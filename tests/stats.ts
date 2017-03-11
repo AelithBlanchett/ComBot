@@ -393,13 +393,13 @@ describe("The player(s)", () => {
         // let tierList = Utils.getEnumList(Tier);
         // let attackList = [
         //     ActionType.Brawl,
-        //     ActionType.SexStrike,
+        //     ActionType.Tease,
         //     ActionType.SubHold,
         //     ActionType.SexHold,
         //     ActionType.Degradation,
         //     ActionType.ForcedWorship,
         //     ActionType.HighRisk,
-        //     ActionType.Penetration,
+        //     ActionType.RiskyLewd,
         //     ActionType.Stun,
         //     ActionType.StrapToy
         // ];

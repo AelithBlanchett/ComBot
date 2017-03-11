@@ -43,7 +43,7 @@ export namespace Fight {
             public static maxTurnsWithoutFocus: number = 3;
             //Holds
             public static initialNumberOfTurnsForHold: number = 5;
-            public static holdDamageMultiplier: number = 0.5;
+            public static holdDamageMultiplier: number = 0.33;
             //Rest
             public static hpPercentageToHealOnRest: number = 0.30;
             public static lpPercentageToHealOnRest: number = 0.30;
@@ -55,6 +55,8 @@ export namespace Fight {
             //Stun
             public static stunPowerDivider: number = 2;
             public static dicePenaltyMultiplierWhileStunned: number = 3;
+
+            public static masturbateLpDamage: number = 7;
 
 
 
@@ -68,8 +70,8 @@ export namespace Fight {
             public static sextoyPickupMultiplier: number = 1.5;
 
             public static degradationUses: number = 1;
-            public static degradationFocusDamage: number = 2;
-            public static degradationFocusMultiplier: number = 2;
+            public static degradationFocusDamage: number = 10;
+            public static degradationFocusMultiplier: number = 1.5;
 
             public static accuracyForBrawlInsideSubHold: number = 3;
             public static accuracyForSexStrikeInsideSexHold: number = 3;
@@ -412,12 +414,12 @@ export enum Trigger {
     Roll = SingleRoll | InitiationRoll,
 
     BrawlAttack = 1 << 10,
-    SexStrikeAttack = 1 << 11,
+    TeaseAttack = 1 << 11,
     ForcedWorshipAttack = 1 << 12,
     HighRiskAttack = 1 << 13,
-    Penetration = 1 << 14,
+    RiskyLewd = 1 << 14,
     Stun = 1 << 15,
-    Attack = BrawlAttack | SexStrikeAttack | ForcedWorshipAttack | Stun,
+    Attack = BrawlAttack | TeaseAttack | ForcedWorshipAttack | Stun,
     SubmissionHold = 1 << 16,
     Bondage = 1 << 17,
     Degradation = 1 << 18,

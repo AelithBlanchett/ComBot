@@ -536,9 +536,9 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
-    penetration(args:string, data:FChatResponse) {
+    riskylewd(args:string, data:FChatResponse) {
         try {
-            this.fight.prepareAction(data.character, ActionType.Penetration, true, false, args);
+            this.fight.prepareAction(data.character, ActionType.RiskyLewd, true, false, args);
         }
         catch (ex) {
             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
@@ -572,9 +572,9 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
-    sex(args:string, data:FChatResponse) {
+    tease(args:string, data:FChatResponse) {
         try {
-            this.fight.prepareAction(data.character, ActionType.SexStrike, true, false, args);
+            this.fight.prepareAction(data.character, ActionType.Tease, true, false, args);
         }
         catch (ex) {
             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);

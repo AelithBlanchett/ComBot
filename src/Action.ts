@@ -153,8 +153,8 @@ export class Action{
             case ActionType.HighRisk:
                 result = this.actionHighRisk();
                 break;
-            case ActionType.Penetration:
-                result = this.actionPenetration();
+            case ActionType.RiskyLewd:
+                result = this.actionRiskyLewd();
                 break;
             case ActionType.HumHold:
                 result = this.actionHumHold();
@@ -162,8 +162,8 @@ export class Action{
             case ActionType.ItemPickup:
                 result = this.actionItemPickup();
                 break;
-            case ActionType.SexStrike:
-                result = this.actionSexStrike();
+            case ActionType.Tease:
+                result = this.actionTease();
                 break;
             case ActionType.SubHold:
                 result = this.actionSubHold();
@@ -215,8 +215,8 @@ export class Action{
         return Trigger.BrawlAttack;
     }
 
-    actionSexStrike():Trigger{
-        this.attacker.triggerMods(TriggerMoment.Before, Trigger.SexStrikeAttack);
+    actionTease():Trigger{
+        this.attacker.triggerMods(TriggerMoment.Before, Trigger.TeaseAttack);
         this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
@@ -224,7 +224,7 @@ export class Action{
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             this.lpDamageToDef += this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore);
         }
-        return Trigger.SexStrikeAttack;
+        return Trigger.TeaseAttack;
     }
 
     actionSubHold():Trigger{
@@ -234,7 +234,7 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-            let hpDamage = this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore);
+            let hpDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);
             let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.SubHold, hpDamage, 0, 0);
             let brawlBonusAttacker = new BrawlBonusSubHoldModifier(this.attacker, [holdModifier.idModifier]);
             let brawlBonusDefender = new BrawlBonusSubHoldModifier(this.defender, [holdModifier.idModifier]);
@@ -252,7 +252,7 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-            let lustDamage = this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore);
+            let lustDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);
             let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.SexHold, 0, lustDamage, 0);
             let lustBonusAttacker = new LustBonusSexHoldModifier(this.attacker, [holdModifier.idModifier]);
             let lustBonusDefender = new LustBonusSexHoldModifier(this.defender, [holdModifier.idModifier]);
@@ -306,22 +306,24 @@ export class Action{
         return Trigger.HighRiskAttack;
     }
 
-    actionPenetration():Trigger{
-        this.attacker.triggerMods(TriggerMoment.Before, Trigger.Penetration);
+    actionRiskyLewd():Trigger{
+        this.attacker.triggerMods(TriggerMoment.Before, Trigger.RiskyLewd);
         this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * HighRiskMultipliers[Tier[this.tier]]);
+            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * 0.5);
         }
         else{
             this.missed = true;
             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
             this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * (1 + (1 - HighRiskMultipliers[Tier[this.tier]])));
+            this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * 0.5);
         }
-        return Trigger.Penetration;
+        return Trigger.RiskyLewd;
     }
 
     actionForcedWorship():Trigger{
@@ -331,7 +333,7 @@ export class Action{
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-            this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
+            this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]] * 2;
             this.lpDamageToDef += 1;
         }
         return Trigger.ForcedWorshipAttack;
@@ -405,7 +407,7 @@ export class Action{
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-            this.fpDamageToDef += this.tier + 1;
+            this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfAttacksStunned = this.tier + 1;
             this.hpDamageToDef = this.attackFormula(this.tier, Math.floor(this.attacker.currentPower / Constants.Fight.Action.Globals.stunPowerDivider), this.defender.currentToughness, this.diceScore);
             let stunModifier = new StunModifier(this.defender, this.attacker, -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned), nbOfAttacksStunned);
@@ -450,7 +452,7 @@ export class Action{
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-            this.fpDamageToDef += this.tier + 1;
+            this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfTurnsWearingToy = this.tier + 1;
             let lpDamage = StrapToyLPDamagePerTurn[Tier[this.tier]];
             let strapToyModifier = new StrapToyModifier(this.defender, nbOfTurnsWearingToy, lpDamage);
@@ -463,7 +465,6 @@ export class Action{
     actionFinisher():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Finisher);
         this.tier = Tier.Heavy;
-        this.requiresRoll = false; //subject to change
         if((this.defender.heartsRemaining <= 1 || this.defender.orgasmsRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 1) && this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.defender.triggerPermanentOutsideRing();
@@ -471,6 +472,7 @@ export class Action{
         }
         else{
             this.missed = true;
+            this.fpDamageToDef += FocusDamageOnMiss[Tier[Tier.Heavy]];
             this.fight.message.addHit(Utils.strFormat(Constants.Messages.finishFailMessage, [this.attacker.getStylizedName()]));
         }
 
@@ -481,7 +483,7 @@ export class Action{
         this.defender = null;
         this.requiresRoll = false;
         this.missed = false;
-        this.lpDamageToAtk = 3;
+        this.lpDamageToAtk = Constants.Fight.Action.Globals.masturbateLpDamage;
         return Trigger.PassiveAction;
     }
 
@@ -714,7 +716,7 @@ export class EmptyAction extends Action {
 
 export enum ActionType {
     Brawl,
-    SexStrike,
+    Tease,
     Tag,
     Rest,
     SubHold,
@@ -726,7 +728,7 @@ export enum ActionType {
     Degradation,
     ForcedWorship,
     HighRisk,
-    Penetration,
+    RiskyLewd,
     Stun,
     Escape,
     Submit,
