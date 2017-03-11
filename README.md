@@ -1,4 +1,4 @@
-# NSFWBot [![Build Status](https://travis-ci.org/AelithBlanchett/nsfwbot.svg?branch=master)](https://travis-ci.org/AelithBlanchett/nsfwbot)
+# ComBot [![Build Status](https://travis-ci.org/AelithBlanchett/combot.svg?branch=master)](https://travis-ci.org/AelithBlanchett/ComBot)
 
 Not much here for the moment.
 
