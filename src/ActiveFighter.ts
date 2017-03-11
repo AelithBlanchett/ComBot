@@ -159,7 +159,12 @@ export class ActiveFighter extends Fighter {
     }
 
     get isInDebug():boolean{
-        return this.fight.debug;
+        if(this.fight != null){
+            return this.fight.debug;
+        }
+        else{
+            return false;
+        }
     }
 
     get currentPower():number{
