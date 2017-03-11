@@ -1,0 +1,51 @@
+{
+  "name": "nsfwbot",
+  "version": "3.0.0",
+  "description": "A bot with a fighting mechanism plugin for fun times.",
+  "main": "index.js",
+  "dependencies": {
+    "@types/es6-promise": "0.0.32",
+    "@types/knex": "0.0.38",
+    "array.prototype.findindex": "^2.0.0",
+    "async": "^2.0.1",
+    "cappu-dice": "*",
+    "circular-json": "^0.3.1",
+    "didyoumean": "*",
+    "es-abstract": "^1.6.1",
+    "es6-promise": "^4.0.3",
+    "fchatlib": "^0.6.0",
+    "jasmine": "2.2",
+    "jasmine-es6": "^0.4.0",
+    "knex": "^0.12.6",
+    "lodash": "*",
+    "mysql": "*",
+    "mysql2": "^1.1.2",
+    "promise": "^7.1.1",
+    "require-reload": "*",
+    "sprintf-js": "^1.0.3",
+    "stats-lite": "*",
+    "typeorm": "0.0.8",
+    "typescript": "^2.0",
+    "typings": "*",
+    "wait-until": "*"
+  },
+  "devDependencies": {
+    "@types/core-js": "^0.9.34",
+    "@types/jasmine": "^2.2.34",
+    "@types/mysql": "0.0.29",
+    "@types/node": "<5.0.0"
+  },
+  "scripts": {
+    "test": "cd bin/tests && node tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AelithBlanchett/NSFWBot.git"
+  },
+  "author": "AelithBlanchett",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AelithBlanchett/NSFWBot/issues"
+  },
+  "homepage": "https://github.com/AelithBlanchett/NSFWBot#readme"
+}

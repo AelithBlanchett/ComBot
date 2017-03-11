@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": true,
+    "sourceRoot": "./src/",
+    "outDir": "./bin/",
+    "types": [
+      "node",
+      "jasmine",
+      "mysql"
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
