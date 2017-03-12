@@ -303,6 +303,12 @@ export class Fight{
             }
         }
         this.currentTurn++;
+
+        for(let fighter of this.fighters){
+            this.message.addSpecial(fighter.checkAchievements());
+        }
+
+
         this.outputStatus();
         for(let fighter of this.fighters){
             fighter.nextRound();
