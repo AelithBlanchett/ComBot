@@ -3,6 +3,7 @@ import {Fighter} from "./Fighter";
 import {FightTier} from "./Constants";
 import Knex = require("knex");
 import {Model} from "./Model";
+import {Fight} from "./Fight";
 
 export class Achievement {
     type: AchievementType;
@@ -30,7 +31,7 @@ export class Achievement {
         return achievements;
     }
 
-    static checkAll(fighter:Fighter):string[]{
+    static checkAll(fighter:Fighter, fight?:Fight):string[]{
         let addedInfo = [];
         let achievements = Achievement.getAll();
 
@@ -49,18 +50,20 @@ export class Achievement {
 }
 
 export enum AchievementCondition{
-    Rookie = <any>"fighter.totalFights >= 1",
-    FiveFights = <any>"fighter.totalFights >= 5",
-    TenFights = <any>"fighter.totalFights >= 10",
-    TwentyFights = <any>"fighter.totalFights >= 20",
-    FortyFights = <any>"fighter.totalFights >= 40",
+    Rookie = <any>"fighter.fightsCount >= 1",
+    FiveFights = <any>"fighter.fightsCount >= 5",
+    TenFights = <any>"fighter.fightsCount >= 10",
+    TwentyFights = <any>"fighter.fightsCount >= 20",
+    FortyFights = <any>"fighter.fightsCount >= 40",
     WinFiveFights = <any>"fighter.wins >= 5",
     WinTenFights = <any>"fighter.wins >= 10",
     WinTwentyFights = <any>"fighter.wins >= 20",
     WinThirtyFights = <any>"fighter.wins >= 30",
     WinFortyFights = <any>"fighter.wins >= 40",
     ReachedSilver = <any>"fighter.tier() >= Constants_1.FightTier.Silver",
-    ReachedGold = <any>"fighter.tier() >= Constants_1.FightTier.Gold"
+    ReachedGold = <any>"fighter.tier() >= Constants_1.FightTier.Gold",
+    LongFight = <any>"fight.currentTurn >= 20",
+    SeasonOne = <any>"fight.season == 1"
 }
 
 export enum AchievementDescription{
@@ -75,7 +78,9 @@ export enum AchievementDescription{
     WinThirtyFights = <any>"Win 30 fights",
     WinFortyFights = <any>"Win 40 fights",
     ReachedSilver = <any>"Reached Silver Tier",
-    ReachedGold = <any>"Reached Gold Tier"
+    ReachedGold = <any>"Reached Gold Tier",
+    LongFight = <any>"Participate in a fight lasting more than 20 turns",
+    SeasonOne = <any>"Participate in season 1"
 }
 
 export enum AchievementType {
@@ -90,7 +95,9 @@ export enum AchievementType {
     WinThirtyFights = 8,
     WinFortyFights = 9,
     ReachedSilver = 10,
-    ReachedGold = 11
+    ReachedGold = 11,
+    LongFight = 12,
+    SeasonOne = 13
 }
 
 export enum AchievementReward {
@@ -105,20 +112,7 @@ export enum AchievementReward {
     WinThirtyFights = 300,
     WinFortyFights = 400,
     ReachedSilver = 100,
-    ReachedGold = 200
+    ReachedGold = 200,
+    LongFight = 5,
+    SeasonOne = 5
 }
-//
-// export enum AchievementReward {
-//     Rookie = <any>"10 tokens",
-//     FiveFights = <any>"50 tokens",
-//     TenFights = <any>"100 tokens",
-//     TwentyFights = <any>"150 tokens",
-//     FortyFights = <any>"200 tokens",
-//     WinFiveFights = <any>"50 tokens",
-//     WinTenFights = <any>"100 tokens",
-//     WinTwentyFights = <any>"200 tokens",
-//     WinThirtyFights = <any>"300 tokens",
-//     WinFortyFights = <any>"400 tokens",
-//     ReachedSilver = <any>"100 tokens",
-//     ReachedGold = <any>"200 tokens"
-// }

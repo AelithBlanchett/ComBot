@@ -95,9 +95,9 @@ export class Fighter{
         return added;
     }
 
-    checkAchievements(){
+    checkAchievements(fight?:Fight){
         let strBase = "Achievements won: ";
-        let added = Achievement.checkAll(this);
+        let added = Achievement.checkAll(this, fight);
 
         if(added.length > 0){
             strBase += added.join("\n");
