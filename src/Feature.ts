@@ -81,7 +81,7 @@ export class Feature{
         switch (this.type){
             case FeatureType.KickStart:
             case FeatureType.SexyKickStart:
-                result = 2 * this.uses;
+                result = 5 * this.uses;
                 break;
             case FeatureType.Sadist:
             case FeatureType.RyonaEnthusiast:

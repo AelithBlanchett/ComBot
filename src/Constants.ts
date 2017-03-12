@@ -144,6 +144,8 @@ export class Messages {
     An example on how to change your stats: Type: !restat 31,32,29,28,30,50 
     31 here represents your Power, 32 your Sensuality, 29 your Toughness, 28 your Endurance, 30 your Dexterity and 50 your Willpower.
     You must have 200 attributed points in order to start a fight.
+    
+    Let's get to the stats.
 
     Power will be used wear out the defender Physically with your strength, reducing their Health
     Sensuality will wear out the defender Sexually
@@ -152,15 +154,43 @@ export class Messages {
     Dexterity will help your moves to hit, help you to dodge attacks and influence your initiative
     Willpower will help you to keep your focus, and increase your Focus bar’s bounds
 
-    Your overall Health is primarily determined by your Toughness plus a percentage of your overall stats.
-    Your Lust and Orgasm Counter scales with the Endurance and also a percentage of your overall stats.
+    During a fight, your "health" is splitted in three bars. Health, Lust, and Focus.
+    
+    Your overall Health scales with your Toughness.
+    Your Lust and Orgasm Counter scales with the Endurance.
+    Your Focus bar bounds scales with the Willpower.
 
     Health works similarly to how Lust does.
-    For your health, you will have 5 hearts, each representing 25 HP.
-    For your lust, the hearts are replaced by the Orgasm Counter, and the HP by a Lust Counter.
-    The Orgasm Counter will go up to X, this X being your Endurance.
-    You will trigger an orgasm when you max your Lust Counter, which will reset back to 0, and removing one orgasm from your Orgasm Counter.
+    For your health, you will have 3 hearts, each representing a certain amount of HP, depending on your toughness.
+    For your lust, the hearts are replaced by the Orgasm Counter, and the HP by LP (Lust Points).
+    The Orgasm Counter are the equivalent of hearts.
+    
+    When you receive an attack, it affects your latest heart. Once your heart's hp gets to zero, it breaks, and the next (with full HP) one takes place.
+    Same as the hearts, you will trigger an orgasm when you max your Lust Counter, which will reset back to 0, and removing one orgasm from your Orgasm Counter.
     No Hearts = No More Orgasms = You're out!
+    
+    The focus works a bit differently: see it as something you need not to be in the 'red'.
+    The focus bar bounds go into the negative and the positive. (-30 to 30 for example.)
+    You will start at 0 FP (Focus Points).
+    In order to stay in the fight, you will have to keep your focus in the green zone, between 0 and 30 in our case.
+    Successfully placing an attack or resting will make you gain FP.
+    Missing an attack, receiving a hit or being put in a humiliation hold will make you lose FP.
+    If you are in the red for 3 consecutive turns, you're considered as too unfocused to continue the fight.
+    Of course, in other terms, it could mean: Too submissive to fight, Ahegao, etc.
+    
+    There is an economy driven around the federation.
+    To participate in a fight, you must pay a copper token (10 tokens).
+    You start with 10 tokens, enough to participate in a fight.
+    If you don't have enough money to participate in a fight, don't worry.
+    You can service someone in the room (however they like~), and they'll give you some money in return with "!tip your_character_name amount_of_tokens".
+    It is encouraged that you do so too, if you happen to be a successful fighter!
+    You can also have feats and flaws linked to your character, called Features.
+    Most of the features are feats, such as starting with an item before the fight starts (the KickStart feature).
+    You can also have non-impacting features, such as the DomSubLover. It simply replaces your focus bar with a submissiveness bar that acts the same.
+    Get a complete list of those features with !getfeatureslist.
+    
+    TLDR: Do "!register", then set your 200 points of stats with "!restat 31,32,29,28,29,51", then do "!ready" to take part in the upcoming fight.
+    You can check the command list on the profile.
     `;
     static Ready = `[color=green]%s is now ready to get it on![/color]`;
     static HitMessage = ` HIT! `;

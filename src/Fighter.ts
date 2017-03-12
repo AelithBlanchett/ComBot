@@ -23,7 +23,7 @@ export class Fighter{
     endurance:number = 1;
     willpower:number = 1;
 
-    tokens: number = 0;
+    tokens: number = 10;
     tokensSpent: number = 0;
 
     fightsCount:number;
@@ -153,7 +153,7 @@ export class Fighter{
     }
 
     minFocus():number {
-        return -20 - this.focusResistance();
+        return -this.focusResistance();
     }
 
     focusResistance():number{
