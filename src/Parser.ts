@@ -85,6 +85,32 @@ export class Commands{
         }
     }
 
+    public static tipPlayer(args){
+        let result = {player: null, amount: -1, message: null};
+        let splittedArgs = args.split(" ");
+        let player = "";
+        let amount = 0;
+
+        if(splittedArgs.length > 1){
+            if(isNaN(splittedArgs[0]) || splittedArgs[0] <= 0){
+                result.message = "The specified amount is invalid. It must be a number > 0.";
+                return result;
+            }
+            else{
+                result.amount = splittedArgs[0];
+            }
+
+            splittedArgs.shift();
+            result.player = splittedArgs.join(" ");
+        }
+        else{
+            result.message = "The parameter count is invalid.";
+            return result;
+        }
+
+        return result;
+    }
+
     public static getFeatureType(args, onlyType:boolean = false){
         let result = {featureType: null, turns: -1, message: null};
         let splittedArgs = args.split(" ");

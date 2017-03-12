@@ -329,9 +329,10 @@ export enum TokensPerWin {
 }
 
 export enum TokensWorth {
-    Bronze = 100,
-    Silver = 200,
-    Gold = 600
+    Copper = 10,
+    Bronze = 50,
+    Silver = 100,
+    Gold = 300
 }
 
 export enum FightType {

@@ -178,7 +178,7 @@ export class Fighter{
             "[b][color=orange]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Orgasms[/color][/b]: " + this.maxOrgasms() + " * " + this.lustPerOrgasm() +" [b][color=pink]Lust[/color] per Orgasm[/b]"+"\n" +
             "[b][color=green]Toughness[/color][/b]: " + this.toughness + "\n" +
             "[b][color=cyan]Endurance[/color][/b]: " + this.endurance + "      " + "[b][color=green]Win[/color]/[color=red]Loss[/color] record[/b]: " + this.wins + " - " + this.losses + "\n" +
-            "[b][color=purple]Dexterity[/color][/b]: " + this.dexterity +  "      " + "[b][color=orange]Bronze tokens available[/color][/b]: " + this.bronzeTokens() +  " " + "[b][color=grey]Silver[/color][/b]: " + this.silverTokens() +  " " + "[b][color=yellow]Gold[/color][/b]: " + this.goldTokens() + "\n" +
+            "[b][color=purple]Dexterity[/color][/b]: " + this.dexterity +  "      " + "[b][color=brown]Copper tokens available[/color][/b]: " + this.copperTokens() +  " " +"[b][color=orange]Bronze tokens available[/color][/b]: " + this.bronzeTokens() +  " " + "[b][color=grey]Silver[/color][/b]: " + this.silverTokens() +  " " + "[b][color=yellow]Gold[/color][/b]: " + this.goldTokens() + "\n" +
             "[b][color=blue]Willpower[/color][/b]: " + this.willpower +  "      " + "[b][color=orange]Total tokens[/color][/b]: " + this.tokens + "         [b][color=orange]Total spent[/color][/b]: "+this.tokensSpent+"\n"  +
             "[b][color=red]Features[/color][/b]: [b]" + this.getFeaturesList() + "[/b]\n" +
             "[b][color=yellow]Achievements[/color][/b]: [b]" + this.getAchievementsList() + "[/b]";
@@ -198,6 +198,10 @@ export class Fighter{
             strResult.push(`${achievement.description}`);
         }
         return strResult.join(", ");
+    }
+
+    copperTokens():number{
+        return Math.floor(this.tokens/TokensWorth.Copper);
     }
 
     bronzeTokens():number{
@@ -223,7 +227,7 @@ export class Fighter{
         }
     }
 
-    addFeature(type:FeatureType, turns:number){
+    async addFeature(type:FeatureType, turns:number){
         let feature = new Feature(this.name, type, turns);
         let amountToRemove = feature.getCost();
 
@@ -232,7 +236,7 @@ export class Fighter{
             if(index == -1){
                 this.features.push(feature);
                 this.removeTokens(amountToRemove);
-                FighterRepository.persist(this);
+                await FighterRepository.persist(this);
             }
             else{
                 throw new Error("You already have this feature. You have to wait for it to expire before adding another of the same type.");
@@ -339,6 +343,10 @@ export class Fighter{
         if(this.tokens < 0){
             this.tokens = 0;
         }
+    }
+
+    canPayAmount(amount):boolean{
+        return (this.tokens - amount > 0);
     }
 
     tier():FightTier{

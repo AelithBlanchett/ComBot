@@ -148,6 +148,9 @@ export class Fight{
         if(!this.hasStarted){
             if (!this.getFighterByName(fighterName)) { //find fighter by its name property instead of comparing objects, which doesn't work.
                 let activeFighter:ActiveFighter = await ActiveFighterRepository.initialize(fighterName);
+                if(activeFighter.copperTokens() < 1){
+                    throw new Error("You don't have any copper token (10 tokens) to spend. Get to work and earn it!");
+                }
                 activeFighter.fightStatus = FightStatus.Joined;
                 if(team != Team.Unknown){
                     activeFighter.assignedTeam = team;

@@ -107,8 +107,8 @@ export class CommandHandler implements ICommandHandler {
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             try {
-                fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
-                this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully added the ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
+                await fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
+                this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully added the ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
             }
             catch (ex) {
                 this.fChatLibInstance.sendPrivMessage("[color=red]An error happened: " + ex.message + "[/color]", fighter.name);
@@ -127,19 +127,30 @@ export class CommandHandler implements ICommandHandler {
         }
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
-            try {
-                let arrParam:Array<number> = [];
+            if(fighter.canPayAmount(5)) {
+                try {
+                    let arrParam:Array<number> = [];
 
-                for(let nbr of args.split(",")){
-                    arrParam.push(parseInt(nbr));
+                    for(let nbr of args.split(",")){
+                        arrParam.push(parseInt(nbr));
+                    }
+
+                    fighter.removeTokens(5);
+                    fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
+
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You've successfully changed your stats![/color]`, fighter.name);
+                }
+                catch (ex) {
+                    this.fChatLibInstance.sendPrivMessage("[color=red]An error happened: " + ex.message + "[/color]", fighter.name);
                 }
 
-                fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
-                this.fChatLibInstance.sendPrivMessage(`[color=green]You've successfully changed your stats![/color]`, fighter.name);
             }
-            catch (ex) {
-                this.fChatLibInstance.sendPrivMessage("[color=red]An error happened: " + ex.message + "[/color]", fighter.name);
+            else{
+                this.fChatLibInstance.sendPrivMessage(`[color=red]You don't have enough money.[/color]`, data.character);
             }
+
+
+
         }
         else {
             this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
@@ -386,6 +397,37 @@ export class CommandHandler implements ICommandHandler {
         }
         else {
             this.fChatLibInstance.sendPrivMessage("[color=red]You are already registered.[/color]", data.character);
+        }
+    };
+
+    async tip(args:string, data:FChatResponse) {
+        let parsedArgs = Parser.Commands.tipPlayer(args);
+        if (parsedArgs.message != null) {
+            this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedArgs.message + "\nExample: !tip character 10[/color]", data.character);
+            return;
+        }
+        let fighterGiving = await FighterRepository.load(data.character);
+        let fighterReceiving = await FighterRepository.load(parsedArgs.player);
+        try {
+            if (fighterGiving != null && fighterReceiving != null) {
+                if(fighterGiving.canPayAmount(parsedArgs.amount)){
+                    fighterGiving.removeTokens(parsedArgs.amount);
+                    fighterReceiving.giveTokens(parsedArgs.amount);
+                    await FighterRepository.persist(fighterGiving);
+                    await FighterRepository.persist(fighterReceiving);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully paid ${fighterReceiving.name} ${parsedArgs.amount} tokens for their... services.[/color]`, data.character);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You just received ${parsedArgs.amount} tokens from ${fighterReceiving.name} for your... services.[/color]`, fighterReceiving.name);
+                }
+                else{
+                    this.fChatLibInstance.sendPrivMessage(`[color=red]You don't have enough money.[/color]`, data.character);
+                }
+            }
+            else{
+                this.fChatLibInstance.sendPrivMessage(`[color=red]Either you or the receiver wasn't found in the fighter database.[/color]`, data.character);
+            }
+        }
+        catch (ex) {
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
         }
     };
 
