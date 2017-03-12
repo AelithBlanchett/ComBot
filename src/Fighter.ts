@@ -94,7 +94,7 @@ export class Fighter{
     }
 
     checkAchievements(fight?:Fight){
-        let strBase = `Achievements unlocked for ${this.name}!\n`;
+        let strBase = `[color=yellow][b]Achievements unlocked for ${this.name}![/b][/color]\n`;
         let added = Achievement.checkAll(this, fight);
 
         if(added.length > 0){
@@ -151,7 +151,7 @@ export class Fighter{
     }
 
     minFocus():number {
-        return -this.focusResistance();
+        return -20 - this.focusResistance();
     }
 
     focusResistance():number{

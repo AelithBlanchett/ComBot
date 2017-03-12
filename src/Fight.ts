@@ -305,7 +305,10 @@ export class Fight{
         this.currentTurn++;
 
         for(let fighter of this.fighters){
-            this.message.addSpecial(fighter.checkAchievements(this));
+            let strAchievements = fighter.checkAchievements(this);
+            if(strAchievements != ""){
+                this.message.addSpecial(strAchievements);
+            }
         }
 
 
@@ -328,6 +331,10 @@ export class Fight{
 
     isOver():boolean {
         return this.getTeamsStillInGame().length <= 1;
+    }
+
+    isDraw():boolean{
+        return this.getTeamsStillInGame().length == 0;
     }
 
     //Fighting info displays

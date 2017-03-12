@@ -63,7 +63,8 @@ export enum AchievementCondition{
     ReachedSilver = <any>"fighter.tier() >= Constants_1.FightTier.Silver",
     ReachedGold = <any>"fighter.tier() >= Constants_1.FightTier.Gold",
     LongFight = <any>"fight.currentTurn >= 20",
-    SeasonOne = <any>"fight.season == 1"
+    SeasonOne = <any>"fight.season == 1",
+    DoubleKO = <any>"fight.isDraw() == true"
 }
 
 export enum AchievementDescription{
@@ -80,7 +81,8 @@ export enum AchievementDescription{
     ReachedSilver = <any>"Reached Silver Tier",
     ReachedGold = <any>"Reached Gold Tier",
     LongFight = <any>"Participate in a fight lasting more than 20 turns",
-    SeasonOne = <any>"Participate in season 1"
+    SeasonOne = <any>"Participate in season 1",
+    DoubleKO = <any>"Finish a match with a double-KO"
 }
 
 export enum AchievementType {
@@ -97,7 +99,8 @@ export enum AchievementType {
     ReachedSilver = 10,
     ReachedGold = 11,
     LongFight = 12,
-    SeasonOne = 13
+    SeasonOne = 13,
+    DoubleKO = 14
 }
 
 export enum AchievementReward {
@@ -114,5 +117,6 @@ export enum AchievementReward {
     ReachedSilver = 100,
     ReachedGold = 200,
     LongFight = 5,
-    SeasonOne = 5
+    SeasonOne = 5,
+    DoubleKO = 25
 }

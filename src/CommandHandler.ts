@@ -14,7 +14,6 @@ import {ActionType} from "./Action";
 import {Team} from "./Constants";
 import {FighterRepository} from "./FighterRepository";
 import {FightRepository} from "./FightRepository";
-import {Commands} from "./Constants";
 
 export class CommandHandler implements ICommandHandler {
     fChatLibInstance:IFChatLib;
@@ -41,7 +40,7 @@ export class CommandHandler implements ICommandHandler {
             if(this.blnAutofight == false){
                 return;
             }
-            let availableCommands = Utils.getEnumList(Constants.Commands);
+            let availableCommands = Utils.getEnumList(ActionType);
             let availableTiers = Utils.getEnumList(Constants.Tier);
             availableTiers.shift();
 
@@ -156,27 +155,6 @@ export class CommandHandler implements ICommandHandler {
             this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
         }
     };
-
-    // async addstat(args:string, data:FChatResponse) {
-    //     let parsedStat:Stats = Parser.Commands.addStat(args);
-    //     if (parsedStat == -1) {
-    //         this.fChatLibInstance.sendPrivMessage("[color=red]Stat not found.[/color]", data.character);
-    //         return;
-    //     }
-    //     let fighter:Fighter = await FighterRepository.load(data.character);
-    //     if (fighter != undefined) {
-    //         try {
-    //             fighter.addStat(parsedStat);
-    //             this.fChatLibInstance.sendPrivMessage(`[color=green]${Stats[parsedStat]} successfully upgraded by 1![/color]`, fighter.name);
-    //         }
-    //         catch (ex) {
-    //             this.fChatLibInstance.sendPrivMessage("[color=red]An error happened: " + ex.message + "[/color]", fighter.name);
-    //         }
-    //     }
-    //     else {
-    //         this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
-    //     }
-    // };
 
     async clearfeatures(args:string, data:FChatResponse) {
         let fighter:Fighter = await FighterRepository.load(data.character);
@@ -450,23 +428,6 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
-    // async removestat(args:string, data:FChatResponse) {
-    //     let parsedStat:Stats = Parser.Commands.addStat(args);
-    //     if (parsedStat == -1) {
-    //         this.fChatLibInstance.sendPrivMessage("[color=red]Stat not found.[/color]", this.channel);
-    //         return;
-    //     }
-    //     let fighter:Fighter = await FighterRepository.load(data.character);
-    //     if (fighter != null) {
-    //         try {
-    //             let res = fighter.removeStat(parsedStat);
-    //         }
-    //         catch (ex) {
-    //             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
-    //         }
-    //     }
-    // };
-
     async stats(args:string, data:FChatResponse) {
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != null) {
@@ -688,7 +649,7 @@ export class CommandHandler implements ICommandHandler {
 
     finisher(args:string, data:FChatResponse) {
         try {
-            this.fight.prepareAction(data.character, ActionType.Finish, false, false, args);
+            this.fight.prepareAction(data.character, ActionType.Finisher, false, false, args);
         }
         catch (ex) {
             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);

@@ -400,7 +400,7 @@ export class ActiveFighter extends Fighter {
             this.triggerMods(TriggerMoment.After, Trigger.FocusDamage);
         }
         if (this.focus <= this.minFocus()) {
-            this.fight.message.addHit(`${this.getStylizedName()} seems way too distracted to possibly continue the fight! Is it their submissiveness? Their morale? One thing's sure, they'll be soon too broken to continue fighting!`);
+            this.fight.message.addSpecial(`If ${this.getStylizedName()} doesn't focus back on the fight, they'll be soon too broken to continue fighting!`);
         }
     }
 

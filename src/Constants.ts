@@ -63,7 +63,7 @@ export namespace Fight {
             //Bonuses
             public static maxTagBonus: number = 3;
 
-            public static itemPickupUses: number = 1;
+            public static itemPickupUses: number = 2;
             public static itemPickupMultiplier: number = 1.5;
 
             public static sextoyPickupUses:number = 2;
@@ -246,27 +246,6 @@ export class Messages {
     static wrongMatchTypeForAction = "You can't %s in a %s match.";
 
     static commandError = "[color=red]An error happened: %s[/color]";
-}
-
-export enum Commands {
-    Bondage = 0,
-    Brawl = 1,
-    Degradation = 2,
-    Escape = 3,
-    ForcedWorship = 4,
-    HighRisk = 5,
-    Penetration = 6,
-    HumHold = 7,
-    ItemPickup = 8,
-    Rest = 9,
-    Sex = 10,
-    SexHold = 11,
-    SubHold = 12,
-    StrapToy = 13,
-    SextoyPickup = 14,
-    Stun = 15,
-    Tag = 16,
-    Masturbate = 17
 }
 
 export enum Team {

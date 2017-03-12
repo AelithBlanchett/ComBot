@@ -104,7 +104,7 @@ export class Action{
             scoreRequired = Constants.Fight.Action.RequiredScore.Tag;
         }
         else{
-            if (this.type == ActionType.Finish) {
+            if (this.type == ActionType.Finisher) {
                 scoreRequired += 6;
             }
 
@@ -189,7 +189,7 @@ export class Action{
             case ActionType.StrapToy:
                 result = this.actionStrapToy();
                 break;
-            case ActionType.Finish:
+            case ActionType.Finisher:
                 result = this.actionFinisher();
                 break;
             case ActionType.Masturbate:
@@ -665,6 +665,27 @@ export class Action{
             }
         }
 
+        if(this.attacker){
+            if (this.attacker.isDead()) {
+                fight.message.addHit(`${this.attacker.name} couldn't take the hits anymore! [b][color=red]They're out![/color][/b]`);
+                this.attacker.triggerPermanentOutsideRing();
+            }
+            else if (this.attacker.isSexuallyExhausted()) {
+                fight.message.addHit(`${this.attacker.name} is too sexually exhausted to continue! [b][color=red]They're out![/color][/b]`);
+                this.attacker.triggerPermanentOutsideRing();
+            }
+            else if (this.attacker.isBroken()) {
+                fight.message.addHit(`${this.attacker.name} is too mentally exhausted to continue! [b][color=red]They're out![/color][/b]`);
+                this.attacker.triggerPermanentOutsideRing();
+            }
+            else if (this.attacker.isCompletelyBound()) {
+                fight.message.addHit(`${this.attacker.name} has too many items on them to possibly fight! [b][color=red]They're out![/color][/b]`);
+                this.attacker.triggerPermanentOutsideRing();
+            }
+            else if (!this.attacker.isInTheRing) {
+                fight.message.addHit(`${this.attacker.name} can't stay inside the ring anymore! [b][color=red]They're out![/color][/b]`);
+            }
+        }
         if(this.defender){
             if (this.defender.isDead()) {
                 fight.message.addHit(`${this.defender.name} couldn't take the hits anymore! [b][color=red]They're out![/color][/b]`);
@@ -695,12 +716,19 @@ export class Action{
             fight.message.addHint(`This is still your turn ${this.attacker.getStylizedName()}, time to fight back!`);
             fight.message.send();
             fight.waitingForAction = true;
-        } else if (!fight.isOver()) {
+        }
+        else if (!fight.isOver()) {
             fight.nextTurn();
-        } else { //if there's only one team left in the fight, then we're sure it's over
-            fight.outputStatus();
+        }
+        else {
             let tokensToGiveToWinners:number = TokensPerWin[FightTier[fight.getFightTier(fight.winnerTeam)]];
             let tokensToGiveToLosers:number = tokensToGiveToWinners*Constants.Fight.Globals.tokensPerLossMultiplier;
+            if(fight.isDraw()){
+                fight.message.addHit(`DOUBLE KO! Everyone is out! It's over!`);
+                tokensToGiveToLosers = tokensToGiveToWinners;
+            }
+            fight.outputStatus();
+
             fight.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
         }
     }
@@ -733,7 +761,7 @@ export enum ActionType {
     Escape,
     Submit,
     StrapToy,
-    Finish,
+    Finisher,
     Masturbate
 }
 
