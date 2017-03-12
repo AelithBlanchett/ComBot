@@ -11,6 +11,7 @@
     "cappu-dice": "*",
     "circular-json": "^0.3.1",
     "didyoumean": "*",
+    "elo-rating": "^1.0.1",
     "es-abstract": "^1.6.1",
     "es6-promise": "^4.0.3",
     "fchatlib": "^0.6.0",

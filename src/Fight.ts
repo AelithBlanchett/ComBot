@@ -16,12 +16,13 @@ import ModifierType = Constants.ModifierType;
 import {BondageModifier} from "./CustomModifiers";
 import TriggerMoment = Constants.TriggerMoment;
 import {Message} from "./Messaging";
-var CircularJSON = require('circular-json');
+let CircularJSON = require('circular-json');
 import {ActiveFighter} from "./ActiveFighter";
 import {Fighter} from "./Fighter";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FightRepository} from "./FightRepository";
 import {FighterRepository} from "./FighterRepository";
+let EloRating = require('elo-rating');
 
 export class Fight{
 
@@ -685,6 +686,30 @@ export class Fight{
             this.message.send();
         }
 
+        let eloAverageOfWinners = 0;
+        let numberOfWinners = 0;
+        let numberOfLosers = 0;
+        let eloAverageOfLosers = 0;
+        let eloPointsChangeToWinners = 0;
+        let eloPointsChangeToLosers = 0;
+        for (let fighter of this.fighters) {
+            if (fighter.assignedTeam == this.winnerTeam) {
+                numberOfWinners++;
+                eloAverageOfWinners += fighter.eloRating;
+            }
+            else{
+                numberOfLosers++;
+                eloAverageOfLosers += fighter.eloRating;
+            }
+        }
+
+        eloAverageOfWinners = Math.floor(eloAverageOfWinners / numberOfWinners);
+        eloAverageOfLosers = Math.floor(eloAverageOfLosers / numberOfLosers);
+
+        let eloResults = EloRating.calculate(eloAverageOfWinners, eloAverageOfLosers);
+        eloPointsChangeToWinners = eloResults.playerRating - eloAverageOfWinners;
+        eloPointsChangeToLosers = eloResults.opponentRating - eloAverageOfLosers;
+
         for (let fighter of this.fighters) {
             if (fighter.assignedTeam == this.winnerTeam) {
                 fighter.fightStatus = FightStatus.Won;
@@ -692,12 +717,14 @@ export class Fight{
                 fighter.giveTokens(tokensToGiveToWinners);
                 fighter.wins++;
                 fighter.winsSeason++;
+                fighter.eloRating += eloPointsChangeToWinners;
             }
             else {
                 if (this.winnerTeam != Team.Unknown) {
                     fighter.fightStatus = FightStatus.Lost;
                     fighter.losses++;
                     fighter.lossesSeason++;
+                    fighter.eloRating += eloPointsChangeToLosers;
                 }
                 this.message.addInfo(`Awarded ${tokensToGiveToLosers} ${Constants.Globals.currencyName} to ${fighter.getStylizedName()}`);
                 fighter.giveTokens(tokensToGiveToLosers);

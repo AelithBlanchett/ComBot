@@ -9,6 +9,7 @@ import {Stats} from "./Constants";
 import {FightTier} from "./Constants";
 import {Fight} from "./Fight";
 import {FighterRepository} from "./FighterRepository";
+let EloRating = require('elo-rating');
 
 export class Fighter{
 
@@ -72,7 +73,7 @@ export class Fighter{
     matchesInLast24Hours:number;
     matchesInLast48Hours:number;
 
-    elo:number;
+    eloRating:number = 2000;
     globalRank:number;
 
     forfeits;
