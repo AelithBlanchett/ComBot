@@ -711,7 +711,7 @@ export class CommandHandler implements ICommandHandler {
             }
             this.fight = new Fight();
             this.fight.build(this.fChatLibInstance, this.channel);
-            this.fChatLibInstance.sendMessage("The fight has been ended.", data.character);
+            this.fChatLibInstance.sendMessage("The fight has been ended.", data.channel);
         }
         else {
             this.fChatLibInstance.sendPrivMessage("[color=red]You're not an operator for this channel.[/color]", data.character);

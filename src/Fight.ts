@@ -305,7 +305,7 @@ export class Fight{
         this.currentTurn++;
 
         for(let fighter of this.fighters){
-            this.message.addSpecial(fighter.checkAchievements());
+            this.message.addSpecial(fighter.checkAchievements(this));
         }
 
 
@@ -738,7 +738,7 @@ export class Fight{
                 this.message.addInfo(`Awarded ${tokensToGiveToLosers} ${Constants.Globals.currencyName} to ${fighter.getStylizedName()}`);
                 fighter.giveTokens(tokensToGiveToLosers);
             }
-            this.message.addInfo(fighter.checkAchievements());
+            this.message.addInfo(fighter.checkAchievements(this));
             FighterRepository.persist(fighter);
         }
 
