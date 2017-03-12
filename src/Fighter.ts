@@ -1,14 +1,12 @@
-import {Feature} from "./Feature";
-import {IFighter} from "./interfaces/IFighter";
+import * as Constants from "./Constants";
 import {Achievement} from "./Achievement";
 import {AchievementType} from "./Achievement";
 import {FeatureType, Team} from "./Constants";
-import * as Constants from "./Constants";
 import {TokensWorth} from "./Constants";
-import {Stats} from "./Constants";
 import {FightTier} from "./Constants";
 import {Fight} from "./Fight";
 import {FighterRepository} from "./FighterRepository";
+import {Feature} from "./Feature";
 let EloRating = require('elo-rating');
 
 export class Fighter{
@@ -187,7 +185,14 @@ export class Fighter{
     getFeaturesList(){
         let strResult = [];
         for(let feature of this.features){
-            strResult.push(`${Feature[FeatureType[feature.type]]} - ${feature.uses} uses left`);
+            let usesLeft = "";
+            if(feature.uses > 0){
+                usesLeft = ` - ${feature.uses} uses left`;
+            }
+            else{
+                usesLeft = ` - permanent`;
+            }
+            strResult.push(`${Constants.Feature[FeatureType[feature.type]]}${usesLeft}`);
         }
         return strResult.join(", ");
     }

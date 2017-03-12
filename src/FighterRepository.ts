@@ -70,7 +70,7 @@ export class FighterRepository{
                 await Model.db('nsfw_fighters_features').insert({
                     idFeature: feature.id,
                     idFighter: fighter.name,
-                    season: currentSeason,
+                    season: currentSeason.value,
                     type: feature.type,
                     uses: feature.uses,
                     permanent: feature.permanent,
@@ -80,7 +80,7 @@ export class FighterRepository{
             else{
                 feature.updatedAt = new Date();
                 await Model.db('nsfw_fighters_features').where({idFighter: fighter.name, idFeature: feature.id}).update({
-                    season: currentSeason,
+                    season: currentSeason.value,
                     type: feature.type,
                     uses: feature.uses,
                     permanent: feature.permanent,
