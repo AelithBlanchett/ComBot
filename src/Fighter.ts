@@ -104,7 +104,7 @@ export class Fighter{
             strBase = "";
         }
 
-        return strBase + "\n";
+        return strBase;
     }
 
     winRate():number{
