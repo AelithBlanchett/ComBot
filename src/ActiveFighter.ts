@@ -288,7 +288,7 @@ export class ActiveFighter extends Fighter {
             hp = this.hpPerHeart() - this.hp; //reduce the number if it overflows the bar
         }
         this.hp += hp;
-        this.hpHealLastRound = hp;
+        this.hpHealLastRound += hp;
         if (triggerMods) {
             this.triggerMods(TriggerMoment.After, Trigger.HPHealing);
         }
@@ -306,7 +306,7 @@ export class ActiveFighter extends Fighter {
             lust = this.lust; //reduce the number if it overflows the bar
         }
         this.lust -= lust;
-        this.lpHealLastRound = lust;
+        this.lpHealLastRound += lust;
         if (triggerMods) {
             this.triggerMods(TriggerMoment.After, Trigger.LustHealing);
         }
@@ -324,7 +324,7 @@ export class ActiveFighter extends Fighter {
             focus = this.maxFocus() - this.focus; //reduce the number if it overflows the bar
         }
         this.focus += focus;
-        this.fpHealLastRound = focus;
+        this.fpHealLastRound += focus;
         if (triggerMods) {
             this.triggerMods(TriggerMoment.After, Trigger.FocusHealing);
         }
@@ -339,12 +339,12 @@ export class ActiveFighter extends Fighter {
             this.triggerMods(TriggerMoment.Before, Trigger.HPDamage);
         }
         this.hp -= hp;
-        this.hpDamageLastRound = hp;
+        this.hpDamageLastRound += hp;
         if (this.hp <= 0) {
             this.triggerMods(TriggerMoment.Before, Trigger.HeartLoss);
             this.hp = 0;
             this.heartsRemaining--;
-            this.heartsDamageLastRound = 1;
+            this.heartsDamageLastRound += 1;
             this.fight.message.addHit(`[b][color=red]Heart broken![/color][/b] ${this.name} has ${this.heartsRemaining} hearts left.`);
             if (this.heartsRemaining > 0) {
                 this.hp = this.hpPerHeart();
@@ -368,12 +368,12 @@ export class ActiveFighter extends Fighter {
             this.triggerMods(TriggerMoment.Before, Trigger.LustDamage);
         }
         this.lust += lust;
-        this.lpDamageLastRound = lust;
+        this.lpDamageLastRound += lust;
         if (this.lust >= this.lustPerOrgasm()) {
             this.triggerMods(TriggerMoment.Before, Trigger.Orgasm);
             this.lust = 0;
             this.orgasmsRemaining--;
-            this.orgasmsDamageLastRound = 1;
+            this.orgasmsDamageLastRound += 1;
             this.fight.message.addHit(`[b][color=pink]Orgasm on the mat![/color][/b] ${this.name} has ${this.orgasmsRemaining} orgasms left.`);
             this.lust = 0;
             if (triggerMods) {
@@ -395,12 +395,9 @@ export class ActiveFighter extends Fighter {
             this.triggerMods(TriggerMoment.Before, Trigger.FocusDamage);
         }
         this.focus -= focusDamage;
-        this.fpDamageLastRound = focusDamage;
+        this.fpDamageLastRound += focusDamage;
         if (triggerMods) {
             this.triggerMods(TriggerMoment.After, Trigger.FocusDamage);
-        }
-        if (this.focus <= this.minFocus()) {
-            this.fight.message.addSpecial(`If ${this.getStylizedName()} doesn't focus back on the fight, they'll be soon too broken to continue fighting!`);
         }
     }
 
@@ -422,35 +419,55 @@ export class ActiveFighter extends Fighter {
         this.canMoveFromOrOffRing = false;
     }
 
-    isDead():boolean {
-        return this.heartsRemaining == 0;
+    isDead(displayMessage:boolean = false):boolean {
+        let condition = (this.heartsRemaining == 0);
+        if(condition && displayMessage){
+            this.fight.message.addHit(`${this.getStylizedName()} couldn't take the hits anymore! They're out!`);
+        }
+        return condition;
     }
 
-    isSexuallyExhausted():boolean {
-        return this.orgasmsRemaining == 0;
+    isSexuallyExhausted(displayMessage:boolean = false):boolean {
+        let condition = (this.orgasmsRemaining == 0);
+        if(condition && displayMessage){
+            this.fight.message.addHit(`${this.getStylizedName()} got wrecked sexually! They're out!`);
+        }
+        return condition;
     }
 
-    isBroken():boolean {
-        return this.consecutiveTurnsWithoutFocus >= Constants.Fight.Action.Globals.maxTurnsWithoutFocus;
+    isBroken(displayMessage:boolean = false):boolean {
+        let condition = (this.consecutiveTurnsWithoutFocus >= Constants.Fight.Action.Globals.maxTurnsWithoutFocus);
+        if(condition && displayMessage){
+            this.fight.message.addHit(`${this.getStylizedName()} completely lost their focus! They're out!`);
+        }
+        return condition;
     }
 
-    isTechnicallyOut():boolean {
+    isCompletelyBound(displayMessage:boolean = false):boolean {
+        let condition = (this.bondageItemsOnSelf() >= Constants.Fight.Action.Globals.maxBondageItemsOnSelf);
+        if(condition && displayMessage){
+            this.fight.message.addHit(`${this.getStylizedName()} is completely bound! They're out!`);
+        }
+        return condition;
+    }
+
+    isTechnicallyOut(displayMessage = false):boolean {
         switch (this.fight.fightType) {
-            case FightType.Rumble:
+            case FightType.Classic:
             case FightType.Tag:
                 return (
-                this.isSexuallyExhausted()
-                || this.isDead()
-                || this.isBroken()
-                || this.isCompletelyBound());
+                this.isSexuallyExhausted(displayMessage)
+                || this.isDead(displayMessage)
+                || this.isBroken(displayMessage)
+                || this.isCompletelyBound(displayMessage));
             case FightType.LastManStanding:
-                return this.isDead();
+                return this.isDead(displayMessage);
             case FightType.SexFight:
-                return this.isSexuallyExhausted();
+                return this.isSexuallyExhausted(displayMessage);
             case FightType.Humiliation:
-                return this.isBroken() || this.isCompletelyBound();
+                return this.isBroken(displayMessage) || this.isCompletelyBound(displayMessage);
             case FightType.Bondage:
-                return this.isCompletelyBound();
+                return this.isCompletelyBound(displayMessage);
             default:
                 return false;
         }
@@ -479,10 +496,6 @@ export class ActiveFighter extends Fighter {
 
     isRequestingDraw():boolean {
         return this.wantsDraw;
-    }
-
-    isCompletelyBound():boolean {
-        return this.bondageItemsOnSelf() >= Constants.Fight.Action.Globals.maxBondageItemsOnSelf;
     }
 
     isStunned():boolean {

@@ -83,7 +83,7 @@ export class Modifier implements IModifier{
         if(this.willTriggerForEvent(moment, event)){
             let messageAboutModifier = "";
             this.uses--;
-            messageAboutModifier = `${this.receiver.getStylizedName()} is still affected by the ${this.name}, `;
+            messageAboutModifier = `${this.receiver.getStylizedName()} is affected by the ${this.name}, `;
             if(!objFightAction){
                 if(this.hpDamage > 0){
                     let flagTriggerMods = ((event & Constants.Trigger.HPDamage) == 0);

@@ -54,7 +54,7 @@ export class Fight{
     public constructor() {
         this.idFight = Utils.generateUUID();
         this.stage = this.pickStage();
-        this.fightType = FightType.Rumble;
+        this.fightType = FightType.Classic;
         this.pastActions = [];
         this.winnerTeam = Team.Unknown;
         this.currentTurn = 0;
@@ -83,8 +83,9 @@ export class Fight{
         if(!this.hasStarted && !this.hasEnded){
             switch(type.toLowerCase()){
                 case "classic":
-                    this.fightType = FightType.Rumble;
-                    this.message.addInfo(Constants.Messages.setFightTypeRumble);
+                case "rumble":
+                    this.fightType = FightType.Classic;
+                    this.message.addInfo(Constants.Messages.setFightTypeClassic);
                     break;
                 case "tag":
                 case "tagteam":
@@ -106,11 +107,11 @@ export class Fight{
                     this.message.addInfo(Constants.Messages.setFightTypeHMatch);
                     break;
                 case "bondage":
-                    this.fightType = FightType.Humiliation;
+                    this.fightType = FightType.Bondage;
                     this.message.addInfo(Constants.Messages.setFightTypeBondageMatch);
                     break;
                 default:
-                    this.fightType = FightType.Rumble;
+                    this.fightType = FightType.Classic;
                     this.message.addInfo(Constants.Messages.setFightTypeNotFound);
                     break;
             }
@@ -182,7 +183,7 @@ export class Fight{
             if(fighterInFight && !fighterInFight.isReady){ //find fighter by its name property instead of comparing objects, which doesn't work.
                 fighterInFight.isReady = true;
                 fighterInFight.fightStatus = FightStatus.Ready;
-                this.message.addInfo(Utils.strFormat(Constants.Messages.Ready, [fighterInFight.getStylizedName()])); //Find out why the f it doesn't work
+                this.message.addInfo(Utils.strFormat(Constants.Messages.Ready, [fighterInFight.getStylizedName()]));
                 this.message.send();
                 if (this.canStart()) {
                     this.start();
@@ -202,7 +203,7 @@ export class Fight{
     //Fight logic
 
     async start() {
-        this.message.addInfo(Constants.Messages.startMatchAnnounce);
+        this.message.addInfo(Utils.strFormat(Constants.Messages.startMatchAnnounce, [this.idFight]));
         this.currentTurn = 1;
         this.hasStarted = true;
         this.shufflePlayers(); //random order for teams
@@ -309,23 +310,34 @@ export class Fight{
             if(strAchievements != ""){
                 this.message.addSpecial(strAchievements);
             }
-        }
+            //displays message too if they're out
+            if(!fighter.isTechnicallyOut(true)) {
+                if (fighter.focus <= fighter.minFocus()) {
+                    this.message.addSpecial(`If ${fighter.getStylizedName()} doesn't focus back on the fight, they'll soon be out of the fight!`);
+                }
+            }
 
 
-        this.outputStatus();
-        for(let fighter of this.fighters){
-            fighter.nextRound();
         }
 
         if (this.isOver()) { //Check for the ending
+            let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]];
+            let tokensToGiveToLosers:number = tokensToGiveToWinners*Constants.Fight.Globals.tokensPerLossMultiplier;
+            if(this.isDraw()){
+                this.message.addHit(`DOUBLE KO! Everyone is out! It's over!`);
+                tokensToGiveToLosers = tokensToGiveToWinners;
+            }
             this.outputStatus();
-            var tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]];
-            var tokensToGiveToLosers:number = tokensToGiveToWinners*Constants.Fight.Globals.tokensPerLossMultiplier;
             this.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
         }
         else{
             FightRepository.persist(this);
             this.waitingForAction = true;
+            this.outputStatus();
+        }
+
+        for(let fighter of this.fighters){
+            fighter.nextRound();
         }
     }
 
@@ -335,6 +347,10 @@ export class Fight{
 
     isDraw():boolean{
         return this.getTeamsStillInGame().length == 0;
+    }
+
+    playerStillInFight(fighter:ActiveFighter):void{
+
     }
 
     //Fighting info displays

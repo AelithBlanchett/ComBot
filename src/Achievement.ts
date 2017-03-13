@@ -64,7 +64,8 @@ export enum AchievementCondition{
     ReachedGold = <any>"fighter.tier() >= Constants_1.FightTier.Gold",
     LongFight = <any>"fight.currentTurn >= 20",
     SeasonOne = <any>"fight.season == 1",
-    DoubleKO = <any>"fight.isDraw() == true"
+    DoubleKO = <any>"fight.isDraw() == true",
+    CumFest = <any>`fight.fighters.filter(x => x.name == "").length >= 2`
 }
 
 export enum AchievementDescription{
@@ -82,7 +83,8 @@ export enum AchievementDescription{
     ReachedGold = <any>"Reached Gold Tier",
     LongFight = <any>"Participate in a fight lasting more than 20 turns",
     SeasonOne = <any>"Participate in season 1",
-    DoubleKO = <any>"Finish a match with a double-KO"
+    DoubleKO = <any>"Finish a match with a double-KO",
+    CumFest = <any>"Have two players cum on the same round"
 }
 
 export enum AchievementType {
@@ -100,23 +102,25 @@ export enum AchievementType {
     ReachedGold = 11,
     LongFight = 12,
     SeasonOne = 13,
-    DoubleKO = 14
+    DoubleKO = 14,
+    CumFest = 15
 }
 
 export enum AchievementReward {
-    Rookie = 10,
-    FiveFights = 50,
-    TenFights = 100,
-    TwentyFights = 150,
-    FortyFights = 200,
-    WinFiveFights = 50,
-    WinTenFights = 100,
-    WinTwentyFights = 200,
-    WinThirtyFights = 300,
-    WinFortyFights = 400,
-    ReachedSilver = 100,
-    ReachedGold = 200,
+    Rookie = 5,
+    FiveFights = 25,
+    TenFights = 50,
+    TwentyFights = 75,
+    FortyFights = 100,
+    WinFiveFights = 25,
+    WinTenFights = 50,
+    WinTwentyFights = 100,
+    WinThirtyFights = 150,
+    WinFortyFights = 200,
+    ReachedSilver = 50,
+    ReachedGold = 100,
     LongFight = 5,
     SeasonOne = 5,
-    DoubleKO = 25
+    DoubleKO = 15,
+    CumFest = 10
 }

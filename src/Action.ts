@@ -666,46 +666,10 @@ export class Action{
         }
 
         if(this.attacker){
-            if (this.attacker.isDead()) {
-                fight.message.addHit(`${this.attacker.name} couldn't take the hits anymore! [b][color=red]They're out![/color][/b]`);
-                this.attacker.triggerPermanentOutsideRing();
-            }
-            else if (this.attacker.isSexuallyExhausted()) {
-                fight.message.addHit(`${this.attacker.name} is too sexually exhausted to continue! [b][color=red]They're out![/color][/b]`);
-                this.attacker.triggerPermanentOutsideRing();
-            }
-            else if (this.attacker.isBroken()) {
-                fight.message.addHit(`${this.attacker.name} is too mentally exhausted to continue! [b][color=red]They're out![/color][/b]`);
-                this.attacker.triggerPermanentOutsideRing();
-            }
-            else if (this.attacker.isCompletelyBound()) {
-                fight.message.addHit(`${this.attacker.name} has too many items on them to possibly fight! [b][color=red]They're out![/color][/b]`);
-                this.attacker.triggerPermanentOutsideRing();
-            }
-            else if (!this.attacker.isInTheRing) {
-                fight.message.addHit(`${this.attacker.name} can't stay inside the ring anymore! [b][color=red]They're out![/color][/b]`);
-            }
+            this.attacker.isTechnicallyOut(true);
         }
         if(this.defender){
-            if (this.defender.isDead()) {
-                fight.message.addHit(`${this.defender.name} couldn't take the hits anymore! [b][color=red]They're out![/color][/b]`);
-                this.defender.triggerPermanentOutsideRing();
-            }
-            else if (this.defender.isSexuallyExhausted()) {
-                fight.message.addHit(`${this.defender.name} is too sexually exhausted to continue! [b][color=red]They're out![/color][/b]`);
-                this.defender.triggerPermanentOutsideRing();
-            }
-            else if (this.defender.isBroken()) {
-                fight.message.addHit(`${this.defender.name} is too mentally exhausted to continue! [b][color=red]They're out![/color][/b]`);
-                this.defender.triggerPermanentOutsideRing();
-            }
-            else if (this.defender.isCompletelyBound()) {
-                fight.message.addHit(`${this.defender.name} has too many items on them to possibly fight! [b][color=red]They're out![/color][/b]`);
-                this.defender.triggerPermanentOutsideRing();
-            }
-            else if (!this.defender.isInTheRing) {
-                fight.message.addHit(`${this.defender.name} can't stay inside the ring anymore! [b][color=red]They're out![/color][/b]`);
-            }
+            this.defender.isTechnicallyOut(true);
         }
 
         //Save it to the DB

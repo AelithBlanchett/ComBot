@@ -323,13 +323,13 @@ export class CommandHandler implements ICommandHandler {
             try {
                 if (args) {
                     let theFight = await FightRepository.load(args);
-                    if(theFight != null){
+                    if(theFight != null && (this.fChatLibInstance.isUserChatOP(data.character, data.channel) || theFight.fighters.findIndex(x => x.name == data.character) != -1)){
                         this.fight = theFight;
                         this.fight.build(this.fChatLibInstance, this.channel);
                         this.fight.outputStatus();
                     }
                     else{
-                        this.fChatLibInstance.sendMessage("[color=red]No fight is associated with this id.[/color]", this.channel);
+                        this.fChatLibInstance.sendMessage("[color=red]No fight is associated with this id, or you don't have the rights to access it.[/color]", this.channel);
                     }
                 }
                 else {
@@ -441,7 +441,8 @@ export class CommandHandler implements ICommandHandler {
     async fighttype(args:string, data:FChatResponse) {
         let parsedFT:FightType = Parser.Commands.setFightType(args);
         if (parsedFT == -1) {
-            this.fChatLibInstance.sendMessage("[color=red]Fight Type not found. Types: Rumble, Tag. Example: !setFightType Tag[/color]", this.channel);
+            let fightTypes = Utils.getEnumList(FightType);
+            this.fChatLibInstance.sendMessage(`[color=red]Fight Type not found. Types: ${fightTypes.join(", ")}. Example: !fighttype classic[/color]`, this.channel);
             return;
         }
         let fighter:Fighter = await FighterRepository.load(data.character);

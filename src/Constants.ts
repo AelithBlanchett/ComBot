@@ -194,18 +194,18 @@ export class Messages {
     `;
     static Ready = `[color=green]%s is now ready to get it on![/color]`;
     static HitMessage = ` HIT! `;
-    static changeMinTeamsInvolvedInFightOK = "Number of teams involved in the fight updated!.";
+    static changeMinTeamsInvolvedInFightOK = "Number of teams involved in the fight updated!";
     static changeMinTeamsInvolvedInFightFail = "The number of teams should be superior or equal than 2.";
-    static setFightTypeRumble = "Fight type successfully set to Rumble.";
+    static setFightTypeClassic = "Fight type successfully set to Classic.";
     static setFightTypeTag = "Fight type successfully set to Tag-Team.";
     static setFightTypeLMS = "Fight type successfully set to Last Man Standing.";
     static setFightTypeHMatch = "Fight type successfully set to Humiliation Match.";
     static setFightTypeSexFight = "Fight type successfully set to SexFight.";
-    static setFightTypeBondageMatch = "Fight type successfully set to SexFight.";
-    static setFightTypeNotFound = "Type not found. Fight type resetted to Rumble.";
+    static setFightTypeBondageMatch = "Fight type successfully set to Bondage Match.";
+    static setFightTypeNotFound = "Type not found. Fight type resetted to Classic.";
     static setFightTypeFail = "Can't change the fight type if the fight has already started or is already finished.";
 
-    static startMatchAnnounce = "[color=green]Everyone's ready, let's start the match![/color]";
+    static startMatchAnnounce = "[color=green]Everyone's ready, let's start the match![/color] (Match ID: %s Keep it somewhere if you want to resume it later!)";
     static startMatchStageAnnounce = "The fighters will meet in the... [color=red][b]%s![/b][/color]";
     static startMatchFirstPlayer = "%s starts first for the [color=%s]%s[/color] team!";
     static startMatchFollowedBy = "%s will follow for the [color=%s]%s[/color] team.";
@@ -345,7 +345,7 @@ export enum TokensWorth {
 }
 
 export enum FightType {
-    Rumble = 0,
+    Classic = 0,
     Tag = 1,
     LastManStanding = 2,
     SexFight = 3,
