@@ -7,8 +7,6 @@ export class Globals {
 }
 
 export class SQL {
-    public static commitFightAction = "INSERT INTO `flistplugins`.?? (`idFight`,`atTurn`,`type`,`tier`,`isHold`,`diceScore`,`missed`,`idAttacker`,`idDefender`,`hpDamageToDef`,`lpDamageToDef`,`fpDamageToDef`,`hpDamageToAtk`,`lpDamageToAtk`,`fpDamageToAtk`,`hpHealToDef`,`lpHealToDef`,`fpHealToDef`,`hpHealToAtk`,`lpHealToAtk`,`fpHealToAtk`)\
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     public static fightTableName: string = "nsfw_fights";
     public static fightFightersTableName: string = "nsfw_fightfighters";
     public static fightersTableName: string = "nsfw_fighters";
@@ -80,16 +78,16 @@ export namespace Fight {
 }
 
 export class Modifier {
-    static SubHoldBrawlBonus = "brawl attacks accuracy increase during a submission hold";
+    static SubHoldBrawlBonus = "Accuracy++ on brawl (submission hold)";
     static SubHold = "submission hold";
-    static SexHoldLustBonus = "lust attacks accuracy increase during a sexual hold";
+    static SexHoldLustBonus = "Accuracy++ on tease (sexual hold)";
     static SexHold = "sexual hold";
     static Bondage = "bondage items";
     static HumHold = "humiliation hold";
     static DegradationMalus = "degradation malus";
-    static ItemPickupBonus = "bonus damage on item pickup";
-    static SextoyPickupBonus = "bonus lust damage on sextoy pickup";
-    static Stun = "stun malus";
+    static ItemPickupBonus = "HP Dmg++ (item pickup)";
+    static SextoyPickupBonus = "LP Dmg++ (sextoy pickup)";
+    static Stun = "stunned";
     static StrapToy = "strapped sex-toy"
 }
 
