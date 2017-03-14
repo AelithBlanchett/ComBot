@@ -194,6 +194,8 @@ export class Messages {
     static HitMessage = ` HIT! `;
     static changeMinTeamsInvolvedInFightOK = "Number of teams involved in the fight updated!";
     static changeMinTeamsInvolvedInFightFail = "The number of teams should be superior or equal than 2.";
+    static setDiceLess = "The fight is now %susing the dice.";
+    static setDiceLessFail = "Couldn't drop the dice for this fight, it is already started, or it's already over.";
     static setFightTypeClassic = "Fight type successfully set to Classic.";
     static setFightTypeTag = "Fight type successfully set to Tag-Team.";
     static setFightTypeLMS = "Fight type successfully set to Last Man Standing.";

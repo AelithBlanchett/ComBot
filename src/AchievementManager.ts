@@ -20,7 +20,7 @@ export class AchievementManager {
         let achievements = AchievementManager.getAll();
 
         for(let achievement of achievements){
-            if(fighter.achievements.findIndex(x => x.getUniqueShortName() == achievement.getDetailedDescription()) == -1 && achievement.meetsRequirements(fighter, activeFighter, fight)){
+            if(fighter.achievements.findIndex(x => x.getType() == achievement.getType()) == -1 && achievement.meetsRequirements(fighter, activeFighter, fight)){
                 achievement.createdAt = new Date();
                 fighter.achievements.push(achievement);
                 fighter.giveTokens(achievement.getReward());

@@ -50,6 +50,7 @@ export class Fight{
 
     debug:boolean = false;
     forcedDiceRoll:number = 0;
+    diceLess:boolean = false;
 
     public constructor() {
         this.idFight = Utils.generateUUID();
@@ -60,6 +61,7 @@ export class Fight{
         this.currentTurn = 0;
         this.season = Constants.Globals.currentSeason;
         this.requiredTeams = 2;
+        this.diceLess = false;
     }
 
     build(fChatLibInstance:IFChatLib, channel:string){
@@ -75,6 +77,17 @@ export class Fight{
         }
         else{
             this.message.addInfo(Constants.Messages.changeMinTeamsInvolvedInFightFail);
+        }
+        this.message.send();
+    }
+
+    setDiceLess(bln:boolean){
+        if(!this.hasStarted && !this.hasEnded){
+            this.diceLess = bln;
+            this.message.addInfo(Utils.strFormat(Constants.Messages.setDiceLess, [(bln ? "" : "NOT ")]));
+        }
+        else{
+            this.message.addInfo(Constants.Messages.setDiceLessFail);
         }
         this.message.send();
     }
@@ -306,7 +319,7 @@ export class Fight{
         this.currentTurn++;
 
         for(let fighter of this.fighters){
-            let strAchievements = fighter.checkAchievements(this);
+            let strAchievements = fighter.checkAchievements(fighter, this);
             if(strAchievements != ""){
                 this.message.addSpecial(strAchievements);
             }
@@ -761,7 +774,7 @@ export class Fight{
                 this.message.addInfo(`Awarded ${tokensToGiveToLosers} ${Constants.Globals.currencyName} to ${fighter.getStylizedName()}`);
                 fighter.giveTokens(tokensToGiveToLosers);
             }
-            this.message.addInfo(fighter.checkAchievements(this));
+            this.message.addInfo(fighter.checkAchievements(fighter, this));
             FighterRepository.persist(fighter);
         }
 

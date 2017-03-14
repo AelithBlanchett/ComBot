@@ -126,7 +126,7 @@ export class Action{
                 scoreRequired += TierDifficulty[Tier[this.tier]];
             }
         }
-        if(scoreRequired < 0){
+        if(scoreRequired < 0 || this.fight.diceLess){
             scoreRequired = 0;
         }
         return scoreRequired;
@@ -465,6 +465,7 @@ export class Action{
     actionFinisher():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Finisher);
         this.tier = Tier.Heavy;
+        this.diceScore = this.attacker.dice.roll(1) + Math.ceil(this.attacker.currentWillpower / 10);
         if((this.defender.heartsRemaining <= 1 || this.defender.orgasmsRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 1) && this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.defender.triggerPermanentOutsideRing();

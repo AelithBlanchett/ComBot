@@ -106,7 +106,7 @@ export class FighterRepository{
     public static async persistAchievements(fighter:Fighter):Promise<void>{
 
         for(let achievement of fighter.achievements){
-            let loadedData = await Model.db('nsfw_fighters_achievements').where({idFighter: fighter.name, idAchievement: achievement.getUniqueShortName()}).select();
+            let loadedData = await Model.db('nsfw_fighters_achievements').where({idFighter: fighter.name, idAchievement: achievement.getType()}).select();
 
             if(loadedData.length == 0){
                 achievement.createdAt = new Date();

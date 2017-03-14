@@ -454,6 +454,21 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
+    async usedice(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserChatOP(data.character, data.channel)) {
+            this.fight.setDiceLess((args.toLowerCase().indexOf("yes") != -1));
+            return;
+        }
+        let fighter:Fighter = await FighterRepository.load(data.character);
+        if (fighter != null) {
+            let flag = (args.toLowerCase().indexOf("yes") != -1);
+            this.fight.setDiceLess(flag);
+        }
+        else {
+            this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
+        }
+    };
+
     async teamscount(args:string, data:FChatResponse) {
         let parsedTeams:number = Parser.Commands.setTeamsCount(args);
         if (parsedTeams <= 1) {
