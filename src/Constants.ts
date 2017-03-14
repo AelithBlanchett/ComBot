@@ -190,7 +190,7 @@ export class Messages {
     TLDR: Do "!register", then set your 200 points of stats with "!restat 31,32,29,28,29,51", then do "!ready" to take part in the upcoming fight.
     You can check the command list on the profile.
     `;
-    static Ready = `[color=green]%s is now ready to get it on![/color]`;
+    static Ready = `[color=green]%s is now ready to get it on![/color] (Fight Type: %s, Required Teams: %s)`;
     static HitMessage = ` HIT! `;
     static changeMinTeamsInvolvedInFightOK = "Number of teams involved in the fight updated!";
     static changeMinTeamsInvolvedInFightFail = "The number of teams should be superior or equal than 2.";

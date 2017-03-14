@@ -1,12 +1,13 @@
 import * as Constants from "./Constants";
-import {Achievement} from "./Achievement";
-import {AchievementType} from "./Achievement";
 import {FeatureType, Team} from "./Constants";
 import {TokensWorth} from "./Constants";
 import {FightTier} from "./Constants";
 import {Fight} from "./Fight";
 import {FighterRepository} from "./FighterRepository";
 import {Feature} from "./Feature";
+import {IAchievement} from "./interfaces/IAchievement";
+import {AchievementManager} from "./AchievementManager";
+import {ActiveFighter} from "./ActiveFighter";
 let EloRating = require('elo-rating');
 
 export class Fighter{
@@ -78,24 +79,28 @@ export class Fighter{
     quits;
 
     features:Feature[] = [];
-    achievements:Achievement[] = [];
+    achievements:IAchievement[] = [];
     createdAt:Date;
     updatedAt:Date;
     deletedAt:Date;
 
-    addAchievement(type:AchievementType){
+    addAchievement(uniqueShortName:string){
         let added = false;
-        let index = this.achievements.findIndex(x => x.type == type);
+        let index = this.achievements.findIndex(x => x.getUniqueShortName() == uniqueShortName);
         if(index == -1){
-            this.achievements.push(new Achievement(type));
+            let allAchievements = AchievementManager.getAll();
+            let indexNewAchievement = allAchievements.findIndex(x => x.getUniqueShortName().toString() == uniqueShortName);
+            let achievement = allAchievements[indexNewAchievement];
+            achievement.createdAt = new Date();
+            this.achievements.push(achievement);
             added = true;
         }
         return added;
     }
 
-    checkAchievements(fight?:Fight){
+    checkAchievements(activeFighter?:ActiveFighter, fight?:Fight){
         let strBase = `[color=yellow][b]Achievements unlocked for ${this.name}![/b][/color]\n`;
-        let added = Achievement.checkAll(this, fight);
+        let added = AchievementManager.checkAll(this, activeFighter, fight);
 
         if(added.length > 0){
             strBase += added.join("\n");
@@ -200,7 +205,7 @@ export class Fighter{
     getAchievementsList(){
         let strResult = [];
         for(let achievement of this.achievements){
-            strResult.push(`${achievement.description}`);
+            strResult.push(`${achievement.getDetailedDescription()}`);
         }
         return strResult.join(", ");
     }

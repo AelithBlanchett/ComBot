@@ -1,8 +1,9 @@
 import {Model} from "./Model";
 import {Fighter} from "./Fighter";
-import {Achievement} from "./Achievement";
 import {Feature} from "./Feature";
 import {Utils} from "./Utils";
+import {IAchievement} from "./interfaces/IAchievement";
+import {AchievementManager} from "./AchievementManager";
 
 export class FighterRepository{
 
@@ -105,12 +106,12 @@ export class FighterRepository{
     public static async persistAchievements(fighter:Fighter):Promise<void>{
 
         for(let achievement of fighter.achievements){
-            let loadedData = await Model.db('nsfw_fighters_achievements').where({idFighter: fighter.name, idAchievement: achievement.type}).select();
+            let loadedData = await Model.db('nsfw_fighters_achievements').where({idFighter: fighter.name, idAchievement: achievement.getUniqueShortName()}).select();
 
             if(loadedData.length == 0){
                 achievement.createdAt = new Date();
                 await Model.db('nsfw_fighters_achievements').insert({
-                    idAchievement: achievement.type,
+                    idAchievement: achievement.getType(),
                     idFighter: fighter.name,
                     createdAt: achievement.createdAt
                 });
@@ -151,7 +152,7 @@ export class FighterRepository{
         return loadedFighter;
     }
 
-    static async loadAllAchievements(fighterName:string):Promise<Achievement[]>{
+    static async loadAllAchievements(fighterName:string):Promise<IAchievement[]>{
         let result;
 
         try{
@@ -161,9 +162,13 @@ export class FighterRepository{
             throw ex;
         }
 
-        let achievementsArray:Achievement[] = [];
+        let achievementsArray:IAchievement[] = [];
         for(let row of result){
-            achievementsArray.push(new Achievement(parseInt(row.idAchievement), row.createdAt));
+            let achievement = AchievementManager.get(row.idAchievement);
+            if(achievement){
+                achievement.createdAt = row.createdAt;
+                achievementsArray.push(achievement);
+            }
         }
         return achievementsArray;
     }

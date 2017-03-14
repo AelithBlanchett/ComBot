@@ -179,11 +179,11 @@ export class Fight{
             if (!this.getFighterByName(fighterName)) {
                 await this.join(fighterName, Team.Unknown);
             }
-            var fighterInFight:ActiveFighter = this.getFighterByName(fighterName);
+            let fighterInFight:ActiveFighter = this.getFighterByName(fighterName);
             if(fighterInFight && !fighterInFight.isReady){ //find fighter by its name property instead of comparing objects, which doesn't work.
                 fighterInFight.isReady = true;
                 fighterInFight.fightStatus = FightStatus.Ready;
-                this.message.addInfo(Utils.strFormat(Constants.Messages.Ready, [fighterInFight.getStylizedName()]));
+                this.message.addInfo(Utils.strFormat(Constants.Messages.Ready, [fighterInFight.getStylizedName(), FightType[this.fightType], this.requiredTeams.toString()]));
                 this.message.send();
                 if (this.canStart()) {
                     this.start();
