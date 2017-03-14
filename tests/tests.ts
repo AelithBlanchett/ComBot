@@ -21,6 +21,7 @@ import {ActiveFighterRepository} from "../src/ActiveFighterRepository";
 import {ActionRepository} from "../src/ActionRepository";
 import {FightRepository} from "../src/FightRepository";
 import {Dice} from "../src/Dice";
+import {Modifier} from "../src/Constants";
 var jasmine = new Jasmine();
 var fChatLibInstance:any;
 var debug = false;
@@ -254,7 +255,7 @@ describe("The player(s)", () => {
         spyOn(ActiveFighterRepository, 'initialize').and.callThrough();
         spyOn(FighterRepository, 'load').and.callThrough();
 
-        debug = true;
+        debug = false;
 
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     }, DEFAULT_TIMEOUT);
@@ -418,7 +419,7 @@ describe("The player(s)", () => {
         waitUntil().interval(2).times(500).condition(() => {
             return cmd.fight.fighters.findIndex(x => x.name == "TheTinaArmstrong") != -1;
         }).done(() => {
-            doAction(cmd, "sex", "Light").then(() => {
+            doAction(cmd, "tease", "Light").then(() => {
                 if (wasLustHit(cmd, "Aelith Blanchette")) {
                     done();
                 }
@@ -458,7 +459,7 @@ describe("The player(s)", () => {
             return cmd.fight.fighters.findIndex(x => x.name == "TheTinaArmstrong") != -1;
         }).done(() => {
             cmd.fight.setCurrentPlayer("TheTinaArmstrong");
-            doAction(cmd, "penetration", "Light").then(() => {
+            doAction(cmd, "riskylewd", "Light").then(() => {
                 if (wasLustHit(cmd, "Aelith Blanchette")) {
                     done();
                 }
@@ -860,7 +861,7 @@ describe("The player(s)", () => {
                             return (cmd.fight.hasStarted && !cmd.fight.hasEnded && cmd.fight.waitingForAction);
                         };
                         waitUntil().interval(INTERVAL_TO_WAIT_FOR).times(50).condition(condition).done(() => {
-                            if (wasMessageSent("is still affected by the degradation malus!")) {
+                            if (wasMessageSent(Modifier.DegradationMalus)) {
                                 done();
                             }
                             else {
@@ -915,7 +916,7 @@ describe("The player(s)", () => {
             cmd.fight.setCurrentPlayer("TheTinaArmstrong");
             doAction(cmd, "sextoypickup", "Light").then(() => {
                 cmd.fight.nextTurn();
-                doAction(cmd, "sex", "Light").then(() => {
+                doAction(cmd, "tease", "Light").then(() => {
                     let condition = () => {
                         return (cmd.fight.hasStarted && !cmd.fight.hasEnded && cmd.fight.waitingForAction);
                     };
@@ -1180,7 +1181,7 @@ describe("The player(s)", () => {
                         return (cmd.fight.hasStarted && !cmd.fight.hasEnded && cmd.fight.waitingForAction);
                     };
                     waitUntil().interval(INTERVAL_TO_WAIT_FOR).times(50).condition(condition).done(() => {
-                        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.length == 0 && wasMessageSent("penalty applied on their dice roll")) {
+                        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.length == 0 && wasMessageSent("penalty for their dice roll")) {
                             done();
                         }
                         else {

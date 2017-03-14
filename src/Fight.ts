@@ -312,7 +312,7 @@ export class Fight{
             }
             //displays message too if they're out
             if(!fighter.isTechnicallyOut(true)) {
-                if (fighter.focus <= fighter.minFocus()) {
+                if (fighter.focus <= fighter.minFocus() && (this.fightType == FightType.Classic || this.fightType == FightType.Tag || this.fightType == FightType.Humiliation)) {
                     this.message.addSpecial(`If ${fighter.getStylizedName()} doesn't focus back on the fight, they'll soon be out of the fight!`);
                 }
             }

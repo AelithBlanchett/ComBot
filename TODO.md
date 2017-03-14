@@ -1,7 +1,7 @@
 #TODO
 
 ##Important
--   Only print some sentences depending on the current fight-type
+-   Rework achievements, to be safer
 
 ###Next steps
 -   Do the guide on F-list profile
