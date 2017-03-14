@@ -189,6 +189,7 @@ export class Messages {
     
     TLDR: Do "!register", then set your 200 points of stats with "!restat 31,32,29,28,29,51", then do "!ready" to take part in the upcoming fight.
     You can check the command list on the profile.
+    Available commands in fight: Brawl, Tease, HighRisk, RiskyLewd, SubHold, HumHold, Bondage, Degradation, ItemPickup, SextoyPickup, StrapToy, Submit, Finisher
     `;
     static Ready = `[color=green]%s is now ready to get it on![/color] (Fight Type: %s, Required Teams: %s)`;
     static HitMessage = ` HIT! `;
@@ -350,7 +351,7 @@ export enum FightType {
     LastManStanding = 2,
     SexFight = 3,
     Humiliation = 4,
-    Tables = 5,
+    // Tables = 5,
     Bondage = 6,
     Submission = 7
 }

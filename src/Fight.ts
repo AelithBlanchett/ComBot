@@ -84,7 +84,7 @@ export class Fight{
     setDiceLess(bln:boolean){
         if(!this.hasStarted && !this.hasEnded){
             this.diceLess = bln;
-            this.message.addInfo(Utils.strFormat(Constants.Messages.setDiceLess, [(bln ? "" : "NOT ")]));
+            this.message.addInfo(Utils.strFormat(Constants.Messages.setDiceLess, [(bln ? "NOT " : "")]));
         }
         else{
             this.message.addInfo(Constants.Messages.setDiceLessFail);

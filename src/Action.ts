@@ -97,6 +97,9 @@ export class Action{
 
     requiredDiceScore():number{
         let scoreRequired = 0;
+        if(this.fight && this.fight.diceLess){
+            return scoreRequired;
+        }
         if (this.type == ActionType.Rest) {
             scoreRequired = Constants.Fight.Action.RequiredScore.Rest;
         }
@@ -126,7 +129,7 @@ export class Action{
                 scoreRequired += TierDifficulty[Tier[this.tier]];
             }
         }
-        if(scoreRequired < 0 || this.fight.diceLess){
+        if(scoreRequired < 0){
             scoreRequired = 0;
         }
         return scoreRequired;

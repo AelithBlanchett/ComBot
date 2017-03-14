@@ -1,6 +1,7 @@
 #TODO
 
 ##Important
+- Hide stats if the fight is of another type?
 
 ###Next steps
 -   Do the guide on F-list profile
@@ -17,6 +18,8 @@
     Tables
     Ladder/Cage
 
+##Bugs
+-   Not correctly displaying that X player is broken after 3 turns not being focused
 
 
 #Done
