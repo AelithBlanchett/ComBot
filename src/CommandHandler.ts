@@ -363,9 +363,26 @@ export class CommandHandler implements ICommandHandler {
     async register(args:string, data:FChatResponse) {
         let doesFighterExist = await FighterRepository.exists(data.character);
         if (!doesFighterExist) {
+            let parserPassed = Parser.Commands.checkIfValidStats(args, Constants.Globals.numberOfRequiredStatPoints);
+            if(parserPassed != ""){
+                this.fChatLibInstance.sendPrivMessage(`[color=red]${parserPassed}[/color]`, data.character);
+                return;
+            }
+            let arrParam:Array<number> = [];
+
+            for(let nbr of args.split(",")){
+                arrParam.push(parseInt(nbr));
+            }
+
             try {
                 let newFighter = new Fighter();
                 newFighter.name = data.character;
+                newFighter.power = arrParam[0];
+                newFighter.sensuality = arrParam[1];
+                newFighter.toughness = arrParam[2];
+                newFighter.endurance = arrParam[3];
+                newFighter.dexterity = arrParam[4];
+                newFighter.willpower = arrParam[5];
                 await FighterRepository.persist(newFighter);
                 this.fChatLibInstance.sendPrivMessage("[color=green]You are now registered! Welcome! Don't forget to type !howtostart here if you haven't read the quickstart guide yet.[/color]", data.character);
             }

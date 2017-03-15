@@ -267,11 +267,11 @@ export class Fighter{
     }
 
     restat(power:number, sensuality:number, toughness:number, endurance:number, dexterity:number, willpower:number):boolean{
-        this.dexterity = dexterity;
         this.power = power;
         this.sensuality = sensuality;
         this.toughness = toughness;
         this.endurance = endurance;
+        this.dexterity = dexterity;
         this.willpower = willpower;
 
         FighterRepository.persist(this);

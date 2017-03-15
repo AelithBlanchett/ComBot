@@ -70,7 +70,7 @@ export class FightRepository{
             return null;
         }
 
-        let latestIdFightInvolvingFighter = await Model.db('nsfw_activefighters').where({idFighter: idFighter}).and.whereNull('deletedAt').select();
+        let latestIdFightInvolvingFighter = await Model.db('nsfw_activefighters').where({idFighter: idFighter, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
 
         if(!await FightRepository.exists(latestIdFightInvolvingFighter, true)){
             return null;

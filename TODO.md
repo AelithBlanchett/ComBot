@@ -1,13 +1,14 @@
 #TODO
 
 ##Important
-- Hide stats if the fight is of another type?
+
 
 ###Next steps
 -   Do the guide on F-list profile
 -   Give more tokens to lower tier fighters when matched against a higher
 
 ####Optional/Ideas
+-   Hide stats if the fight is of another type?
 -   More achievements
 -   Rework Triggers so we can add more
 -   Add admin commands
