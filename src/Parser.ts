@@ -141,6 +141,11 @@ export class Commands{
         else{
             result.message = "This feature doesn't exist.";
         }
+
+        if(result.featureType == FeatureType[FeatureType.SexyKickStart] || result.featureType == FeatureType[FeatureType.KickStart]){
+            result.message = "You did not specify a number of fights, and features requiring payment cannot be permanent.";
+        }
+
         return result;
     }
 

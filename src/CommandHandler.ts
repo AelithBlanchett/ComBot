@@ -118,6 +118,11 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
+    async getfeatureslist(args:string, data:FChatResponse) {
+        this.fChatLibInstance.sendPrivMessage("Usage: !addFeature myFeature OR !addFeature myFeature 2  (with 2 being the number of fights you want)." +
+            "\n[/color]Available features: " + EnumEx.getNames(FeatureType).join(", "), data.character);
+    };
+
     async restat(args:string, data:FChatResponse) {
         let parserPassed = Parser.Commands.checkIfValidStats(args, Constants.Globals.numberOfRequiredStatPoints);
         if(parserPassed != ""){
