@@ -121,7 +121,8 @@ export enum FeatureType {
     Sadist = 2,
     CumSlut = 3,
     RyonaEnthusiast = 4,
-    DomSubLover = 5
+    DomSubLover = 5,
+    BondageBunny = 6
 }
 
 export class FeatureExplain {

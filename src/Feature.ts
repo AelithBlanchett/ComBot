@@ -86,6 +86,7 @@ export class Feature{
             case FeatureType.Sadist:
             case FeatureType.RyonaEnthusiast:
             case FeatureType.CumSlut:
+            case FeatureType.BondageBunny:
                 //Free features
                 break;
         }

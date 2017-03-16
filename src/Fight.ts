@@ -22,6 +22,7 @@ import {Fighter} from "./Fighter";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FightRepository} from "./FightRepository";
 import {FighterRepository} from "./FighterRepository";
+import {FeatureType} from "./Constants";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -514,8 +515,13 @@ export class Fight{
     }
 
     checkAttackRequirements(action:ActionType) {
-        if (action == ActionType.HumHold || action == ActionType.Bondage) {
+        if (action == ActionType.HumHold) {
             if(!this.currentTarget.isInSpecificHold(Constants.Modifier.SexHold)){
+                throw new Error(Constants.Messages.checkAttackRequirementsNotInSexualHold);
+            }
+        }
+        if (action == ActionType.Bondage) {
+            if(!this.currentTarget.isInSpecificHold(Constants.Modifier.SexHold) && !this.currentTarget.hasFeature(FeatureType.BondageBunny)){
                 throw new Error(Constants.Messages.checkAttackRequirementsNotInSexualHold);
             }
         }

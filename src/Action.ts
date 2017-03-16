@@ -27,6 +27,7 @@ import {ActionRepository} from "./ActionRepository";
 import {FocusDamageOnMiss} from "./Constants";
 import {FocusHealOnHit} from "./Constants";
 import {FocusDamageOnHit} from "./Constants";
+import {FeatureType} from "./Constants";
 
 export class Action{
 
@@ -279,15 +280,28 @@ export class Action{
         return Trigger.HumiliationHold;
     }
 
-    actionBondage():Trigger{ //No tier
+    actionBondage():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Bondage);
-        this.diceScore = -1;
-        this.requiresRoll = false;
-        this.missed = false;
-        this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
-        let bdModifier = new BondageModifier(this.defender, this.attacker);
-        this.modifiers.push(bdModifier);
+        if(this.defender.isInSpecificHold(Constants.Modifier.SexHold)){
+            this.diceScore = -1;
+            this.requiresRoll = false;
+            this.missed = false;
+            this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
+            this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
+            let bdModifier = new BondageModifier(this.defender, this.attacker);
+            this.modifiers.push(bdModifier);
+        }
+        else{
+            this.diceScore = this.attacker.dice.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
+            if(this.diceScore >= this.requiredDiceScore()) {
+                this.missed = false;
+                this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
+                this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
+                let bdModifier = new BondageModifier(this.defender, this.attacker);
+                this.modifiers.push(bdModifier);
+            }
+        }
+
         return Trigger.Bondage;
     }
 
