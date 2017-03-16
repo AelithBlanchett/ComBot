@@ -42,8 +42,8 @@ export class FightRepository{
             }
 
             for(let fighter of fight.fighters){
-                ActiveFighterRepository.persist(fighter);
-                FighterRepository.persist(fighter);
+                await ActiveFighterRepository.persist(fighter);
+                await FighterRepository.persist(fighter);
             }
         }
         catch(ex){

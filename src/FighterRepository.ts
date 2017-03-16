@@ -46,8 +46,8 @@ export class FighterRepository{
                     updatedAt: fighter.updatedAt
                 });
 
-                FighterRepository.persistFeatures(fighter);
-                FighterRepository.persistAchievements(fighter);
+                await FighterRepository.persistFeatures(fighter);
+                await FighterRepository.persistAchievements(fighter);
             }
         }
         catch(ex){
@@ -95,8 +95,14 @@ export class FighterRepository{
             deletedAt: new Date()
         });
 
-        for(let id of featuresIdToKeep){
-            let index = fighter.features.findIndex(x => x.id == id);
+        var myArray = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+        var toRemove = ['b', 'c', 'g'];
+
+        myArray = myArray.filter(function(x) { return toRemove.indexOf(x) < 0 })
+
+        let featuresToRemove = fighter.features.filter(x => featuresIdToKeep.indexOf(x.id) == -1);
+        for(let feature of featuresToRemove){
+            let index = fighter.features.findIndex(x => x.id == feature.id);
             if(index != -1){
                 fighter.features.splice(index, 1);
             }

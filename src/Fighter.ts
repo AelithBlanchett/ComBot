@@ -178,13 +178,13 @@ export class Fighter{
     outputStats():string{
         return "[b]" + this.name + "[/b]'s stats" + "\n" +
             "[b][color=red]Power[/color][/b]:  " + this.power + "      " + "    --            [b][color=red]Hearts[/color][/b]: " + this.maxHearts() + " * " + this.hpPerHeart() +" [b][color=red]HP[/color] per heart[/b]"+"\n" +
-            "[b][color=orange]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Orgasms[/color][/b]: " + this.maxOrgasms() + " * " + this.lustPerOrgasm() +" [b][color=pink]Lust[/color] per Orgasm[/b]"+"\n" +
-            "[b][color=green]Toughness[/color][/b]: " + this.toughness + "\n" +
+            "[b][color=purple]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Orgasms[/color][/b]: " + this.maxOrgasms() + " * " + this.lustPerOrgasm() +" [b][color=pink]Lust[/color] per Orgasm[/b]"+"\n" +
+            "[b][color=orange]Toughness[/color][/b]: " + this.toughness + "\n" +
             "[b][color=cyan]Endurance[/color][/b]: " + this.endurance + "      " + "[b][color=green]Win[/color]/[color=red]Loss[/color] record[/b]: " + this.wins + " - " + this.losses + "\n" +
-            "[b][color=purple]Dexterity[/color][/b]: " + this.dexterity +  "      " + "[b][color=brown]Copper tokens available[/color][/b]: " + this.copperTokens() +  " " +"[b][color=orange]Bronze tokens available[/color][/b]: " + this.bronzeTokens() +  " " + "[b][color=grey]Silver[/color][/b]: " + this.silverTokens() +  " " + "[b][color=yellow]Gold[/color][/b]: " + this.goldTokens() + "\n" +
-            "[b][color=blue]Willpower[/color][/b]: " + this.willpower +  "      " + "[b][color=orange]Total tokens[/color][/b]: " + this.tokens + "         [b][color=orange]Total spent[/color][/b]: "+this.tokensSpent+"\n"  +
+            "[b][color=green]Dexterity[/color][/b]: " + this.dexterity +  "      " + "[b][color=brown]Copper tokens available[/color][/b]: " + this.copperTokens() +  " " +"[b][color=orange]Bronze tokens available[/color][/b]: " + this.bronzeTokens() +  " " + "[b][color=grey]Silver[/color][/b]: " + this.silverTokens() +  " " + "[b][color=yellow]Gold[/color][/b]: " + this.goldTokens() + "\n" +
+            "[b][color=brown]Willpower[/color][/b]: " + this.willpower +  "      " + "[b][color=orange]Total tokens[/color][/b]: " + this.tokens + "         [b][color=orange]Total spent[/color][/b]: "+this.tokensSpent+"\n"  +
             "[b][color=red]Features[/color][/b]: [b]" + this.getFeaturesList() + "[/b]\n" +
-            "[b][color=yellow]Achievements[/color][/b]: [b]" + this.getAchievementsList() + "[/b]";
+            "[b][color=yellow]Achievements[/color][/b]: [sub]" + this.getAchievementsList() + "[/sub]";
     }
 
     getFeaturesList(){
@@ -197,7 +197,7 @@ export class Fighter{
             else{
                 usesLeft = ` - permanent`;
             }
-            strResult.push(`${Constants.Feature[FeatureType[feature.type]]}${usesLeft}`);
+            strResult.push(`${FeatureType[feature.type]}${usesLeft}`);
         }
         return strResult.join(", ");
     }
@@ -257,9 +257,9 @@ export class Fighter{
         }
     }
 
-    clearFeatures(){
+    async clearFeatures(){
         this.features = [];
-        FighterRepository.persist(this);
+        await FighterRepository.persist(this);
     }
 
     hasFeature(featureType:FeatureType):boolean{

@@ -229,7 +229,7 @@ export class CommandHandler implements ICommandHandler {
 
         let fighter:Fighter = await FighterRepository.load(args);
 
-        if (fighter != undefined && (fighter.name == data.character || (fighter.name == data.character && !fighter.areStatsPrivate))) {
+        if (fighter != undefined && (fighter.name == data.character || (fighter.name == data.character && !fighter.areStatsPrivate) || this.fChatLibInstance.isUserChatOP(data.character, data.channel))) {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), data.character);
         }
         else {
@@ -242,7 +242,7 @@ export class CommandHandler implements ICommandHandler {
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
-                FighterRepository.persist(fighter);
+                await FighterRepository.persist(fighter);
                 this.fChatLibInstance.sendPrivMessage("[color=green]You stats are now private.[/color]", data.character);
             }
             catch (ex) {
@@ -512,7 +512,7 @@ export class CommandHandler implements ICommandHandler {
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
-                FighterRepository.persist(fighter);
+                await FighterRepository.persist(fighter);
                 this.fChatLibInstance.sendPrivMessage("[color=green]You stats are now public.[/color]", data.character);
             }
             catch (ex) {

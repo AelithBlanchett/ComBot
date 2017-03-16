@@ -68,8 +68,8 @@ export class Feature{
                     fight.message.addHint(Constants.FeatureExplain.RyonaEnthusiast);
                     break;
             }
-            this.uses--;
             if (!this.permanent) {
+                this.uses--;
                 fight.message.addHint(`Uses left: ${this.uses}`);
             }
         }

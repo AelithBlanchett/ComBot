@@ -711,7 +711,7 @@ export class Action{
             }
             fight.outputStatus();
 
-            fight.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
+            await fight.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
         }
     }
 

@@ -304,7 +304,7 @@ export class Fight{
         }
     }
 
-    nextTurn(){
+    async nextTurn(){
         for (let fighter of this.fighters) {
             fighter.triggerMods(TriggerMoment.Any, Trigger.OnTurnTick);
             if(!fighter.isInHold()){
@@ -342,7 +342,7 @@ export class Fight{
                 tokensToGiveToLosers = tokensToGiveToWinners;
             }
             this.outputStatus();
-            this.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
+            await this.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
         }
         else{
             FightRepository.persist(this);
@@ -661,7 +661,7 @@ export class Fight{
         return Constants.Arenas[Math.floor(Math.random() * Constants.Arenas.length)];
     }
 
-    forfeit(fighterName:string) {
+    async forfeit(fighterName:string) {
         let fighter = this.getFighterByName(fighterName);
         if(fighter != null){
             if(!fighter.isTechnicallyOut()){
@@ -687,14 +687,14 @@ export class Fight{
         this.message.send();
         if (this.isOver()) {
             var tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]]*Constants.Fight.Globals.tokensPerLossMultiplier;
-            this.endFight(tokensToGiveToWinners, 0);
+            await this.endFight(tokensToGiveToWinners, 0);
         }
         else{
             this.nextTurn();
         }
     }
 
-    checkForDraw(){
+    async checkForDraw(){
         let neededDrawFlags = this.getAlivePlayers().length;
         let drawFlags = 0;
         for (let fighter of this.getAlivePlayers()) {
@@ -709,7 +709,7 @@ export class Fight{
             if(tokensToGive > parseInt(TokensPerWin[FightTier.Bronze])){
                 tokensToGive = parseInt(TokensPerWin[FightTier.Bronze]);
             }
-            this.endFight(0,tokensToGive, Team.Unknown); //0 because there isn't a winning team
+            await this.endFight(0,tokensToGive, Team.Unknown); //0 because there isn't a winning team
         }
         else{
             this.message.addInfo(Constants.Messages.checkForDrawWaiting);
@@ -721,7 +721,7 @@ export class Fight{
         return Constants.finishers[Math.floor(Math.random() * Constants.finishers.length)];
     }
 
-    endFight(tokensToGiveToWinners, tokensToGiveToLosers, forceWinner?:Team){
+    async endFight(tokensToGiveToWinners, tokensToGiveToLosers, forceWinner?:Team){
         this.hasEnded = true;
         this.hasStarted = false;
         
@@ -781,7 +781,7 @@ export class Fight{
                 fighter.giveTokens(tokensToGiveToLosers);
             }
             this.message.addInfo(fighter.checkAchievements(fighter, this));
-            FighterRepository.persist(fighter);
+            await FighterRepository.persist(fighter);
         }
 
         this.message.send();
