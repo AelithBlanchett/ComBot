@@ -21,6 +21,7 @@ export class CommandHandler implements ICommandHandler {
     fight:Fight;
 
     blnAutofight:boolean = false;
+    debugImpersonatedCharacter:string = "Tina Armstrong";
 
     constructor(fChatLib:IFChatLib, chan:string) {
         this.fChatLibInstance = fChatLib;
@@ -82,6 +83,12 @@ export class CommandHandler implements ICommandHandler {
         }
     }
 
+    async impersonate(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+            this.debugImpersonatedCharacter = args;
+        }
+    }
+
     async runas(args:string, data:FChatResponse) {
         if (this.fChatLibInstance.isUserMaster(data.character, "")) {
             let splits = args.split(" ");
@@ -89,7 +96,7 @@ export class CommandHandler implements ICommandHandler {
             splits.shift();
             let commandArgs = splits.join(" ");
             let impersonatedData = data;
-            impersonatedData.character = "Tina Armstrong";
+            impersonatedData.character = this.debugImpersonatedCharacter;
             this[command].apply(this, [commandArgs, impersonatedData]);
         }
     }
@@ -791,7 +798,6 @@ class PrivateCommandHandler {
         this.fChatLibInstance = fChatLib;
     }
 
-    //addstat = CommandHandler.prototype.addstat;
     clearfeatures = CommandHandler.prototype.clearfeatures;
     debugmode = CommandHandler.prototype.debugmode;
     setdicescore = CommandHandler.prototype.setdicescore;

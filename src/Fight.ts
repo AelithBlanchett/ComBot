@@ -257,6 +257,8 @@ export class Fight{
 
         for (let i = 0; i < this.fighters.length; i++) {
             this.fighters[i].fightStatus = FightStatus.Playing;
+            this.fighters[i].removeTokens(Constants.Fight.Globals.tokensCostToFight);
+
             for (let feature of this.fighters[i].features) {
                 let modToAdd = feature.getModifier(this, this.fighters[i]);
                 if (modToAdd) {
@@ -268,6 +270,8 @@ export class Fight{
                 }
             }
         }
+
+
 
         this.message.send();
         await FightRepository.persist(this);
@@ -690,7 +694,7 @@ export class Fight{
             await this.endFight(tokensToGiveToWinners, 0);
         }
         else{
-            this.nextTurn();
+            this.outputStatus();
         }
     }
 
@@ -889,7 +893,7 @@ export class Fight{
         var teamIndex = 0;
         while (usedTeams.length < this.requiredTeams) {
             let teamToAdd = Team[Team[teamIndex]];
-            if (usedTeams.indexOf(teamToAdd)) {
+            if (usedTeams.indexOf(teamToAdd) == -1) {
                 usedTeams.push(teamToAdd);
             }
             teamIndex++;

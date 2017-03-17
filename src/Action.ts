@@ -293,7 +293,7 @@ export class Action{
         }
         else{
             this.diceScore = this.attacker.dice.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
-            if(this.diceScore >= this.requiredDiceScore()) {
+            if(this.diceScore >= 8) {
                 this.missed = false;
                 this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
                 this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];

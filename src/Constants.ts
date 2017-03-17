@@ -4,6 +4,7 @@ export class Globals {
     public static currentSeason:number = 1;
     public static diceSides:number = 12;
     public static numberOfRequiredStatPoints:number = 200;
+
 }
 
 export class SQL {
@@ -23,6 +24,7 @@ export namespace Fight {
     export class Globals {
         public static tokensPerLossMultiplier: number = 0.5; //needs to be < 1 of course
         public static tokensForWinnerByForfeitMultiplier: number = 0.5; //needs to be < 1 of course
+        public static tokensCostToFight:number = 10;
     }
 
     export namespace Action {

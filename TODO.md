@@ -2,7 +2,7 @@
 
 ##Important
 -   Private message handler
--   Features get lost in the match
+-   Tease light too strong
 
 ###Next steps
 -   Do the guide on F-list profile
