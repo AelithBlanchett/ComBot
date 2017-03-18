@@ -672,8 +672,8 @@ export class Fight{
         let fighter = this.getFighterByName(fighterName);
         if(fighter != null){
             if(!fighter.isTechnicallyOut()){
-                this.message.addHit(Utils.strFormat(Constants.Messages.forfeitItemApply, [fighter.getStylizedName()]));
-                for(var i = 0; i < 3; i++){
+                this.message.addHit(Utils.strFormat(Constants.Messages.forfeitItemApply, [fighter.getStylizedName(), Constants.Fight.Action.Globals.maxBondageItemsOnSelf.toString()]));
+                for(let i = 0; i < Constants.Fight.Action.Globals.maxBondageItemsOnSelf; i++){
                     fighter.modifiers.push(new BondageModifier(fighter));
                 }
                 fighter.fightStatus = FightStatus.Forfeited;
@@ -693,7 +693,7 @@ export class Fight{
         }
         this.message.send();
         if (this.isOver()) {
-            var tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]]*Constants.Fight.Globals.tokensPerLossMultiplier;
+            let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]]*Constants.Fight.Globals.tokensPerLossMultiplier;
             await this.endFight(tokensToGiveToWinners, 0);
         }
         else{

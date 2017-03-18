@@ -37,7 +37,7 @@ export namespace Fight {
             //Tag
             public static turnsToWaitBetweenTwoTags: number = 4;
             //Bondage
-            public static maxBondageItemsOnSelf: number = 3;
+            public static maxBondageItemsOnSelf: number = 4;
             public static difficultyIncreasePerBondageItem: number = 2;
             //Focus
             public static maxTurnsWithoutFocus: number = 5;
@@ -234,7 +234,7 @@ export class Messages {
     static doActionNotActorsTurn = `This isn't your turn.`;
     static doActionTargetIsSameTeam = "The target for this attack can't be in your team.";
 
-    static forfeitItemApply = `%s forfeits! Which means... 3 bondage items landing on them to punish them!`;
+    static forfeitItemApply = `%s forfeits! Which means... %s bondage items landing on them to punish them!`;
     static forfeitTooManyItems = `%s has too many items on them to possibly fight! [b][color=red]They're out![/color][/b]`;
     static forfeitAlreadyOut = `You are already out of the match. No need to give up.`;
 

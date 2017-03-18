@@ -5,6 +5,7 @@
 -   Tease light too strong
 
 ###Next steps
+-   Correct all warnings, refactor the code, clean it up
 -   Do the guide on F-list profile
 -   Give more tokens to lower tier fighters when matched against a higher
 
