@@ -532,6 +532,9 @@ export class Fight{
         if (action == ActionType.Submit && this.fightType == FightType.LastManStanding) {
             throw new Error(Utils.strFormat(Constants.Messages.wrongMatchTypeForAction, ["submit", "Last Man Standing"]));
         }
+        if (action == ActionType.Submit && this.currentTurn <= 6) {
+            throw new Error(Constants.Messages.tapoutTooEarly);
+        }
     }
 
     assignValidTargetIfWrong() {

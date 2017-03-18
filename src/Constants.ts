@@ -40,7 +40,7 @@ export namespace Fight {
             public static maxBondageItemsOnSelf: number = 3;
             public static difficultyIncreasePerBondageItem: number = 2;
             //Focus
-            public static maxTurnsWithoutFocus: number = 3;
+            public static maxTurnsWithoutFocus: number = 5;
             //Holds
             public static initialNumberOfTurnsForHold: number = 5;
             public static holdDamageMultiplier: number = 0.33;
@@ -239,6 +239,7 @@ export class Messages {
     static forfeitAlreadyOut = `You are already out of the match. No need to give up.`;
 
     static tapoutMessage = `%s couldn't handle it anymore! They SUBMIT!`;
+    static tapoutTooEarly = "You can't tap out right now. Submitting is only allowed after the 6th turn.";
 
     static finishFailMessage = `%s failed their finisher!`;
     static finishMessage = `%s couldn't fight against that! They're out!`;
