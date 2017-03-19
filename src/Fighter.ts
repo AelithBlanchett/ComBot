@@ -294,7 +294,7 @@ export class Fighter{
     }
 
     canPayAmount(amount):boolean{
-        return (this.tokens - amount > 0);
+        return (this.tokens - amount >= 0);
     }
 
     tier():FightTier{
