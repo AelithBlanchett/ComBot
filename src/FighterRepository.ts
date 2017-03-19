@@ -4,6 +4,7 @@ import {Feature} from "./Feature";
 import {Utils} from "./Utils";
 import {IAchievement} from "./interfaces/IAchievement";
 import {AchievementManager} from "./AchievementManager";
+import {TransactionType} from "./Constants";
 
 export class FighterRepository{
 
@@ -24,8 +25,8 @@ export class FighterRepository{
                     endurance: fighter.endurance,
                     willpower: fighter.willpower,
                     areStatsPrivate: fighter.areStatsPrivate,
-                    tokens: fighter.tokens,
-                    tokensSpent: fighter.tokensSpent,
+                    tokens: fighter.tokens.toFixed(2),
+                    tokensSpent: fighter.tokensSpent.toFixed(2),
                     eloRating: fighter.eloRating,
                     createdAt: fighter.createdAt
                 });
@@ -40,8 +41,8 @@ export class FighterRepository{
                     endurance: fighter.endurance,
                     willpower: fighter.willpower,
                     areStatsPrivate: fighter.areStatsPrivate,
-                    tokens: fighter.tokens,
-                    tokensSpent: fighter.tokensSpent,
+                    tokens: fighter.tokens.toFixed(2),
+                    tokensSpent: fighter.tokensSpent.toFixed(2),
                     eloRating: fighter.eloRating,
                     updatedAt: fighter.updatedAt
                 });
@@ -124,6 +125,23 @@ export class FighterRepository{
             }
         }
 
+    }
+
+    public static async changedTokensAmount(receiver:string, amount:number, transactionType:TransactionType, fromFighter:string = ""):Promise<void>{
+        if(await FighterRepository.exists(receiver)){
+            if(fromFighter != "" && !await FighterRepository.exists(fromFighter)){
+                throw new Error("The fighter who gave this money wasn't found in the database.")
+            }
+            let currentSeason = await Model.db('nsfw_constants').where({key: "currentSeason"}).first();
+            await Model.db('nsfw_fighters_transactions').insert({
+                idReceiver: receiver,
+                idGiver: fromFighter,
+                season: currentSeason.value,
+                transactionType: transactionType,
+                amount: amount.toFixed(2),
+                date: new Date()
+            });
+        }
     }
 
     public static async exists(name:string):Promise<boolean>{

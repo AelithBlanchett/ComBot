@@ -4,7 +4,8 @@ export class Globals {
     public static currentSeason:number = 1;
     public static diceSides:number = 12;
     public static numberOfRequiredStatPoints:number = 200;
-
+    public static restatCostInTokens:number = 5;
+    public static botName:string = "Miss_Spencer";
 }
 
 export class SQL {
@@ -347,6 +348,15 @@ export enum TokensWorth {
     Bronze = 50,
     Silver = 100,
     Gold = 300
+}
+
+export enum TransactionType{
+    FightReward = 0,
+    Feature = 1,
+    AchievementReward = 2,
+    Restat = 3,
+    FightStart = 4,
+    Tip = 5
 }
 
 export enum FightType {

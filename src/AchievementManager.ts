@@ -4,6 +4,9 @@ import {Fight} from "./Fight";
 import {IAchievement} from "./interfaces/IAchievement";
 import {EnabledAchievements, AchievementType} from "./Achievements";
 import {ActiveFighter} from "./ActiveFighter";
+import {FighterRepository} from "./FighterRepository";
+import * as Constants from "./Constants";
+import {TransactionType} from "./Constants";
 
 export class AchievementManager {
 
@@ -23,7 +26,9 @@ export class AchievementManager {
             if(fighter.achievements.findIndex(x => x.getType() == achievement.getType()) == -1 && achievement.meetsRequirements(fighter, activeFighter, fight)){
                 achievement.createdAt = new Date();
                 fighter.achievements.push(achievement);
-                fighter.giveTokens(achievement.getReward());
+                let amount = achievement.getReward();
+                fighter.giveTokens(amount);
+                FighterRepository.changedTokensAmount(Constants.Globals.botName, amount, TransactionType.AchievementReward, this.name);
                 addedInfo.push(achievement.getDetailedDescription() + " Reward: "+ achievement.getReward() + " tokens.");
             }
         }

@@ -14,6 +14,7 @@ import {ActionType} from "./Action";
 import {Team} from "./Constants";
 import {FighterRepository} from "./FighterRepository";
 import {FightRepository} from "./FightRepository";
+import {TransactionType} from "./Constants";
 
 export class CommandHandler implements ICommandHandler {
     fChatLibInstance:IFChatLib;
@@ -147,7 +148,8 @@ export class CommandHandler implements ICommandHandler {
                     }
 
                     fighter.removeTokens(5);
-                    fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
+                    await FighterRepository.changedTokensAmount(fighter.name, Constants.Globals.restatCostInTokens, TransactionType.Restat);
+                    await fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
 
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've successfully changed your stats![/color]`, fighter.name);
                 }
@@ -420,10 +422,11 @@ export class CommandHandler implements ICommandHandler {
                 if(fighterGiving.canPayAmount(parsedArgs.amount)){
                     fighterGiving.removeTokens(parsedArgs.amount);
                     fighterReceiving.giveTokens(parsedArgs.amount);
+                    await FighterRepository.changedTokensAmount(fighterGiving.name, parsedArgs.amount, TransactionType.Tip, fighterReceiving.name);
                     await FighterRepository.persist(fighterGiving);
                     await FighterRepository.persist(fighterReceiving);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully paid ${fighterReceiving.name} ${parsedArgs.amount} tokens for their... services.[/color]`, data.character);
-                    this.fChatLibInstance.sendPrivMessage(`[color=green]You just received ${parsedArgs.amount} tokens from ${fighterReceiving.name} for your... services.[/color]`, fighterReceiving.name);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You just received ${parsedArgs.amount} tokens from ${fighterGiving.name} for your... services.[/color]`, fighterReceiving.name);
                     if(fighterReceiving.name == "Miss_Spencer"){
                         if(parsedArgs.amount <= 5){
                             this.fChatLibInstance.sendPrivMessage(`[url=http://i.imgur.com/3b7r7qk.jpg]Thanks for the tip♥[/url]`, data.character);

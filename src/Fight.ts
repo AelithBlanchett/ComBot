@@ -23,6 +23,7 @@ import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FightRepository} from "./FightRepository";
 import {FighterRepository} from "./FighterRepository";
 import {FeatureType} from "./Constants";
+import {TransactionType} from "./Constants";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -258,6 +259,7 @@ export class Fight{
         for (let i = 0; i < this.fighters.length; i++) {
             this.fighters[i].fightStatus = FightStatus.Playing;
             this.fighters[i].removeTokens(Constants.Fight.Globals.tokensCostToFight);
+            await FighterRepository.changedTokensAmount(this.fighters[i].name, Constants.Fight.Globals.tokensCostToFight, TransactionType.FightStart, Constants.Globals.botName);
 
             for (let feature of this.fighters[i].features) {
                 let modToAdd = feature.getModifier(this, this.fighters[i]);
@@ -773,6 +775,7 @@ export class Fight{
                 fighter.fightStatus = FightStatus.Won;
                 this.message.addInfo(`Awarded ${tokensToGiveToWinners} ${Constants.Globals.currencyName} to ${fighter.getStylizedName()}`);
                 fighter.giveTokens(tokensToGiveToWinners);
+                await FighterRepository.changedTokensAmount(Constants.Globals.botName, tokensToGiveToWinners, TransactionType.FightReward, fighter.name);
                 fighter.wins++;
                 fighter.winsSeason++;
                 fighter.eloRating += eloPointsChangeToWinners;
@@ -786,6 +789,7 @@ export class Fight{
                 }
                 this.message.addInfo(`Awarded ${tokensToGiveToLosers} ${Constants.Globals.currencyName} to ${fighter.getStylizedName()}`);
                 fighter.giveTokens(tokensToGiveToLosers);
+                await FighterRepository.changedTokensAmount(Constants.Globals.botName, tokensToGiveToLosers, TransactionType.FightReward, fighter.name);
             }
             this.message.addInfo(fighter.checkAchievements(fighter, this));
             await FighterRepository.persist(fighter);

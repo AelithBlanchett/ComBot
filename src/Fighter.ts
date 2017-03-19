@@ -8,6 +8,7 @@ import {Feature} from "./Feature";
 import {IAchievement} from "./interfaces/IAchievement";
 import {AchievementManager} from "./AchievementManager";
 import {ActiveFighter} from "./ActiveFighter";
+import {TransactionType} from "./Constants";
 let EloRating = require('elo-rating');
 
 export class Fighter{
@@ -246,6 +247,7 @@ export class Fighter{
             if(index == -1){
                 this.features.push(feature);
                 this.removeTokens(amountToRemove);
+                await FighterRepository.changedTokensAmount(this.name, amountToRemove, TransactionType.Feature, Constants.Globals.botName);
                 await FighterRepository.persist(this);
             }
             else{
@@ -266,7 +268,7 @@ export class Fighter{
         return this.features.findIndex(x => x.type == featureType) != -1;
     }
 
-    restat(power:number, sensuality:number, toughness:number, endurance:number, dexterity:number, willpower:number):boolean{
+    async restat(power:number, sensuality:number, toughness:number, endurance:number, dexterity:number, willpower:number):Promise<boolean>{
         this.power = power;
         this.sensuality = sensuality;
         this.toughness = toughness;
@@ -274,80 +276,16 @@ export class Fighter{
         this.dexterity = dexterity;
         this.willpower = willpower;
 
-        FighterRepository.persist(this);
+        await FighterRepository.persist(this);
 
         return true;
     }
-
-    // addStat(stat:Stats):any{
-    //     let theStat = this[Stats[stat].toLowerCase()];
-    //     theStat++;
-    //     if(theStat > Constants.Fighter.maxLevel){
-    //         return "You can't increase this stat anymore.";
-    //     }
-    //     let statTier = this.tier();
-    //     let amountToRemove = 0;
-    //     if(statTier == FightTier.Bronze){
-    //         amountToRemove = TokensWorth.Bronze;
-    //     }
-    //     else if(statTier == FightTier.Silver){
-    //         amountToRemove = TokensWorth.Silver;
-    //     }
-    //     else if(statTier == FightTier.Gold){
-    //         amountToRemove = TokensWorth.Gold;
-    //     }
-    //     else if(statTier == -1){
-    //         return "Tier not found.";
-    //     }
-    //
-    //     if(amountToRemove != 0 && (this.tokens - amountToRemove >= 0)){
-    //         this.removeTokens(amountToRemove);
-    //         this[Stats[stat].toLowerCase()]++;
-    //         FighterRepository.persist(this);
-    //         return "";
-    //     }
-    //     else{
-    //         return `Not enough ${FightTier[statTier]} tokens`;
-    //     }
-    // }
-    //
-    // removeStat(stat:Stats):any{
-    //     let theStat = this[Stats[stat].toLowerCase()];
-    //     theStat--;
-    //     if(theStat < Constants.Fighter.minLevel){
-    //         return "You can't decrease this stat anymore.";
-    //     }
-    //     let statTier = this.tier();
-    //     let amountToGive = 0;
-    //     if(statTier == FightTier.Bronze){
-    //         amountToGive = TokensWorth.Bronze;
-    //     }
-    //     else if(statTier == FightTier.Silver){
-    //         amountToGive = TokensWorth.Silver;
-    //     }
-    //     else if(statTier == FightTier.Gold){
-    //         amountToGive = TokensWorth.Gold;
-    //     }
-    //     else{
-    //         return "Tier not found.";
-    //     }
-    //
-    //     if(amountToGive != 0){
-    //         this.giveTokens(Math.floor(amountToGive/2));
-    //         this[Stats[stat].toLowerCase()]--;
-    //         FighterRepository.persist(this);
-    //         return "";
-    //     }
-    //     else{
-    //         return "The number of tokens to give back was miscalculated, request denied.";
-    //     }
-    // }
 
     giveTokens(amount){
         this.tokens += amount;
     }
 
-    removeTokens(amount){
+    removeTokens(amount:number){
         this.tokens -= amount;
         this.tokensSpent += amount;
         if(this.tokens < 0){
