@@ -424,6 +424,14 @@ export class CommandHandler implements ICommandHandler {
                     await FighterRepository.persist(fighterReceiving);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully paid ${fighterReceiving.name} ${parsedArgs.amount} tokens for their... services.[/color]`, data.character);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You just received ${parsedArgs.amount} tokens from ${fighterReceiving.name} for your... services.[/color]`, fighterReceiving.name);
+                    if(fighterReceiving.name == "Miss_Spencer"){
+                        if(parsedArgs.amount <= 5){
+                            this.fChatLibInstance.sendPrivMessage(`[url=http://i.imgur.com/3b7r7qk.jpg]Thanks for the tip♥[/url]`, data.character);
+                        }
+                        else {
+                            this.fChatLibInstance.sendPrivMessage(`[url=http://i.imgur.com/fLpZ1IN.png]All those coins? For me?~[/url]`, data.character);
+                        }
+                    }
                 }
                 else{
                     this.fChatLibInstance.sendPrivMessage(`[color=red]You don't have enough money.[/color]`, data.character);

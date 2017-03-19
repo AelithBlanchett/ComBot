@@ -55,7 +55,7 @@ export class FightRepository{
     public static async exists(idFight:string, notFinished?:boolean):Promise<boolean>{
         let loadedData;
         if(notFinished){
-            loadedData = await Model.db('nsfw_fights').where({idFight: idFight, hasEnded: false}).and.whereNull('deletedAt').select();
+            loadedData = await Model.db('nsfw_fights').where({idFight: idFight, hasStarted: true, hasEnded: false}).and.whereNull('deletedAt').select();
         }
         else{
             loadedData = await Model.db('nsfw_fights').where({idFight: idFight}).and.whereNull('deletedAt').select();
@@ -72,7 +72,7 @@ export class FightRepository{
 
         let latestIdFightInvolvingFighter = await Model.db('nsfw_activefighters').where({idFighter: idFighter, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
 
-        if(!await FightRepository.exists(latestIdFightInvolvingFighter, true)){
+        if(latestIdFightInvolvingFighter != null && !await FightRepository.exists(latestIdFightInvolvingFighter.idFight, true)){
             return null;
         }
 
@@ -90,13 +90,13 @@ export class FightRepository{
     public static async load(idFight:string):Promise<Fight>{
         let loadedFight:Fight = new Fight();
 
-        if(!await FightRepository.exists(idFight)){
+        if(!await FightRepository.exists(idFight, true)){
             return null;
         }
 
         try
         {
-            let loadedData = await Model.db('nsfw_fights').where({idFight: idFight}).and.whereNull('deletedAt').select();
+            let loadedData = await Model.db('nsfw_fights').where({idFight: idFight, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
             let data = loadedData[0];
 
             Utils.mergeFromTo(data, loadedFight);
