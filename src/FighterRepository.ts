@@ -25,8 +25,8 @@ export class FighterRepository{
                     endurance: fighter.endurance,
                     willpower: fighter.willpower,
                     areStatsPrivate: fighter.areStatsPrivate,
-                    tokens: fighter.tokens.toFixed(2),
-                    tokensSpent: fighter.tokensSpent.toFixed(2),
+                    tokens: Number(fighter.tokens).toFixed(2),
+                    tokensSpent: Number(fighter.tokensSpent).toFixed(2),
                     eloRating: fighter.eloRating,
                     createdAt: fighter.createdAt
                 });
@@ -41,8 +41,8 @@ export class FighterRepository{
                     endurance: fighter.endurance,
                     willpower: fighter.willpower,
                     areStatsPrivate: fighter.areStatsPrivate,
-                    tokens: fighter.tokens.toFixed(2),
-                    tokensSpent: fighter.tokensSpent.toFixed(2),
+                    tokens: Number(fighter.tokens).toFixed(2),
+                    tokensSpent: Number(fighter.tokensSpent).toFixed(2),
                     eloRating: fighter.eloRating,
                     updatedAt: fighter.updatedAt
                 });
@@ -138,7 +138,7 @@ export class FighterRepository{
                 idGiver: fromFighter,
                 season: currentSeason.value,
                 transactionType: transactionType,
-                amount: amount.toFixed(2),
+                amount: Number(amount).toFixed(2),
                 date: new Date()
             });
         }

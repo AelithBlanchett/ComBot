@@ -139,7 +139,7 @@ export class CommandHandler implements ICommandHandler {
         }
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
-            if(fighter.canPayAmount(5)) {
+            if(fighter.canPayAmount(Constants.Globals.restatCostInTokens)) {
                 try {
                     let arrParam:Array<number> = [];
 
@@ -425,8 +425,8 @@ export class CommandHandler implements ICommandHandler {
                     await FighterRepository.changedTokensAmount(fighterGiving.name, parsedArgs.amount, TransactionType.Tip, fighterReceiving.name);
                     await FighterRepository.persist(fighterGiving);
                     await FighterRepository.persist(fighterReceiving);
-                    this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully paid ${fighterReceiving.name} ${parsedArgs.amount} tokens for their... services.[/color]`, data.character);
-                    this.fChatLibInstance.sendPrivMessage(`[color=green]You just received ${parsedArgs.amount} tokens from ${fighterGiving.name} for your... services.[/color]`, fighterReceiving.name);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${parsedArgs.amount} tokens.[/color]`, data.character);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${parsedArgs.amount} tokens from ${fighterGiving.name} for your... services.[/color]`, fighterReceiving.name);
                     if(fighterReceiving.name == "Miss_Spencer"){
                         if(parsedArgs.amount <= 5){
                             this.fChatLibInstance.sendPrivMessage(`[url=http://i.imgur.com/3b7r7qk.jpg]Thanks for the tip♥[/url]`, data.character);
