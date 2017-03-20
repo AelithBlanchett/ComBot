@@ -200,7 +200,7 @@ export class Fight{
                 fighterInFight.fightStatus = FightStatus.Ready;
                 let fightTypes = Utils.getEnumList(FightType);
                 let listOfFightTypes = fightTypes.join(", ");
-                listOfFightTypes.replace(FightType[this.fightType], `[color=green][b]${FightType[this.fightType]}[/b][/color]`)
+                listOfFightTypes = listOfFightTypes.replace(FightType[this.fightType], `[color=green][b]${FightType[this.fightType]}[/b][/color]`);
                 this.message.addInfo(Utils.strFormat(Constants.Messages.Ready, [fighterInFight.getStylizedName(), listOfFightTypes, this.requiredTeams.toString()]));
                 this.message.send();
                 if (this.canStart()) {
