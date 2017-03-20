@@ -127,14 +127,14 @@ export class FighterRepository{
 
     }
 
-    public static async changedTokensAmount(receiver:string, amount:number, transactionType:TransactionType, fromFighter:string = ""):Promise<void>{
-        if(await FighterRepository.exists(receiver)){
+    public static async logTransaction(idFighter:string, amount:number, transactionType:TransactionType, fromFighter:string = ""):Promise<void>{
+        if(await FighterRepository.exists(idFighter)){
             if(fromFighter != "" && !await FighterRepository.exists(fromFighter)){
                 throw new Error("The fighter who gave this money wasn't found in the database.")
             }
             let currentSeason = await Model.db('nsfw_constants').where({key: "currentSeason"}).first();
             await Model.db('nsfw_fighters_transactions').insert({
-                idReceiver: receiver,
+                idFighter: idFighter,
                 idGiver: fromFighter,
                 season: currentSeason.value,
                 transactionType: transactionType,

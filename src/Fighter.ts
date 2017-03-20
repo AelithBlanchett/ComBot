@@ -247,7 +247,7 @@ export class Fighter{
             if(index == -1){
                 this.features.push(feature);
                 this.removeTokens(amountToRemove);
-                await FighterRepository.changedTokensAmount(this.name, amountToRemove, TransactionType.Feature, Constants.Globals.botName);
+                await FighterRepository.logTransaction(this.name, -amountToRemove, TransactionType.Feature);
                 await FighterRepository.persist(this);
             }
             else{

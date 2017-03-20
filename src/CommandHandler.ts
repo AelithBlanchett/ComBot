@@ -148,7 +148,7 @@ export class CommandHandler implements ICommandHandler {
                     }
 
                     fighter.removeTokens(5);
-                    await FighterRepository.changedTokensAmount(fighter.name, Constants.Globals.restatCostInTokens, TransactionType.Restat);
+                    await FighterRepository.logTransaction(fighter.name, -Constants.Globals.restatCostInTokens, TransactionType.Restat);
                     await fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
 
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've successfully changed your stats![/color]`, fighter.name);
@@ -422,7 +422,8 @@ export class CommandHandler implements ICommandHandler {
                 if(fighterGiving.canPayAmount(parsedArgs.amount)){
                     fighterGiving.removeTokens(parsedArgs.amount);
                     fighterReceiving.giveTokens(parsedArgs.amount);
-                    await FighterRepository.changedTokensAmount(fighterGiving.name, parsedArgs.amount, TransactionType.Tip, fighterReceiving.name);
+                    await FighterRepository.logTransaction(fighterGiving.name, -parsedArgs.amount, TransactionType.Tip);
+                    await FighterRepository.logTransaction(fighterReceiving.name, parsedArgs.amount, TransactionType.Tip, fighterGiving.name);
                     await FighterRepository.persist(fighterGiving);
                     await FighterRepository.persist(fighterReceiving);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${parsedArgs.amount} tokens.[/color]`, data.character);

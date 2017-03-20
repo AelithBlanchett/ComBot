@@ -28,7 +28,7 @@ export class AchievementManager {
                 fighter.achievements.push(achievement);
                 let amount = achievement.getReward();
                 fighter.giveTokens(amount);
-                FighterRepository.changedTokensAmount(Constants.Globals.botName, amount, TransactionType.AchievementReward, this.name);
+                FighterRepository.logTransaction(this.name, amount, TransactionType.AchievementReward, Constants.Globals.botName);
                 addedInfo.push(achievement.getDetailedDescription() + " Reward: "+ achievement.getReward() + " tokens.");
             }
         }
