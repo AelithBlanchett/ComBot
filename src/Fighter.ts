@@ -281,11 +281,11 @@ export class Fighter{
         return true;
     }
 
-    giveTokens(amount){
+    giveTokens(amount:number):void{
         this.tokens += amount;
     }
 
-    removeTokens(amount:number){
+    removeTokens(amount:number):void{
         this.tokens -= amount;
         this.tokensSpent += amount;
         if(this.tokens < 0){
