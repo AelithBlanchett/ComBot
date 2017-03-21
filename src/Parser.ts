@@ -97,7 +97,7 @@ export class Commands{
                 return result;
             }
             else{
-                result.amount = splittedArgs[0];
+                result.amount = Number(splittedArgs[0]);
             }
 
             splittedArgs.shift();

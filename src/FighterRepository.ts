@@ -138,7 +138,7 @@ export class FighterRepository{
                 idGiver: fromFighter,
                 season: currentSeason.value,
                 transactionType: transactionType,
-                amount: Number(amount).toFixed(2),
+                amount: amount,
                 date: new Date()
             });
         }

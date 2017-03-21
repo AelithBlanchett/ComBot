@@ -147,8 +147,9 @@ export class CommandHandler implements ICommandHandler {
                         arrParam.push(parseInt(nbr));
                     }
 
-                    fighter.removeTokens(5);
-                    await FighterRepository.logTransaction(fighter.name, -Constants.Globals.restatCostInTokens, TransactionType.Restat);
+                    let cost = Constants.Globals.restatCostInTokens;
+                    fighter.removeTokens(cost);
+                    await FighterRepository.logTransaction(fighter.name, -cost, TransactionType.Restat);
                     await fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
 
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've successfully changed your stats![/color]`, fighter.name);
@@ -419,17 +420,18 @@ export class CommandHandler implements ICommandHandler {
         let fighterReceiving = await FighterRepository.load(parsedArgs.player);
         try {
             if (fighterGiving != null && fighterReceiving != null) {
-                if(fighterGiving.canPayAmount(parsedArgs.amount)){
-                    fighterGiving.removeTokens(parsedArgs.amount);
-                    fighterReceiving.giveTokens(parsedArgs.amount);
-                    await FighterRepository.logTransaction(fighterGiving.name, -parsedArgs.amount, TransactionType.Tip);
-                    await FighterRepository.logTransaction(fighterReceiving.name, parsedArgs.amount, TransactionType.Tip, fighterGiving.name);
+                let amount:number = parsedArgs.amount;
+                if(fighterGiving.canPayAmount(amount)){
+                    fighterGiving.removeTokens(amount);
+                    fighterReceiving.giveTokens(amount);
+                    await FighterRepository.logTransaction(fighterGiving.name, -amount, TransactionType.Tip);
+                    await FighterRepository.logTransaction(fighterReceiving.name, amount, TransactionType.Tip, fighterGiving.name);
                     await FighterRepository.persist(fighterGiving);
                     await FighterRepository.persist(fighterReceiving);
-                    this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${parsedArgs.amount} tokens.[/color]`, data.character);
-                    this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${parsedArgs.amount} tokens from ${fighterGiving.name} for your... services.[/color]`, fighterReceiving.name);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${amount} tokens.[/color]`, data.character);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${amount} tokens from ${fighterGiving.name} for your... services.[/color]`, fighterReceiving.name);
                     if(fighterReceiving.name == "Miss_Spencer"){
-                        if(parsedArgs.amount <= 5){
+                        if(amount <= 5){
                             this.fChatLibInstance.sendPrivMessage(`[url=http://i.imgur.com/3b7r7qk.jpg]Thanks for the tip♥[/url]`, data.character);
                         }
                         else {

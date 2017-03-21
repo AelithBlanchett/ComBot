@@ -26,7 +26,7 @@ export class AchievementManager {
             if(fighter.achievements.findIndex(x => x.getType() == achievement.getType()) == -1 && achievement.meetsRequirements(fighter, activeFighter, fight)){
                 achievement.createdAt = new Date();
                 fighter.achievements.push(achievement);
-                let amount = achievement.getReward();
+                let amount:number = achievement.getReward();
                 fighter.giveTokens(amount);
                 FighterRepository.logTransaction(this.name, amount, TransactionType.AchievementReward, Constants.Globals.botName);
                 addedInfo.push(achievement.getDetailedDescription() + " Reward: "+ achievement.getReward() + " tokens.");
