@@ -240,7 +240,7 @@ export class Fighter{
 
     async addFeature(type:FeatureType, turns:number){
         let feature = new Feature(this.name, type, turns);
-        let amountToRemove = feature.getCost();
+        let amountToRemove:number = feature.getCost();
 
         if(this.tokens - amountToRemove >= 0){
             let index = this.features.findIndex(x => x.type == type);

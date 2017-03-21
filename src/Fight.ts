@@ -261,8 +261,9 @@ export class Fight{
 
         for (let i = 0; i < this.fighters.length; i++) {
             this.fighters[i].fightStatus = FightStatus.Playing;
-            this.fighters[i].removeTokens(Constants.Fight.Globals.tokensCostToFight);
-            await FighterRepository.logTransaction(this.fighters[i].name, -Constants.Fight.Globals.tokensCostToFight, TransactionType.FightStart);
+            let fightCost:number = Constants.Fight.Globals.tokensCostToFight;
+            this.fighters[i].removeTokens(fightCost);
+            await FighterRepository.logTransaction(this.fighters[i].name, -fightCost, TransactionType.FightStart);
 
             for (let feature of this.fighters[i].features) {
                 let modToAdd = feature.getModifier(this, this.fighters[i]);
@@ -733,7 +734,7 @@ export class Fight{
         return Constants.finishers[Math.floor(Math.random() * Constants.finishers.length)];
     }
 
-    async endFight(tokensToGiveToWinners, tokensToGiveToLosers, forceWinner?:Team){
+    async endFight(tokensToGiveToWinners:number, tokensToGiveToLosers:number, forceWinner?:Team){
         this.hasEnded = true;
         this.hasStarted = false;
         
