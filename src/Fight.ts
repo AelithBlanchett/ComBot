@@ -525,12 +525,12 @@ export class Fight{
 
     checkAttackRequirements(action:ActionType) {
         if (action == ActionType.HumHold) {
-            if(!this.currentTarget.isInSpecificHold(Constants.Modifier.SexHold)){
+            if(!this.currentTarget.isInHold()){
                 throw new Error(Constants.Messages.checkAttackRequirementsNotInSexualHold);
             }
         }
         if (action == ActionType.Bondage) {
-            if(!this.currentTarget.isInSpecificHold(Constants.Modifier.SexHold) && !this.currentTarget.hasFeature(FeatureType.BondageBunny)){
+            if(!this.currentTarget.isInHold() && !this.currentTarget.hasFeature(FeatureType.BondageBunny)){
                 throw new Error(Constants.Messages.checkAttackRequirementsNotInSexualHold);
             }
         }

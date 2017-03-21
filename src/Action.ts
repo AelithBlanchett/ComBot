@@ -89,7 +89,7 @@ export class Action{
             statDiff = Math.ceil((actorAtk-targetDef) / 10);
         }
         var diceBonus = 0;
-        var calculatedBonus = Math.floor(roll - TierDifficulty.Light);
+        var calculatedBonus = Math.floor(roll - TierDifficulty[Tier[tier]]);
         if(calculatedBonus > 0){
             diceBonus = calculatedBonus;
         }
@@ -119,7 +119,7 @@ export class Action{
                 scoreRequired += Math.floor(this.defender.currentDexterity / 20);
 
                 if(this.defender.focus < 0){
-                    scoreRequired += Math.floor(this.defender.focus / 20);
+                    scoreRequired += Math.floor(this.defender.focus / 20); //It's negative, remember that
                 }
                 if(this.defender.isStunned()){
                     scoreRequired -= 4;
