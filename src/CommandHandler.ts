@@ -115,7 +115,9 @@ export class CommandHandler implements ICommandHandler {
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             try {
-                await fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
+                let cost = fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
+                await FighterRepository.logTransaction(fighter.name, -cost, TransactionType.Feature);
+                await FighterRepository.persist(fighter);
                 this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully added the ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
             }
             catch (ex) {
@@ -151,8 +153,8 @@ export class CommandHandler implements ICommandHandler {
                     let cost = Constants.Globals.restatCostInTokens;
                     fighter.removeTokens(cost);
                     await FighterRepository.logTransaction(fighter.name, -cost, TransactionType.Restat);
-                    await fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
-
+                    fighter.restat(arrParam[0], arrParam[1], arrParam[2], arrParam[3], arrParam[4], arrParam[5]);
+                    await FighterRepository.persist(fighter);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've successfully changed your stats![/color]`, fighter.name);
                 }
                 catch (ex) {
@@ -178,6 +180,7 @@ export class CommandHandler implements ICommandHandler {
             fighter.areStatsPrivate = false;
             try {
                 fighter.clearFeatures();
+                await FighterRepository.persist(fighter);
                 this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed all your features.[/color]`, fighter.name);
             }
             catch (ex) {
@@ -504,6 +507,7 @@ export class CommandHandler implements ICommandHandler {
         try {
             if (fighter != null) {
                 fighter.removeFeature(parsedFeatureArgs.featureType);
+                await FighterRepository.persist(fighter);
                 this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed your ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
             }
         }

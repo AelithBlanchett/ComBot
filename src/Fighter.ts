@@ -1,16 +1,12 @@
 import * as Constants from "./Constants";
 import {FeatureType, Team} from "./Constants";
-import {TokensWorth} from "./Constants";
 import {FightTier} from "./Constants";
 import {Fight} from "./Fight";
-import {FighterRepository} from "./FighterRepository";
 import {Feature} from "./Feature";
 import {IAchievement} from "./interfaces/IAchievement";
 import {AchievementManager} from "./AchievementManager";
 import {ActiveFighter} from "./ActiveFighter";
-import {TransactionType} from "./Constants";
 import {FightDuration} from "./Constants";
-let EloRating = require('elo-rating');
 
 export class Fighter{
 
@@ -297,14 +293,13 @@ export class Fighter{
         let index = this.features.findIndex(x => x.type == type);
         if(index != -1){
             this.features.splice(index, 1);
-            await FighterRepository.persist(this);
         }
         else{
             throw new Error("You don't have this feature, you can't remove it.");
         }
     }
 
-    async addFeature(type:FeatureType, turns:number){
+    addFeature(type:FeatureType, turns:number):number{
         let feature = new Feature(this.name, type, turns);
         let amountToRemove:number = feature.getCost();
 
@@ -313,8 +308,7 @@ export class Fighter{
             if(index == -1){
                 this.features.push(feature);
                 this.removeTokens(amountToRemove);
-                await FighterRepository.logTransaction(this.name, -amountToRemove, TransactionType.Feature);
-                await FighterRepository.persist(this);
+                return amountToRemove;
             }
             else{
                 throw new Error("You already have this feature. You have to wait for it to expire before adding another of the same type.");
@@ -325,26 +319,21 @@ export class Fighter{
         }
     }
 
-    async clearFeatures(){
+    clearFeatures(){
         this.features = [];
-        await FighterRepository.persist(this);
     }
 
     hasFeature(featureType:FeatureType):boolean{
         return this.features.findIndex(x => x.type == featureType) != -1;
     }
 
-    async restat(power:number, sensuality:number, toughness:number, endurance:number, dexterity:number, willpower:number):Promise<boolean>{
+    restat(power:number, sensuality:number, toughness:number, endurance:number, dexterity:number, willpower:number){
         this.power = power;
         this.sensuality = sensuality;
         this.toughness = toughness;
         this.endurance = endurance;
         this.dexterity = dexterity;
         this.willpower = willpower;
-
-        await FighterRepository.persist(this);
-
-        return true;
     }
 
     giveTokens(amount:number):void{
