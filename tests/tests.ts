@@ -85,7 +85,18 @@ function abstractDatabase() {
         });
     };
 
+    FighterRepository.exists = async function (fight) {
+        return true;
+    };
+
     FightRepository.exists = async function (fight) {
+        return false;
+    };
+
+    FighterRepository.logTransaction = async function (a,b,c,d) {
+    };
+
+    ActiveFighterRepository.exists = async function (fight) {
         return false;
     };
 
@@ -854,8 +865,10 @@ describe("The player(s)", () => {
             cmd.fight.setCurrentPlayer("TheTinaArmstrong");
             doAction(cmd, "degradation", "Light").then(() => {
                 cmd.fight.nextTurn();
+                refillHPLPFP(cmd, "Aelith Blanchette");
                 doAction(cmd, "sexhold", "Light").then(() => {
                     cmd.fight.nextTurn();
+                    refillHPLPFP(cmd, "Aelith Blanchette");
                     doAction(cmd, "humhold", "Light").then(() => {
                         let condition = () => {
                             return (cmd.fight.hasStarted && !cmd.fight.hasEnded && cmd.fight.waitingForAction);
@@ -937,53 +950,33 @@ describe("The player(s)", () => {
         });
     }, DEFAULT_TIMEOUT);
 
-    it("should win the match with 3 bondage attacks", async function (done) {
+    it("should win the match with bondage attacks", async function (done) {
         var cmd = new CommandHandler(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         waitUntil().interval(INTERVAL_TO_WAIT_FOR).times(50).condition(() => {
             return cmd.fight.fighters.findIndex(x => x.name == "TheTinaArmstrong") != -1;
         }).done(() => {
             cmd.fight.setCurrentPlayer("TheTinaArmstrong");
-            doAction(cmd, "sexhold", "Light").then(() => {
-                cmd.fight.nextTurn();
-                refillHPLPFP(cmd, "Aelith Blanchette");
-                doAction(cmd, "bondage", "Light").then(() => {
+
+            for(let i = 0; i < cmd.fight.getFighterByName("Aelith Blanchette").maxBondageItemsOnSelf(); i++){
+                doAction(cmd, "sexhold", "Light").then(() => {
                     cmd.fight.nextTurn();
                     refillHPLPFP(cmd, "Aelith Blanchette");
-                    doAction(cmd, "sexhold", "Light").then(() => {
-                        cmd.fight.nextTurn();
-                        refillHPLPFP(cmd, "Aelith Blanchette");
-                        doAction(cmd, "bondage", "Light").then(() => {
-                            cmd.fight.nextTurn();
-                            refillHPLPFP(cmd, "Aelith Blanchette");
-                            doAction(cmd, "bondage", "Light").then(() => {
-                                refillHPLPFP(cmd, "Aelith Blanchette");
-                                let condition = () => {
-                                    return (cmd.fight.hasStarted && !cmd.fight.hasEnded && cmd.fight.waitingForAction);
-                                };
-                                waitUntil().interval(INTERVAL_TO_WAIT_FOR).times(50).condition(condition).done(() => {
-                                    if (cmd.fight.getFighterByName("Aelith Blanchette").isCompletelyBound()) {
-                                        done();
-                                    }
-                                    else {
-                                        done.fail(new Error("Did not say that the receiver must abandon because of bondage."));
-                                    }
-                                });
-                            }).catch(err => {
-                                fChatLibInstance.throwError(err);
-                            });
-                        }).catch(err => {
-                            fChatLibInstance.throwError(err);
-                        });
-                    }).catch(err => {
-                        fChatLibInstance.throwError(err);
-                    });
-                }).catch(err => {
-                    fChatLibInstance.throwError(err);
                 });
-            }).catch(err => {
-                fChatLibInstance.throwError(err);
+            }
+
+            let condition = () => {
+                return (cmd.fight.hasStarted && !cmd.fight.hasEnded && cmd.fight.waitingForAction);
+            };
+            waitUntil().interval(INTERVAL_TO_WAIT_FOR).times(500).condition(condition).done(() => {
+                if (cmd.fight.getFighterByName("Aelith Blanchette").isCompletelyBound()) {
+                    done();
+                }
+                else {
+                    done.fail(new Error("Did not say that the receiver must abandon because of bondage."));
+                }
             });
+
         });
     }, DEFAULT_TIMEOUT + 10000);
 
@@ -1062,61 +1055,6 @@ describe("The player(s)", () => {
             });
         });
     }, DEFAULT_TIMEOUT);
-
-
-    it("should win the match with 3 bondage attacks and check if mods are not incorrectly", async function (done) {
-        var cmd = new CommandHandler(fChatLibInstance, "here");
-        await initiateMatchSettings1vs1(cmd);
-        waitUntil().interval(INTERVAL_TO_WAIT_FOR).times(50).condition(() => {
-            return cmd.fight.fighters.findIndex(x => x.name == "TheTinaArmstrong") != -1;
-        }).done(() => {
-            cmd.fight.setCurrentPlayer("TheTinaArmstrong");
-            doAction(cmd, "sexhold", "Light").then(() => {
-                cmd.fight.nextTurn();
-                refillHPLPFP(cmd, "Aelith Blanchette");
-                doAction(cmd, "bondage", "Light").then(() => {
-                    cmd.fight.nextTurn();
-                    refillHPLPFP(cmd, "Aelith Blanchette");
-                    doAction(cmd, "sexhold", "Light").then(() => {
-                        cmd.fight.nextTurn();
-                        refillHPLPFP(cmd, "Aelith Blanchette");
-                        doAction(cmd, "bondage", "Light").then(() => {
-                            refillHPLPFP(cmd, "Aelith Blanchette");
-                            doAction(cmd, "rest", "Light").then(() => {
-                                refillHPLPFP(cmd, "Aelith Blanchette");
-                                doAction(cmd, "bondage", "Light").then(() => {
-                                    refillHPLPFP(cmd, "Aelith Blanchette");
-                                    let condition = () => {
-                                        return (cmd.fight.hasStarted && !cmd.fight.hasEnded && cmd.fight.waitingForAction);
-                                    };
-                                    waitUntil().interval(INTERVAL_TO_WAIT_FOR).times(50).condition(condition).done(() => {
-                                        if (cmd.fight.getFighterByName("Aelith Blanchette").isCompletelyBound()) {
-                                            done();
-                                        }
-                                        else {
-                                            done.fail(new Error("Did not say that the receiver must abandon because of bondage."));
-                                        }
-                                    });
-                                }).catch(err => {
-                                    fChatLibInstance.throwError(err);
-                                });
-                            }).catch(err => {
-                                fChatLibInstance.throwError(err);
-                            });
-                        }).catch(err => {
-                            fChatLibInstance.throwError(err);
-                        });
-                    }).catch(err => {
-                        fChatLibInstance.throwError(err);
-                    });
-                }).catch(err => {
-                    fChatLibInstance.throwError(err);
-                });
-            }).catch(err => {
-                fChatLibInstance.throwError(err);
-            });
-        });
-    }, DEFAULT_TIMEOUT + 10000);
 
     it("should grant the itemPickupModifier bonus for the KickStart feature", async function (done) {
         var cmd = new CommandHandler(fChatLibInstance, "here");
