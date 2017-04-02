@@ -555,7 +555,7 @@ export class CommandHandler implements ICommandHandler {
     async fightduration(args:string, data:FChatResponse) {
         let parsedFD:FightDuration = Parser.Commands.setFightDuration(args);
         if (parsedFD == -1) {
-            let fightDurations = Utils.getEnumList(FightType);
+            let fightDurations = Utils.getEnumList(FightDuration);
             this.fChatLibInstance.sendMessage(`[color=red]Fight Duration not found. Types: ${fightDurations.join(", ")}. Example: !fightduration Long[/color]`, this.channel);
             return;
         }
