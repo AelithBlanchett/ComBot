@@ -204,7 +204,9 @@ export class Modifier implements IModifier{
             }
 
             if(this.isOver()){
-                this.receiver.removeMod(this.idModifier);
+                for(let fighter of this.fight.fighters){
+                    fighter.removeMod(this.idModifier);
+                }
                 messageAboutModifier += ` and it is now expired.`;
             }
             else{
