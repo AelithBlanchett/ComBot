@@ -796,6 +796,15 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
+    pass(args:string, data:FChatResponse) {
+        try {
+            this.fight.prepareAction(data.character, ActionType.Pass, false, false, args);
+        }
+        catch (ex) {
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+        }
+    };
+
     async resetfight(args:string, data:FChatResponse) {
         if (this.fChatLibInstance.isUserChatOP(data.character, data.channel)) {
             if(this.fight && this.fight.idFight){

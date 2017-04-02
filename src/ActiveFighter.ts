@@ -558,7 +558,7 @@ export class ActiveFighter extends Fighter {
     getListOfActiveModifiers():string{
         let strMods = "";
         for(let mod of this.modifiers){
-            strMods += mod.name + ",";
+            strMods += mod.name + ", ";
         }
         return strMods;
     }

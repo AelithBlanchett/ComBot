@@ -199,6 +199,9 @@ export class Action{
             case ActionType.Masturbate:
                 result = this.actionMasturbate();
                 break;
+            case ActionType.Pass:
+                result = this.actionPass();
+                break;
             default:
                 this.fight.message.addHit("WARNING! UNKNOWN ATTACK!");
                 result = Trigger.None;
@@ -505,6 +508,14 @@ export class Action{
         return Trigger.PassiveAction;
     }
 
+    actionPass():Trigger{
+        this.defender = null;
+        this.requiresRoll = false;
+        this.missed = false;
+        this.fpDamageToAtk = Constants.Fight.Action.Globals.passFpDamage;
+        return Trigger.PassiveAction;
+    }
+
     async commit(fight:Fight){
         let strTier = "";
         if(this.tier >= 0){
@@ -654,10 +665,10 @@ export class Action{
                             mod.uses += this.modifiers[indexOfNewHold].uses;
                         }
                     }
-                    fight.message.addSpecial(`[b][color=red]Hold Stacking![/color][/b] ${this.defender.name} will have to suffer this hold for ${this.modifiers[indexOfNewHold].uses} more turns, and will also suffer a bit more, as it 
-                                     ${(this.modifiers[indexOfNewHold].hpDamage > 0 ? "added -"+this.modifiers[indexOfNewHold].hpDamage+" HP per turn ":"")}
-                                     ${(this.modifiers[indexOfNewHold].lustDamage > 0 ? "added +"+this.modifiers[indexOfNewHold].lustDamage+" Lust per turn ":"")}
-                                     ${(this.modifiers[indexOfNewHold].focusDamage > 0 ? "added -"+this.modifiers[indexOfNewHold].focusDamage+" Focus per turn":"")}
+                    fight.message.addSpecial(`[b][color=red]Hold Stacking![/color][/b] ${this.defender.name} will have to suffer this hold for ${this.modifiers[indexOfNewHold].uses} more turns, and will also suffer a bit more, as it has added 
+                                     ${(this.modifiers[indexOfNewHold].hpDamage > 0 ? " -"+this.modifiers[indexOfNewHold].hpDamage+" HP per turn ":"")}
+                                     ${(this.modifiers[indexOfNewHold].lustDamage > 0 ? " +"+this.modifiers[indexOfNewHold].lustDamage+" Lust per turn ":"")}
+                                     ${(this.modifiers[indexOfNewHold].focusDamage > 0 ? " -"+this.modifiers[indexOfNewHold].focusDamage+" Focus per turn":"")}
                      `);
                 }
                 else{
@@ -744,7 +755,8 @@ export enum ActionType {
     Submit,
     StrapToy,
     Finisher,
-    Masturbate
+    Masturbate,
+    Pass
 }
 
 export class ActionExplanation {
@@ -756,4 +768,5 @@ export class ActionExplanation {
     static Escape = `[b][color=red]%s got away![/color][/b]`;
     static Submit = `[b][color=red]%s taps out! It's over, it's done![/color][/b]`;
     static Masturbate = `[b][color=red]%s really needed those strokes apparently![/color][/b]`;
+    static Pass = `[b][color=red]%s passed their turn...[/color][/b]`;
 }

@@ -48,7 +48,7 @@ export namespace Fight {
             //Rest
             public static hpPercentageToHealOnRest: number = 0.30;
             public static lpPercentageToHealOnRest: number = 0.30;
-            public static fpPointsToHealOnRest: number = 0.20;
+            public static fpPointsToHealOnRest: number = 0.30;
             //Forced Lewd
             public static forcedLewdPercentageOfLPRemoved: number = 3;
             //HighRisk
@@ -58,6 +58,8 @@ export namespace Fight {
             public static dicePenaltyMultiplierWhileStunned: number = 3;
 
             public static masturbateLpDamage: number = 7;
+
+            public static passFpDamage: number = 4;
 
 
 
@@ -323,13 +325,13 @@ export enum FocusDamageOnMiss {
 
 export enum FocusHealOnHit {
     None = 1,
-    Light = 3,
-    Medium = 6,
-    Heavy = 10
+    Light = 6,
+    Medium = 12,
+    Heavy = 18
 }
 
 export enum FocusDamageOnHit {
-    Light = 4,
+    Light = 3,
     Medium = 9,
     Heavy = 15
 }

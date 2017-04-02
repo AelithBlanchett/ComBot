@@ -220,15 +220,15 @@ export class Fighter{
     }
 
     focusResistance():number{
-        let resistance = 0;
-        if (this.willpower > 30) {
-            resistance += (this.willpower - 30);
+        let resistance = 20;
+        if (this.willpower > 20) {
+            resistance += (this.willpower - 10);
         }
         return resistance;
     }
 
     initialFocus():number{
-        return Math.floor(0.66 * this.maxFocus());
+        return this.maxFocus();
     }
 
     maxFocus():number {
