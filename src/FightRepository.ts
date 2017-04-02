@@ -25,7 +25,7 @@ export class FightRepository{
                     hasEnded: fight.hasEnded,
                     winnerTeam: fight.winnerTeam,
                     season: fight.season,
-                    fightDuration: fight.fightDuration,
+                    fightLength: fight.fightLength,
                     createdAt: fight.createdAt
                 });
             }
@@ -38,7 +38,7 @@ export class FightRepository{
                     hasStarted: fight.hasStarted,
                     hasEnded: fight.hasEnded,
                     winnerTeam: fight.winnerTeam,
-                    fightDuration: fight.fightDuration,
+                    fightLength: fight.fightLength,
                     updatedAt: fight.updatedAt
                 });
             }

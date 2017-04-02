@@ -277,8 +277,8 @@ export class ActiveFighter extends Fighter {
     }
 
     fightDuration(){
-        if(this.fight != null && this.fight.fightDuration != null){
-            return this.fight.fightDuration;
+        if(this.fight != null && this.fight.fightLength != null){
+            return this.fight.fightLength;
         }
         else{
             return super.fightDuration();

@@ -6,7 +6,7 @@ import {Feature} from "./Feature";
 import {IAchievement} from "./interfaces/IAchievement";
 import {AchievementManager} from "./AchievementManager";
 import {ActiveFighter} from "./ActiveFighter";
-import {FightDuration} from "./Constants";
+import {FightLength} from "./Constants";
 
 export class Fighter{
 
@@ -122,7 +122,7 @@ export class Fighter{
     }
 
     fightDuration(){
-        return FightDuration.Medium;
+        return FightLength.Medium;
     }
 
     totalHp():number{
@@ -131,16 +131,16 @@ export class Fighter{
             hp += (this.toughness - 35);
         }
         switch (this.fightDuration()){
-            case FightDuration.Epic:
+            case FightLength.Epic:
                 hp = hp * 1.33;
                 break;
-            case FightDuration.Long:
+            case FightLength.Long:
                 //Keep it as it is
                 break;
-            case FightDuration.Medium:
+            case FightLength.Medium:
                 hp = hp * 0.66;
                 break;
-            case FightDuration.Short:
+            case FightLength.Short:
                 hp = hp * 0.33;
                 break;
         }
@@ -154,16 +154,16 @@ export class Fighter{
     maxHearts():number {
         let maxHearts = -1;
         switch (this.fightDuration()){
-            case FightDuration.Epic:
+            case FightLength.Epic:
                 maxHearts = 4;
                 break;
-            case FightDuration.Long:
+            case FightLength.Long:
                 maxHearts = 3;
                 break;
-            case FightDuration.Medium:
+            case FightLength.Medium:
                 maxHearts = 2;
                 break;
-            case FightDuration.Short:
+            case FightLength.Short:
                 maxHearts = 1;
                 break;
         }
@@ -176,16 +176,16 @@ export class Fighter{
             lust += (this.endurance - 35);
         }
         switch (this.fightDuration()){
-            case FightDuration.Epic:
+            case FightLength.Epic:
                 lust = lust * 1.33;
                 break;
-            case FightDuration.Long:
+            case FightLength.Long:
                 //Keep it as it is
                 break;
-            case FightDuration.Medium:
+            case FightLength.Medium:
                 lust = lust * 0.66;
                 break;
-            case FightDuration.Short:
+            case FightLength.Short:
                 lust = lust * 0.33;
                 break;
         }
@@ -199,16 +199,16 @@ export class Fighter{
     maxOrgasms():number {
         let maxOrgasms = -1;
         switch (this.fightDuration()){
-            case FightDuration.Epic:
+            case FightLength.Epic:
                 maxOrgasms = 4;
                 break;
-            case FightDuration.Long:
+            case FightLength.Long:
                 maxOrgasms = 3;
                 break;
-            case FightDuration.Medium:
+            case FightLength.Medium:
                 maxOrgasms = 2;
                 break;
-            case FightDuration.Short:
+            case FightLength.Short:
                 maxOrgasms = 1;
                 break;
         }
@@ -238,16 +238,16 @@ export class Fighter{
     maxBondageItemsOnSelf():number {
         let maxBondageItemsOnSelf = -1;
         switch (this.fightDuration()){
-            case FightDuration.Epic:
+            case FightLength.Epic:
                 maxBondageItemsOnSelf = 5;
                 break;
-            case FightDuration.Long:
+            case FightLength.Long:
                 maxBondageItemsOnSelf = 4;
                 break;
-            case FightDuration.Medium:
+            case FightLength.Medium:
                 maxBondageItemsOnSelf = 3;
                 break;
-            case FightDuration.Short:
+            case FightLength.Short:
                 maxBondageItemsOnSelf = 2;
                 break;
         }

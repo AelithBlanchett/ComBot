@@ -24,7 +24,7 @@ import {FightRepository} from "./FightRepository";
 import {FighterRepository} from "./FighterRepository";
 import {FeatureType} from "./Constants";
 import {TransactionType} from "./Constants";
-import {FightDuration} from "./Constants";
+import {FightLength} from "./Constants";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -40,7 +40,7 @@ export class Fight{
     winnerTeam:Team;
     season:number;
     waitingForAction:boolean = true;
-    fightDuration:FightDuration = FightDuration.Medium;
+    fightLength:FightLength = FightLength.Medium;
 
     createdAt:Date;
     updatedAt:Date;
@@ -66,7 +66,7 @@ export class Fight{
         this.season = Constants.Globals.currentSeason;
         this.requiredTeams = 2;
         this.diceLess = false;
-        this.fightDuration = FightDuration.Medium;
+        this.fightLength = FightLength.Medium;
     }
 
     build(fChatLibInstance:IFChatLib, channel:string){
@@ -97,13 +97,13 @@ export class Fight{
         this.message.send();
     }
 
-    setFightDuration(fightDuration:FightDuration){
+    setFightLength(fightDuration:FightLength){
         if(!this.hasStarted && !this.hasEnded){
-            this.fightDuration = fightDuration;
-            this.message.addInfo(Utils.strFormat(Constants.Messages.setFightDuration, [FightDuration[this.fightDuration]]));
+            this.fightLength = fightDuration;
+            this.message.addInfo(Utils.strFormat(Constants.Messages.setFightLength, [FightLength[this.fightLength]]));
         }
         else{
-            this.message.addInfo(Constants.Messages.setFightDurationFail);
+            this.message.addInfo(Constants.Messages.setFightLengthFail);
         }
         this.message.send();
     }
@@ -215,7 +215,10 @@ export class Fight{
                 let fightTypes = Utils.getEnumList(FightType);
                 let listOfFightTypes = fightTypes.join(", ");
                 listOfFightTypes = listOfFightTypes.replace(FightType[this.fightType], `[color=green][b]${FightType[this.fightType]}[/b][/color]`);
-                this.message.addInfo(Utils.strFormat(Constants.Messages.Ready, [fighterInFight.getStylizedName(), listOfFightTypes, this.requiredTeams.toString()]));
+                let fightDurations = Utils.getEnumList(FightLength);
+                let listOfFightDurations = fightDurations.join(", ");
+                listOfFightDurations = listOfFightDurations.replace(FightLength[this.fightLength], `[color=green][b]${FightLength[this.fightLength]}[/b][/color]`);
+                this.message.addInfo(Utils.strFormat(Constants.Messages.Ready, [fighterInFight.getStylizedName(), listOfFightTypes, this.requiredTeams.toString(), listOfFightDurations]));
                 this.message.send();
                 if (this.canStart()) {
                     this.start();

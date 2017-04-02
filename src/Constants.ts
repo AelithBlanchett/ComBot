@@ -195,14 +195,14 @@ export class Messages {
     You can check the command list on the profile.
     Available commands in fight: Brawl, Tease, HighRisk, RiskyLewd, SubHold, HumHold, Bondage, Degradation, ItemPickup, SextoyPickup, StrapToy, Submit, Finisher
     `;
-    static Ready = `[color=green]%s is now ready to get it on![/color] (Fight Type: %s ---- Required Teams: [color=green][b]%s[/b][/color])\n[sub]Hint: Don't forget you can change these settings with the !fighttype and the !teamscount command.[/sub]`;
+    static Ready = `[color=green]%s is now ready to get it on![/color] (Fight Type: %s ---- Required Teams: [color=green][b]%s[/b][/color] ---- Fight Length: %s)\n[sub]Hint: Don't forget you can change these settings with the !fighttype and the !teamscount command.[/sub]`;
     static HitMessage = ` HIT! `;
     static changeMinTeamsInvolvedInFightOK = "Number of teams involved in the fight updated!";
     static changeMinTeamsInvolvedInFightFail = "The number of teams should be superior or equal than 2.";
     static setDiceLess = "The fight is now %susing the dice.";
     static setDiceLessFail = "Couldn't drop the dice for this fight, it is already started, or it's already over.";
-    static setFightDuration = "The fight's pace has been set to %s";
-    static setFightDurationFail = "Couldn't change the pace for this fight, it is already started, or it's already over.";
+    static setFightLength = "The fight's pace has been set to %s";
+    static setFightLengthFail = "Couldn't change the pace for this fight, it is already started, or it's already over.";
     static setFightTypeClassic = "Fight type successfully set to Classic.";
     static setFightTypeTag = "Fight type successfully set to Tag-Team.";
     static setFightTypeLMS = "Fight type successfully set to Last Man Standing.";
@@ -289,7 +289,7 @@ export enum FightTier {
     Gold = 2
 }
 
-export enum FightDuration {
+export enum FightLength {
     Short = 0,
     Medium = 1,
     Long = 2,

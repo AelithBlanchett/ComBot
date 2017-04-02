@@ -15,7 +15,7 @@ import {Team} from "./Constants";
 import {FighterRepository} from "./FighterRepository";
 import {FightRepository} from "./FightRepository";
 import {TransactionType} from "./Constants";
-import {FightDuration} from "./Constants";
+import {FightLength} from "./Constants";
 
 export class CommandHandler implements ICommandHandler {
     fChatLibInstance:IFChatLib;
@@ -552,16 +552,16 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
-    async fightduration(args:string, data:FChatResponse) {
-        let parsedFD:FightDuration = Parser.Commands.setFightDuration(args);
+    async fightlength(args:string, data:FChatResponse) {
+        let parsedFD:FightLength = Parser.Commands.setFightLength(args);
         if (parsedFD == -1) {
-            let fightDurations = Utils.getEnumList(FightDuration);
-            this.fChatLibInstance.sendMessage(`[color=red]Fight Duration not found. Types: ${fightDurations.join(", ")}. Example: !fightduration Long[/color]`, this.channel);
+            let fightDurations = Utils.getEnumList(FightLength);
+            this.fChatLibInstance.sendMessage(`[color=red]Fight Length not found. Types: ${fightDurations.join(", ")}. Example: !fightlength Long[/color]`, this.channel);
             return;
         }
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != null) {
-            this.fight.setFightDuration(parsedFD);
+            this.fight.setFightLength(parsedFD);
         }
         else {
             this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
