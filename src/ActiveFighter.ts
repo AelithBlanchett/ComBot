@@ -277,7 +277,12 @@ export class ActiveFighter extends Fighter {
     }
 
     fightDuration(){
-        return this.fight.fightDuration;
+        if(this.fight != null && this.fight.fightDuration != null){
+            return this.fight.fightDuration;
+        }
+        else{
+            return super.fightDuration();
+        }
     }
 
     healHP(hp:number, triggerMods:boolean = true) {
