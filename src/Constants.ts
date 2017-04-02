@@ -39,7 +39,7 @@ export namespace Fight {
             public static turnsToWaitBetweenTwoTags: number = 4;
             //Bondage
             public static maxBondageItemsOnSelf: number = 4;
-            public static difficultyIncreasePerBondageItem: number = 2;
+            public static difficultyIncreasePerBondageItem: number = 1;
             //Focus
             public static maxTurnsWithoutFocus: number = 5;
             //Holds
@@ -201,6 +201,8 @@ export class Messages {
     static changeMinTeamsInvolvedInFightFail = "The number of teams should be superior or equal than 2.";
     static setDiceLess = "The fight is now %susing the dice.";
     static setDiceLessFail = "Couldn't drop the dice for this fight, it is already started, or it's already over.";
+    static setFightDuration = "The fight's pace has been set to %s";
+    static setFightDurationFail = "Couldn't change the pace for this fight, it is already started, or it's already over.";
     static setFightTypeClassic = "Fight type successfully set to Classic.";
     static setFightTypeTag = "Fight type successfully set to Tag-Team.";
     static setFightTypeLMS = "Fight type successfully set to Last Man Standing.";
@@ -287,6 +289,13 @@ export enum FightTier {
     Gold = 2
 }
 
+export enum FightDuration {
+    Short = 0,
+    Medium = 1,
+    Long = 2,
+    Epic = 3
+}
+
 export enum HighRiskMultipliers {
     Light = 2,
     Medium = 1.5,
@@ -300,8 +309,8 @@ export enum StatTier {
 }
 
 export enum BaseDamage {
-    Light = 4,
-    Medium = 12,
+    Light = 1,
+    Medium = 10,
     Heavy = 20
 }
 
@@ -356,7 +365,8 @@ export enum TransactionType{
     AchievementReward = 2,
     Restat = 3,
     FightStart = 4,
-    Tip = 5
+    Tip = 5,
+    DonationFromAelith = 6
 }
 
 export enum FightType {

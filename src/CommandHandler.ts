@@ -15,6 +15,7 @@ import {Team} from "./Constants";
 import {FighterRepository} from "./FighterRepository";
 import {FightRepository} from "./FightRepository";
 import {TransactionType} from "./Constants";
+import {FightDuration} from "./Constants";
 
 export class CommandHandler implements ICommandHandler {
     fChatLibInstance:IFChatLib;
@@ -410,6 +411,46 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
+    async givetokens(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+            let parsedArgs = Parser.Commands.tipPlayer(args);
+            if (parsedArgs.message != null) {
+                this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedArgs.message + "\nExample: !tip character 10[/color]", data.character);
+                return;
+            }
+            let fighterReceiving = await FighterRepository.load(parsedArgs.player);
+            try {
+                if (fighterReceiving != null) {
+                    let amount:number = parsedArgs.amount;
+                    fighterReceiving.giveTokens(amount);
+                    await FighterRepository.logTransaction(fighterReceiving.name, amount, TransactionType.DonationFromAelith, data.character);
+                    await FighterRepository.persist(fighterReceiving);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${amount} tokens.[/color]`, data.character);
+                    this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${amount} tokens from ${data.character} ![/color]`, fighterReceiving.name);
+                }
+                else{
+                    this.fChatLibInstance.sendPrivMessage(`[color=red]Either you or the receiver wasn't found in the fighter database.[/color]`, data.character);
+                }
+            }
+            catch (ex) {
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            }
+        }
+
+    };
+
+    async givetokenstoplayersregisteredbeforenow(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+            try {
+                await FighterRepository.GiveTokensToPlayersRegisteredBeforeNow(parseInt(args));
+            }
+            catch (ex) {
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            }
+        }
+
+    };
+
     async tip(args:string, data:FChatResponse) {
         let parsedArgs = Parser.Commands.tipPlayer(args);
         if (parsedArgs.message != null) {
@@ -481,6 +522,16 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
+    async tokens(args:string, data:FChatResponse) {
+        let fighter:Fighter = await FighterRepository.load(data.character);
+        if (fighter != null) {
+            this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), fighter.name);
+        }
+        else {
+            this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
+        }
+    };
+
     async fighttype(args:string, data:FChatResponse) {
         let parsedFT:FightType = Parser.Commands.setFightType(args);
         if (parsedFT == -1) {
@@ -491,6 +542,22 @@ export class CommandHandler implements ICommandHandler {
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fight.setFightType(args);
+        }
+        else {
+            this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
+        }
+    };
+
+    async fightduration(args:string, data:FChatResponse) {
+        let parsedFD:FightDuration = Parser.Commands.setFightDuration(args);
+        if (parsedFD == -1) {
+            let fightDurations = Utils.getEnumList(FightType);
+            this.fChatLibInstance.sendMessage(`[color=red]Fight Duration not found. Types: ${fightDurations.join(", ")}. Example: !fightduration Long[/color]`, this.channel);
+            return;
+        }
+        let fighter:Fighter = await FighterRepository.load(data.character);
+        if (fighter != null) {
+            this.fight.setFightDuration(parsedFD);
         }
         else {
             this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);

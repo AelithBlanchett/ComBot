@@ -6,6 +6,7 @@ import Stats = Constants.Stats;
 import StatTier = Constants.StatTier;
 import {FightType} from "./Constants";
 import {FeatureType} from "./Constants";
+import {FightDuration} from "./Constants";
 
 export class Commands{
 
@@ -157,6 +158,18 @@ export class Commands{
         let indexOfFightType = fightTypes.indexOf(args.toLowerCase());
         if(indexOfFightType != -1){
             return FightType[FightType[indexOfFightType]];
+        }
+        return -1;
+    }
+
+    public static setFightDuration(args){
+        let fightDurations = Utils.getEnumList(FightDuration);
+        for(let fightTypeId in fightDurations){
+            fightDurations[fightTypeId] = fightDurations[fightTypeId].toLowerCase();
+        }
+        let indexOfFightDuration = fightDurations.indexOf(args.toLowerCase());
+        if(indexOfFightDuration != -1){
+            return FightDuration[FightDuration[indexOfFightDuration]];
         }
         return -1;
     }

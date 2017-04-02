@@ -24,6 +24,7 @@ import {FightRepository} from "./FightRepository";
 import {FighterRepository} from "./FighterRepository";
 import {FeatureType} from "./Constants";
 import {TransactionType} from "./Constants";
+import {FightDuration} from "./Constants";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -39,6 +40,7 @@ export class Fight{
     winnerTeam:Team;
     season:number;
     waitingForAction:boolean = true;
+    fightDuration:FightDuration = FightDuration.Medium;
 
     createdAt:Date;
     updatedAt:Date;
@@ -64,6 +66,7 @@ export class Fight{
         this.season = Constants.Globals.currentSeason;
         this.requiredTeams = 2;
         this.diceLess = false;
+        this.fightDuration = FightDuration.Medium;
     }
 
     build(fChatLibInstance:IFChatLib, channel:string){
@@ -90,6 +93,17 @@ export class Fight{
         }
         else{
             this.message.addInfo(Constants.Messages.setDiceLessFail);
+        }
+        this.message.send();
+    }
+
+    setFightDuration(fightDuration:FightDuration){
+        if(!this.hasStarted && !this.hasEnded){
+            this.fightDuration = fightDuration;
+            this.message.addInfo(Utils.strFormat(Constants.Messages.setFightDuration, [FightDuration[this.fightDuration]]));
+        }
+        else{
+            this.message.addInfo(Constants.Messages.setFightDurationFail);
         }
         this.message.send();
     }
@@ -164,8 +178,8 @@ export class Fight{
         if(!this.hasStarted){
             if (!this.getFighterByName(fighterName)) { //find fighter by its name property instead of comparing objects, which doesn't work.
                 let activeFighter:ActiveFighter = await ActiveFighterRepository.initialize(fighterName);
-                if(activeFighter.copperTokens() < 1){
-                    throw new Error("You don't have any copper token (10 tokens) to spend. Get to work and earn it!");
+                if(activeFighter.tokens < 10){
+                    throw new Error("You don't have enough tokens (It costs 10 tokens). Get to work and earn it!");
                 }
                 activeFighter.fightStatus = FightStatus.Joined;
                 if(team != Team.Unknown){
@@ -678,8 +692,8 @@ export class Fight{
         let fighter = this.getFighterByName(fighterName);
         if(fighter != null){
             if(!fighter.isTechnicallyOut()){
-                this.message.addHit(Utils.strFormat(Constants.Messages.forfeitItemApply, [fighter.getStylizedName(), Constants.Fight.Action.Globals.maxBondageItemsOnSelf.toString()]));
-                for(let i = 0; i < Constants.Fight.Action.Globals.maxBondageItemsOnSelf; i++){
+                this.message.addHit(Utils.strFormat(Constants.Messages.forfeitItemApply, [fighter.getStylizedName(), fighter.maxBondageItemsOnSelf().toString()]));
+                for(let i = 0; i < fighter.maxBondageItemsOnSelf(); i++){
                     fighter.modifiers.push(new BondageModifier(fighter));
                 }
                 fighter.fightStatus = FightStatus.Forfeited;

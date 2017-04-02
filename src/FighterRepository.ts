@@ -214,6 +214,12 @@ export class FighterRepository{
         return featuresArray;
     }
 
+    public static async GiveTokensToPlayersRegisteredBeforeNow(amount:number):Promise<void>{
+        let currentDate = new Date();
+        let currentSeason = await Model.db('nsfw_constants').where({key: "currentSeason"}).first();
+        await Model.db('nsfw_fighters').where({season: currentSeason.value}).and.whereNull('deletedAt').andWhere('createdAt', '<', currentDate).increment('tokens', amount);
+    }
+
     public static async delete(name:string):Promise<void>{
         let currentSeason = await Model.db('nsfw_constants').where({key: "currentSeason"}).first();
         await Model.db('nsfw_fighters').where({name: name, season: currentSeason.value}).and.whereNull('deletedAt').update({

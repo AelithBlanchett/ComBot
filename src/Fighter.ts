@@ -9,6 +9,7 @@ import {IAchievement} from "./interfaces/IAchievement";
 import {AchievementManager} from "./AchievementManager";
 import {ActiveFighter} from "./ActiveFighter";
 import {TransactionType} from "./Constants";
+import {FightDuration} from "./Constants";
 let EloRating = require('elo-rating');
 
 export class Fighter{
@@ -23,7 +24,7 @@ export class Fighter{
     endurance:number = 1;
     willpower:number = 1;
 
-    tokens: number = 10;
+    tokens: number = 50;
     tokensSpent: number = 0;
 
     fightsCount:number;
@@ -124,10 +125,28 @@ export class Fighter{
         return winRate;
     }
 
+    fightDuration(){
+        return FightDuration.Medium;
+    }
+
     totalHp():number{
         let hp = 100;
         if (this.toughness > 35) {
             hp += (this.toughness - 35);
+        }
+        switch (this.fightDuration()){
+            case FightDuration.Epic:
+                hp = hp * 1.33;
+                break;
+            case FightDuration.Long:
+                //Keep it as it is
+                break;
+            case FightDuration.Medium:
+                hp = hp * 0.66;
+                break;
+            case FightDuration.Short:
+                hp = hp * 0.33;
+                break;
         }
         return hp;
     }
@@ -137,13 +156,42 @@ export class Fighter{
     }
 
     maxHearts():number {
-        return 3;
+        let maxHearts = -1;
+        switch (this.fightDuration()){
+            case FightDuration.Epic:
+                maxHearts = 4;
+                break;
+            case FightDuration.Long:
+                maxHearts = 3;
+                break;
+            case FightDuration.Medium:
+                maxHearts = 2;
+                break;
+            case FightDuration.Short:
+                maxHearts = 1;
+                break;
+        }
+        return maxHearts;
     }
 
     totalLust():number{
         let lust = 100;
         if (this.endurance > 35) {
             lust += (this.endurance - 35);
+        }
+        switch (this.fightDuration()){
+            case FightDuration.Epic:
+                lust = lust * 1.33;
+                break;
+            case FightDuration.Long:
+                //Keep it as it is
+                break;
+            case FightDuration.Medium:
+                lust = lust * 0.66;
+                break;
+            case FightDuration.Short:
+                lust = lust * 0.33;
+                break;
         }
         return lust;
     }
@@ -153,11 +201,26 @@ export class Fighter{
     }
 
     maxOrgasms():number {
-        return 3;
+        let maxOrgasms = -1;
+        switch (this.fightDuration()){
+            case FightDuration.Epic:
+                maxOrgasms = 4;
+                break;
+            case FightDuration.Long:
+                maxOrgasms = 3;
+                break;
+            case FightDuration.Medium:
+                maxOrgasms = 2;
+                break;
+            case FightDuration.Short:
+                maxOrgasms = 1;
+                break;
+        }
+        return maxOrgasms;
     }
 
     minFocus():number {
-        return -20 - this.focusResistance();
+        return 0;
     }
 
     focusResistance():number{
@@ -169,11 +232,30 @@ export class Fighter{
     }
 
     initialFocus():number{
-        return 0;
+        return Math.floor(0.66 * this.maxFocus());
     }
 
     maxFocus():number {
-        return 20 + this.focusResistance();
+        return 30 + this.focusResistance();
+    }
+
+    maxBondageItemsOnSelf():number {
+        let maxBondageItemsOnSelf = -1;
+        switch (this.fightDuration()){
+            case FightDuration.Epic:
+                maxBondageItemsOnSelf = 5;
+                break;
+            case FightDuration.Long:
+                maxBondageItemsOnSelf = 4;
+                break;
+            case FightDuration.Medium:
+                maxBondageItemsOnSelf = 3;
+                break;
+            case FightDuration.Short:
+                maxBondageItemsOnSelf = 2;
+                break;
+        }
+        return maxBondageItemsOnSelf;
     }
 
     outputStats():string{
@@ -182,8 +264,8 @@ export class Fighter{
             "[b][color=purple]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Orgasms[/color][/b]: " + this.maxOrgasms() + " * " + this.lustPerOrgasm() +" [b][color=pink]Lust[/color] per Orgasm[/b]"+"\n" +
             "[b][color=orange]Toughness[/color][/b]: " + this.toughness + "\n" +
             "[b][color=cyan]Endurance[/color][/b]: " + this.endurance + "      " + "[b][color=green]Win[/color]/[color=red]Loss[/color] record[/b]: " + this.wins + " - " + this.losses + "\n" +
-            "[b][color=green]Dexterity[/color][/b]: " + this.dexterity +  "      " + "[b][color=brown]Copper tokens available[/color][/b]: " + this.copperTokens() +  " " +"[b][color=orange]Bronze tokens available[/color][/b]: " + this.bronzeTokens() +  " " + "[b][color=grey]Silver[/color][/b]: " + this.silverTokens() +  " " + "[b][color=yellow]Gold[/color][/b]: " + this.goldTokens() + "\n" +
-            "[b][color=brown]Willpower[/color][/b]: " + this.willpower +  "      " + "[b][color=orange]Total tokens[/color][/b]: " + this.tokens + "         [b][color=orange]Total spent[/color][/b]: "+this.tokensSpent+"\n"  +
+            "[b][color=green]Dexterity[/color][/b]: " + this.dexterity + "\n" +
+            "[b][color=brown]Willpower[/color][/b]: " + this.willpower +  "      " + "[b][color=orange]Tokens[/color][/b]: " + this.tokens + "         [b][color=orange]Total spent[/color][/b]: "+this.tokensSpent+"\n"  +
             "[b][color=red]Features[/color][/b]: [b]" + this.getFeaturesList() + "[/b]\n" +
             "[b][color=yellow]Achievements[/color][/b]: [sub]" + this.getAchievementsList() + "[/sub]";
     }
@@ -209,22 +291,6 @@ export class Fighter{
             strResult.push(`${achievement.getDetailedDescription()}`);
         }
         return strResult.join(", ");
-    }
-
-    copperTokens():number{
-        return Math.floor(this.tokens/TokensWorth.Copper);
-    }
-
-    bronzeTokens():number{
-        return Math.floor(this.tokens/TokensWorth.Bronze);
-    }
-
-    silverTokens():number{
-        return Math.floor(this.tokens/TokensWorth.Silver);
-    }
-
-    goldTokens():number{
-        return Math.floor(this.tokens/TokensWorth.Gold);
     }
 
     async removeFeature(type:FeatureType):Promise<void>{

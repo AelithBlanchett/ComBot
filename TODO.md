@@ -1,8 +1,10 @@
 #TODO
 
 ##Important
+-   Expire modifiers on all fighters
 -   Private message handler
 -   Tease light too strong
+-   Game speed 
 
 ###Next steps
 -   Correct all warnings, refactor the code, clean it up
