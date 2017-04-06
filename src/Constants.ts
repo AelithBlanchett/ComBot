@@ -41,7 +41,7 @@ export namespace Fight {
             public static maxBondageItemsOnSelf: number = 4;
             public static difficultyIncreasePerBondageItem: number = 1;
             //Focus
-            public static maxTurnsWithoutFocus: number = 5;
+            public static maxTurnsWithoutFocus: number = 6;
             //Holds
             public static initialNumberOfTurnsForHold: number = 5;
             public static holdDamageMultiplier: number = 0.33;
@@ -60,6 +60,8 @@ export namespace Fight {
             public static masturbateLpDamage: number = 7;
 
             public static passFpDamage: number = 4;
+
+            public static fpHealOnNextTurn: number = 3;
 
 
 

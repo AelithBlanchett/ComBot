@@ -119,7 +119,7 @@ export class Action{
                 scoreRequired += Math.floor(this.defender.currentDexterity / 20);
 
                 if(this.defender.focus < 0){
-                    scoreRequired += Math.floor(this.defender.focus / 20); //It's negative, remember that
+                    scoreRequired += Math.floor(this.defender.focus / 4); //It's negative, remember that
                 }
                 if(this.defender.isStunned()){
                     scoreRequired -= 4;

@@ -335,9 +335,9 @@ export class Fight{
         for (let fighter of this.fighters) {
             fighter.triggerMods(TriggerMoment.Any, Trigger.OnTurnTick);
             if(!fighter.isInHold()){
-                fighter.healFP(1);
+                fighter.healFP(Constants.Fight.Action.Globals.fpHealOnNextTurn);
             }
-            if(fighter.focus < fighter.minFocus()){
+            if(fighter.focus <= fighter.minFocus()){
                 fighter.consecutiveTurnsWithoutFocus++;
             }
             else{
@@ -542,11 +542,6 @@ export class Fight{
     }
 
     checkAttackRequirements(action:ActionType) {
-        if (action == ActionType.HumHold) {
-            if(!this.currentTarget.isInHold()){
-                throw new Error(Constants.Messages.checkAttackRequirementsNotInSexualHold);
-            }
-        }
         if (action == ActionType.Bondage) {
             if(!this.currentTarget.isInHold() && !this.currentTarget.hasFeature(FeatureType.BondageBunny)){
                 throw new Error(Constants.Messages.checkAttackRequirementsNotInSexualHold);
