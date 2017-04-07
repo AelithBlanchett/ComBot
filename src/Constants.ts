@@ -54,7 +54,7 @@ export namespace Fight {
             //HighRisk
             public static multiplierHighRiskAttack: number = 2;
             //Stun
-            public static stunPowerDivider: number = 2;
+            public static stunHPDamageMultiplier: number = 0.5;
             public static dicePenaltyMultiplierWhileStunned: number = 3;
 
             public static masturbateLpDamage: number = 7;
@@ -298,6 +298,12 @@ export enum FightLength {
     Medium = 1,
     Long = 2,
     Epic = 3
+}
+
+export enum FailedHighRiskMultipliers {
+    Light = 0.5,
+    Medium = 0.5,
+    Heavy = 0.5
 }
 
 export enum HighRiskMultipliers {

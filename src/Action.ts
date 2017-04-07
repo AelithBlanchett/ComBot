@@ -28,6 +28,7 @@ import {FocusDamageOnMiss} from "./Constants";
 import {FocusHealOnHit} from "./Constants";
 import {FocusDamageOnHit} from "./Constants";
 import {FeatureType} from "./Constants";
+import {FailedHighRiskMultipliers} from "./Constants";
 
 export class Action{
 
@@ -276,7 +277,7 @@ export class Action{
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-            let focusDamage = FocusDamageOnHit[Tier[this.tier]];
+            let focusDamage = Math.floor(FocusDamageOnHit[Tier[this.tier]] * Constants.Fight.Action.Globals.holdDamageMultiplier);
             let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.HumHold, 0, 0, focusDamage);
             this.modifiers.push(holdModifier);
         }
@@ -315,13 +316,13 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-            this.hpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * HighRiskMultipliers[Tier[this.tier]]);
+            this.hpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * (HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]));
         }
         else{
             this.missed = true;
             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-            this.hpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.attacker.currentToughness, 0) * (1 + (1 - HighRiskMultipliers[Tier[this.tier]])));
+            this.hpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.attacker.currentToughness, 0) * (HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]));
         }
         return Trigger.HighRiskAttack;
     }
@@ -334,14 +335,14 @@ export class Action{
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * HighRiskMultipliers[Tier[this.tier]]);
-            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * 0.5);
+            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * 0.33);
         }
         else{
             this.missed = true;
             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * (1 + (1 - HighRiskMultipliers[Tier[this.tier]])));
-            this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * 0.5);
+            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * (HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]));
+            this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * 0.33);
         }
         return Trigger.RiskyLewd;
     }
@@ -349,7 +350,7 @@ export class Action{
     actionForcedWorship():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.ForcedWorshipAttack);
         this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
-        this.lpDamageToAtk += (this.tier+1) * 2; //deal damage anyway. They're gonna be exposed!
+        this.lpDamageToAtk += (this.tier+1) * 3; //deal damage anyway. They're gonna be exposed!
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -388,6 +389,7 @@ export class Action{
         this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
         if(this.diceScore >= this.requiredDiceScore()) {
             this.missed = false;
+            this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]] * Constants.Fight.Action.Globals.degradationFocusMultiplier;
             let humiliationModifier = new DegradationModifier(this.defender, this.attacker);
             this.modifiers.push(humiliationModifier);
@@ -429,7 +431,7 @@ export class Action{
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfAttacksStunned = this.tier + 1;
-            this.hpDamageToDef = this.attackFormula(this.tier, Math.floor(this.attacker.currentPower / Constants.Fight.Action.Globals.stunPowerDivider), this.defender.currentToughness, this.diceScore);
+            this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);
             let stunModifier = new StunModifier(this.defender, this.attacker, -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned), nbOfAttacksStunned);
             this.modifiers.push(stunModifier);
             this.fight.message.addHit("STUNNED!");
