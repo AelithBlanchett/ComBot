@@ -122,7 +122,7 @@ export class Fighter{
     }
 
     fightDuration(){
-        return FightLength.Medium;
+        return FightLength.Long;
     }
 
     totalHp():number{

@@ -40,7 +40,7 @@ export class Fight{
     winnerTeam:Team;
     season:number;
     waitingForAction:boolean = true;
-    fightLength:FightLength = FightLength.Medium;
+    fightLength:FightLength = FightLength.Long;
 
     createdAt:Date;
     updatedAt:Date;
@@ -66,7 +66,7 @@ export class Fight{
         this.season = Constants.Globals.currentSeason;
         this.requiredTeams = 2;
         this.diceLess = false;
-        this.fightLength = FightLength.Medium;
+        this.fightLength = FightLength.Long;
     }
 
     build(fChatLibInstance:IFChatLib, channel:string){
