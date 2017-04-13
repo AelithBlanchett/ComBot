@@ -61,7 +61,7 @@ export namespace Fight {
 
             public static passFpDamage: number = 4;
 
-            public static fpHealOnNextTurn: number = 3;
+            public static fpHealOnNextTurn: number = 2;
 
 
 

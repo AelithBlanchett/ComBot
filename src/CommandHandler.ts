@@ -227,6 +227,22 @@ export class CommandHandler implements ICommandHandler {
         }
     }
 
+    pause(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+            if (this.fight != undefined && !this.fight.hasEnded && this.fight.hasStarted) {
+                this.fight = new Fight();
+                this.fight.build(this.fChatLibInstance, this.channel);
+                this.fChatLibInstance.sendMessage(`Successfully saved and stored the match for later. The ring is available now!`, this.channel);
+            }
+            else{
+                this.fChatLibInstance.sendPrivMessage(`Something went wrong: either the fight wasn't started or it's already finished!`, data.character);
+            }
+        }
+        else {
+            this.fChatLibInstance.sendPrivMessage("[color=red]You're not Aelith![/color]", data.character);
+        }
+    }
+
     status(args:string, data:FChatResponse) {
         if (this.fight == undefined || this.fight.hasEnded || !this.fight.hasStarted) {
             this.fChatLibInstance.sendPrivMessage("There is no match going on right now.", data.character);

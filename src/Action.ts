@@ -61,6 +61,10 @@ export class Action{
     createdAt:Date;
     updatedAt:Date;
 
+    diceScoreBaseDamage:number;
+    diceScoreStatDifference:number;
+    diceScoreBonusPoints:number;
+
     modifiers:Modifier[] = [];
 
     constructor(idFight:string, currentTurn:number, actionType:ActionType, tier:Tier, attacker:string, defender?:string){
@@ -72,6 +76,9 @@ export class Action{
         this.idAttacker = attacker;
         this.idDefender = defender;
         this.createdAt = new Date();
+        this.diceScoreBaseDamage = 0;
+        this.diceScoreStatDifference = 0;
+        this.diceScoreBonusPoints = 0;
     }
 
     buildAction(fight:Fight, attacker:ActiveFighter, defender?:ActiveFighter) {
@@ -85,16 +92,23 @@ export class Action{
     }
 
     attackFormula(tier:Tier, actorAtk:number, targetDef:number, roll:number):number{
+
         var statDiff = 0;
         if(actorAtk-targetDef > 0){
             statDiff = Math.ceil((actorAtk-targetDef) / 10);
         }
+
         var diceBonus = 0;
         var calculatedBonus = Math.floor(roll - TierDifficulty[Tier[tier]]);
         if(calculatedBonus > 0){
             diceBonus = calculatedBonus;
         }
-        return BaseDamage[Tier[tier]] + statDiff + diceBonus;
+
+        this.diceScoreBaseDamage = BaseDamage[Tier[tier]];
+        this.diceScoreStatDifference = statDiff;
+        this.diceScoreBonusPoints = diceBonus;
+
+        return this.diceScoreBaseDamage + this.diceScoreStatDifference + this.diceScoreBonusPoints;
     }
 
     requiredDiceScore():number{
@@ -117,8 +131,11 @@ export class Action{
 
             if(this.defender){
                 scoreRequired -= (Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.defender.bondageItemsOnSelf()); //+2 difficulty per bondage item
-                scoreRequired += Math.floor(this.defender.currentDexterity / 20);
+                scoreRequired += Math.floor((this.defender.currentDexterity - this.attacker.currentDexterity) / 20);
 
+                if(this.defender.focus >= 0){
+                    scoreRequired += Math.floor((this.defender.focus - this.attacker.focus) / 10);
+                }
                 if(this.defender.focus < 0){
                     scoreRequired += Math.floor(this.defender.focus / 4); //It's negative, remember that
                 }
@@ -547,8 +564,9 @@ export class Action{
         }
 
         if(this.requiresRoll){
-            fight.message.addHint("Rolled: "+this.diceScore);
+            fight.message.addHint(`Rolled: ${this.diceScore}`);
             fight.message.addHint(`Required roll: ${this.requiredDiceScore()}`);
+            fight.message.addHint(`Damage calculation detail: (${this.diceScoreBaseDamage} + ${this.diceScoreStatDifference} + ${this.diceScoreBonusPoints})`);
         }
 
         //Features check
