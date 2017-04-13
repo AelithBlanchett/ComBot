@@ -2,7 +2,8 @@ export class Globals {
     public static pluginName:string = "nsfw";
     public static currencyName:string = "tokens";
     public static currentSeason:number = 1;
-    public static diceSides:number = 12;
+    public static diceSides:number = 7;
+    public static diceCount:number = 2;
     public static numberOfRequiredStatPoints:number = 200;
     public static restatCostInTokens:number = 5;
     public static botName:string = "Miss_Spencer";

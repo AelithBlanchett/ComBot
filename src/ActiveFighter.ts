@@ -220,10 +220,10 @@ export class ActiveFighter extends Fighter {
         this.triggerMods(TriggerMoment.Before, event);
         let result = 0;
         if (times == 1) {
-            result = this.dice.roll(1);
+            result = this.dice.roll(Constants.Globals.diceCount);
         }
         else {
-            result = this.dice.roll(times);
+            result = this.dice.roll(Constants.Globals.diceCount * times);
         }
 
         if(this.isInDebug && this.fight.forcedDiceRoll > 0){
