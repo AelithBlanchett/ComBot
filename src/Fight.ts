@@ -181,6 +181,8 @@ export class Fight{
                 if(activeFighter.tokens < 10){
                     throw new Error("You don't have enough tokens (It costs 10 tokens). Get to work and earn it!");
                 }
+                activeFighter.assignFight(this);
+                activeFighter.initialize();
                 activeFighter.fightStatus = FightStatus.Joined;
                 if(team != Team.Unknown){
                     activeFighter.assignedTeam = team;
@@ -189,8 +191,6 @@ export class Fight{
                     team = this.getAvailableTeam();
                     activeFighter.assignedTeam = team;
                 }
-                activeFighter.fight = this;
-                activeFighter.idFight = this.idFight;
                 this.fighters.push(activeFighter);
                 return team;
             }
