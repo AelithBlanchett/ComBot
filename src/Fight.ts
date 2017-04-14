@@ -178,6 +178,9 @@ export class Fight{
         if(!this.hasStarted){
             if (!this.getFighterByName(fighterName)) { //find fighter by its name property instead of comparing objects, which doesn't work.
                 let activeFighter:ActiveFighter = await ActiveFighterRepository.initialize(fighterName);
+                if(activeFighter == null){
+                    throw new Error("This character isn't registered yet.");
+                }
                 if(activeFighter.tokens < 10){
                     throw new Error("You don't have enough tokens (It costs 10 tokens). Get to work and earn it!");
                 }
