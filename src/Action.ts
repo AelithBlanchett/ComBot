@@ -79,9 +79,12 @@ export class Action{
         this.idAttacker = attacker;
         this.idDefender = defender;
         this.createdAt = new Date();
+        this.diceRollRawValue = 0;
+        this.diceRollBonusFromStat = 0;
         this.diceScoreBaseDamage = 0;
         this.diceScoreStatDifference = 0;
         this.diceScoreBonusPoints = 0;
+        this.difficultyExplanation = "";
     }
 
     buildAction(fight:Fight, attacker:ActiveFighter, defender?:ActiveFighter) {
@@ -610,7 +613,7 @@ export class Action{
         if(this.requiresRoll){
             fight.message.addHint(`Rolled: ${this.diceScore} (RLL: ${this.diceRollRawValue} + STAT:${this.diceRollBonusFromStat})`);
             fight.message.addHint(`Required roll: ${this.requiredDiceScore()} [sub](${this.difficultyExplanation})[/sub]`);
-            fight.message.addHint(`Damage calculation detail: (${this.diceScoreBaseDamage} + ${this.diceScoreStatDifference} + ${this.diceScoreBonusPoints})`);
+            fight.message.addHint(`Damage calculation detail: (BSE:${this.diceScoreBaseDamage} + STA:${this.diceScoreStatDifference} + OVR:${this.diceScoreBonusPoints})`);
         }
 
         //Features check

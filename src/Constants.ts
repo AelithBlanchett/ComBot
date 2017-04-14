@@ -59,7 +59,7 @@ export namespace Fight {
             public static stunHPDamageMultiplier: number = 0.5;
             public static dicePenaltyMultiplierWhileStunned: number = 3;
 
-            public static masturbateLpDamage: number = 6;
+            public static masturbateLpDamage: number = 7;
 
             public static passFpDamage: number = 6;
 
