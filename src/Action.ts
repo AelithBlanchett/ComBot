@@ -99,13 +99,13 @@ export class Action{
 
     attackFormula(tier:Tier, actorAtk:number, targetDef:number, roll:number):number{
 
-        var statDiff = 0;
+        let statDiff = 0;
         if(actorAtk-targetDef > 0){
             statDiff = Math.ceil((actorAtk-targetDef) / 10);
         }
 
-        var diceBonus = 0;
-        var calculatedBonus = Math.floor(roll - TierDifficulty[Tier[tier]]);
+        let diceBonus = 0;
+        let calculatedBonus = Math.floor(roll - TierDifficulty[Tier[tier]]);
         if(calculatedBonus > 0){
             diceBonus = calculatedBonus;
         }
@@ -119,7 +119,7 @@ export class Action{
 
     requiredDiceScore():number{
         let scoreRequired = 0;
-        let temporaryValue = 0;
+
         if(this.fight && this.fight.diceLess){
             return scoreRequired;
         }
@@ -165,7 +165,9 @@ export class Action{
     }
 
     addRequiredScore(score, value, reason):number{
-        this.difficultyExplanation = `${this.difficultyExplanation} ${reason}:${Utils.getSignedNumber(value)}`;
+        if(value != 0){
+            this.difficultyExplanation = `${this.difficultyExplanation} ${reason}:${Utils.getSignedNumber(value)}`;
+        }
         return (score + value);
     }
 
@@ -319,7 +321,7 @@ export class Action{
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-            let focusDamage = Math.floor(FocusDamageOnHit[Tier[this.tier]] * Constants.Fight.Action.Globals.holdDamageMultiplier);
+            let focusDamage = Math.floor(FocusDamageOnHit[Tier[this.tier]]);
             let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.HumHold, 0, 0, focusDamage);
             this.modifiers.push(holdModifier);
         }
@@ -611,9 +613,9 @@ export class Action{
         }
 
         if(this.requiresRoll){
-            fight.message.addHint(`Rolled: ${this.diceScore} (RLL: ${this.diceRollRawValue} + STAT:${this.diceRollBonusFromStat})`);
+            fight.message.addHint(`Rolled: ${this.diceScore} [sub](RLL: ${this.diceRollRawValue} + STAT:${this.diceRollBonusFromStat})[/sub]`);
             fight.message.addHint(`Required roll: ${this.requiredDiceScore()} [sub](${this.difficultyExplanation})[/sub]`);
-            fight.message.addHint(`Damage calculation detail: (BSE:${this.diceScoreBaseDamage} + STA:${this.diceScoreStatDifference} + OVR:${this.diceScoreBonusPoints})`);
+            fight.message.addHint(`Damage calculation detail: [sub](BSE:${this.diceScoreBaseDamage} + STA:${this.diceScoreStatDifference} + OVR:${this.diceScoreBonusPoints})[/sub]`);
         }
 
         //Features check

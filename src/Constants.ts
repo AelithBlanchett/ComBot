@@ -46,7 +46,7 @@ export namespace Fight {
             public static maxTurnsWithoutFocus: number = 6;
             //Holds
             public static initialNumberOfTurnsForHold: number = 5;
-            public static holdDamageMultiplier: number = 1;
+            public static holdDamageMultiplier: number = 0.5;
             //Rest
             public static hpPercentageToHealOnRest: number = 0.30;
             public static lpPercentageToHealOnRest: number = 0.30;
