@@ -47,8 +47,8 @@ export class CommandHandler implements ICommandHandler {
             let availableTiers = Utils.getEnumList(Constants.Tier);
             availableTiers.shift();
 
-            let firstCharData:FChatResponse = {character: "Aelith Blanchette", channel: data.channel};
-            let secondCharData:FChatResponse = {character: "Tina Armstrong", channel: data.channel};
+            let firstCharData:FChatResponse = {character: "MyFirstFighterThatDoesntExist", channel: data.channel};
+            let secondCharData:FChatResponse = {character: "MySecondFighterThatDoesntExist", channel: data.channel};
 
 
 
