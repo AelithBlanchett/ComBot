@@ -127,8 +127,8 @@ export class Fighter{
 
     totalHp():number{
         let hp = 100;
-        if (this.toughness > 35) {
-            hp += (this.toughness - 35);
+        if (this.toughness > 10) {
+            hp += (this.toughness - 10);
         }
         switch (this.fightDuration()){
             case FightLength.Epic:

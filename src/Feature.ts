@@ -1,6 +1,6 @@
 import {Utils} from "./Utils";
 import * as Constants from "./Constants";
-import {ItemPickupModifier, SextoyPickupModifier} from "./CustomModifiers";
+import {ItemPickupModifier, SextoyPickupModifier, BondageModifier} from "./CustomModifiers";
 import {Fight} from "./Fight";
 import {FeatureType} from "./Constants";
 import {ActiveFighter} from "./ActiveFighter";
@@ -66,6 +66,11 @@ export class Feature{
                     modifier = null;
                     fight.message.addHint(`${attacker.getStylizedName()} has the ${Constants.Feature.RyonaEnthusiast} feature!`);
                     fight.message.addHint(Constants.FeatureExplain.RyonaEnthusiast);
+                    break;
+                case FeatureType.BondageHandicap:
+                    modifier = new BondageModifier(attacker);
+                    fight.message.addHint(`${attacker.getStylizedName()} has the ${Constants.Feature.BondageHandicap} feature!`);
+                    fight.message.addHint(Constants.FeatureExplain.BondageHandicap);
                     break;
             }
             if (!this.permanent) {

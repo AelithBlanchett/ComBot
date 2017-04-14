@@ -2,7 +2,7 @@ export class Globals {
     public static pluginName:string = "nsfw";
     public static currencyName:string = "tokens";
     public static currentSeason:number = 1;
-    public static diceSides:number = 7;
+    public static diceSides:number = 10;
     public static diceCount:number = 2;
     public static numberOfRequiredStatPoints:number = 200;
     public static restatCostInTokens:number = 5;
@@ -33,6 +33,7 @@ export namespace Fight {
         export class RequiredScore{
             public static Tag: number = 8;
             public static Rest: number = 4;
+            public static BondageBunny: number = 10;
         }
 
         export class Globals{
@@ -45,7 +46,7 @@ export namespace Fight {
             public static maxTurnsWithoutFocus: number = 6;
             //Holds
             public static initialNumberOfTurnsForHold: number = 5;
-            public static holdDamageMultiplier: number = 0.33;
+            public static holdDamageMultiplier: number = 0.66;
             //Rest
             public static hpPercentageToHealOnRest: number = 0.30;
             public static lpPercentageToHealOnRest: number = 0.30;
@@ -58,7 +59,7 @@ export namespace Fight {
             public static stunHPDamageMultiplier: number = 0.5;
             public static dicePenaltyMultiplierWhileStunned: number = 3;
 
-            public static masturbateLpDamage: number = 7;
+            public static masturbateLpDamage: number = 6;
 
             public static passFpDamage: number = 4;
 
@@ -76,7 +77,7 @@ export namespace Fight {
             public static sextoyPickupMultiplier: number = 1.5;
 
             public static degradationUses: number = 1;
-            public static degradationFocusDamage: number = 10;
+            public static degradationFocusDamage: number = 5;
             public static degradationFocusMultiplier: number = 1.5;
 
             public static accuracyForBrawlInsideSubHold: number = 3;
@@ -121,6 +122,8 @@ export class Feature {
     static CumSlut = "Cum Slut";
     static RyonaEnthusiast = "Ryona Enthusiast";
     static DomSubLover = "Dom Sub Lover";
+    static BondageBunny = "Bondage Bunny";
+    static BondageHandicap = "Bondage Handicap (1 item)";
 }
 
 export enum FeatureType {
@@ -130,7 +133,8 @@ export enum FeatureType {
     CumSlut = 3,
     RyonaEnthusiast = 4,
     DomSubLover = 5,
-    BondageBunny = 6
+    BondageBunny = 6,
+    BondageHandicap = 7
 }
 
 export class FeatureExplain {
@@ -140,6 +144,8 @@ export class FeatureExplain {
     static CumSlut = "Increases all Lust damage done to the wearer by 3.";
     static RyonaEnthusiast = "Taking HP damage also increases the wearer's Lust by the same amount divided by two.";
     static DomSubLover = "Replaces focus by submissiveness. Purely visual.";
+    static BondageBunny = "Gives the possibility to your opponents to tie you up without applying a hold.";
+    static BondageHandicap = "You start the fights already wearing one bondage item.";
 }
 
 export class Messages {
@@ -354,12 +360,12 @@ export enum StrapToyLPDamagePerTurn {
 export enum TierDifficulty {
     Light = 4,
     Medium = 8,
-    Heavy = 12
+    Heavy = 14
 }
 
 export enum TokensPerWin {
-    Bronze = 13,
-    Silver = 20,
+    Bronze = 15,
+    Silver = 25,
     Gold = 50
 }
 
