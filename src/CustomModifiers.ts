@@ -37,21 +37,21 @@ export class BrawlBonusSubHoldModifier extends Modifier {
 
 export class ItemPickupModifier extends Modifier {
     constructor(receiver:ActiveFighter, parentIds?:Array<string>) {
-        super(receiver.name, null, Tier.None, ModifierType.ItemPickupBonus, Constants.Fight.Action.Globals.itemPickupMultiplier, 0, 0, 0, 0, Constants.Fight.Action.Globals.itemPickupUses, Constants.TriggerMoment.After, Constants.Trigger.BrawlAttack, parentIds, true);
+        super(receiver.name, null, Tier.None, ModifierType.ItemPickupBonus, 0, 0, 0, Constants.Fight.Action.Globals.itemPickupBonusDiceScore, 0, Constants.Fight.Action.Globals.itemPickupUses, Constants.TriggerMoment.Before, Constants.Trigger.PowerBasedAttack, parentIds, true);
         this.build(receiver, null, receiver.fight);
     }
 }
 
 export class SextoyPickupModifier extends Modifier {
     constructor(receiver:ActiveFighter, parentIds?:Array<string>) {
-        super(receiver.name, null, Tier.None, ModifierType.SextoyPickupBonus, Constants.Fight.Action.Globals.sextoyPickupMultiplier, 0, 0, 0, 0, Constants.Fight.Action.Globals.sextoyPickupUses, Constants.TriggerMoment.After, Constants.Trigger.TeaseAttack, parentIds, true);
+        super(receiver.name, null, Tier.None, ModifierType.SextoyPickupBonus, 0, 0, 0, Constants.Fight.Action.Globals.sextoyPickupBonusDiceScore, 0, Constants.Fight.Action.Globals.sextoyPickupUses, Constants.TriggerMoment.Before, Constants.Trigger.SensualityBasedAttack, parentIds, true);
         this.build(receiver, null, receiver.fight);
     }
 }
 
 export class StrapToyModifier extends Modifier {
-    constructor(receiver:ActiveFighter, turns:number, damagePerTurn:number, parentIds?:Array<string>) {
-        super(receiver.name, null, Tier.None, ModifierType.StrapToy, 0, damagePerTurn, 0, 0, 0, turns, Constants.TriggerMoment.Any, Constants.Trigger.OnTurnTick, parentIds, true);
+    constructor(receiver:ActiveFighter, turns:number, lpDamagePerTurn:number, fpDamagePerTurn:number, parentIds?:Array<string>) {
+        super(receiver.name, null, Tier.None, ModifierType.StrapToy, 0, lpDamagePerTurn, fpDamagePerTurn, 0, 0, turns, Constants.TriggerMoment.Any, Constants.Trigger.OnTurnTick, parentIds, true);
         this.build(receiver, null, receiver.fight);
     }
 }

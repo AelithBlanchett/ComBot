@@ -41,18 +41,18 @@ export namespace Fight {
             public static turnsToWaitBetweenTwoTags: number = 4;
             //Bondage
             public static maxBondageItemsOnSelf: number = 4;
-            public static difficultyIncreasePerBondageItem: number = 1;
+            public static difficultyIncreasePerBondageItem: number = 2;
             //Focus
             public static maxTurnsWithoutFocus: number = 6;
             //Holds
             public static initialNumberOfTurnsForHold: number = 5;
-            public static holdDamageMultiplier: number = 0.66;
+            public static holdDamageMultiplier: number = 1;
             //Rest
             public static hpPercentageToHealOnRest: number = 0.30;
             public static lpPercentageToHealOnRest: number = 0.30;
-            public static fpPointsToHealOnRest: number = 0.30;
+            public static fpPercentageToHealOnRest: number = 0.30;
             //Forced Lewd
-            public static forcedLewdPercentageOfLPRemoved: number = 3;
+            public static forcedWorshipLPMultiplier: number = 4;
             //HighRisk
             public static multiplierHighRiskAttack: number = 2;
             //Stun
@@ -61,7 +61,7 @@ export namespace Fight {
 
             public static masturbateLpDamage: number = 6;
 
-            public static passFpDamage: number = 4;
+            public static passFpDamage: number = 6;
 
             public static fpHealOnNextTurn: number = 2;
 
@@ -70,11 +70,13 @@ export namespace Fight {
             //Bonuses
             public static maxTagBonus: number = 3;
 
-            public static itemPickupUses: number = 2;
-            public static itemPickupMultiplier: number = 1.5;
+            public static itemPickupUses: number = 3;
+            public static itemPickupBonusDiceScore: number = 5;
+            public static itemPickupDamageMultiplier: number = 1.5;
 
-            public static sextoyPickupUses:number = 2;
-            public static sextoyPickupMultiplier: number = 1.5;
+            public static sextoyPickupUses:number = 3;
+            public static sextoyPickupBonusDiceScore: number = 5;
+            public static sextoyPickupDamageMultiplier: number = 1.5;
 
             public static degradationUses: number = 1;
             public static degradationFocusDamage: number = 5;
@@ -144,8 +146,8 @@ export class FeatureExplain {
     static CumSlut = "Increases all Lust damage done to the wearer by 3.";
     static RyonaEnthusiast = "Taking HP damage also increases the wearer's Lust by the same amount divided by two.";
     static DomSubLover = "Replaces focus by submissiveness. Purely visual.";
-    static BondageBunny = "Gives the possibility to your opponents to tie you up without applying a hold.";
-    static BondageHandicap = "You start the fights already wearing one bondage item.";
+    static BondageBunny = "Theycan be tied up without applying a hold.";
+    static BondageHandicap = "They start the fight already wearing one bondage item.";
 }
 
 export class Messages {
@@ -327,8 +329,8 @@ export enum StatTier {
 
 export enum BaseDamage {
     Light = 1,
-    Medium = 10,
-    Heavy = 20
+    Medium = 15,
+    Heavy = 25
 }
 
 export enum FocusDamageOnMiss {
@@ -346,21 +348,21 @@ export enum FocusHealOnHit {
 }
 
 export enum FocusDamageOnHit {
-    Light = 3,
-    Medium = 9,
+    Light = 5,
+    Medium = 10,
     Heavy = 15
 }
 
 export enum StrapToyLPDamagePerTurn {
     Light = 4,
-    Medium = 9,
+    Medium = 8,
     Heavy = 15
 }
 
 export enum TierDifficulty {
-    Light = 4,
-    Medium = 8,
-    Heavy = 14
+    Light = 5,
+    Medium = 10,
+    Heavy = 15
 }
 
 export enum TokensPerWin {
@@ -478,6 +480,7 @@ export enum Trigger {
     HumiliationHold = 1 << 19,
     SexHoldAttack = 1 << 20,
     Hold = SubmissionHold | HumiliationHold | SexHoldAttack,
+    SensualityBasedAttack = TeaseAttack | SexHoldAttack | ForcedWorshipAttack | HumiliationHold | RiskyLewd,
     PowerBasedAttack = BrawlAttack | SubmissionHold | HighRiskAttack | Stun,
 
     ItemPickup = 1 << 21,

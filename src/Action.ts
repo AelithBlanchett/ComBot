@@ -61,9 +61,12 @@ export class Action{
     createdAt:Date;
     updatedAt:Date;
 
+    diceRollRawValue:number;
+    diceRollBonusFromStat:number;
     diceScoreBaseDamage:number;
     diceScoreStatDifference:number;
     diceScoreBonusPoints:number;
+    difficultyExplanation:string;
 
     modifiers:Modifier[] = [];
 
@@ -113,6 +116,7 @@ export class Action{
 
     requiredDiceScore():number{
         let scoreRequired = 0;
+        let temporaryValue = 0;
         if(this.fight && this.fight.diceLess){
             return scoreRequired;
         }
@@ -127,34 +131,39 @@ export class Action{
         }
         else{
             if (this.type == ActionType.Finisher) {
-                scoreRequired += 6;
+                scoreRequired = this.addRequiredScore(scoreRequired, 6, "FIN");
             }
 
-            scoreRequired += (Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.attacker.bondageItemsOnSelf()); //+2 difficulty per bondage item
+            scoreRequired = this.addRequiredScore(scoreRequired, (Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.attacker.bondageItemsOnSelf()), "BDG");
 
             if(this.defender){
-                scoreRequired -= (Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.defender.bondageItemsOnSelf()); //+2 difficulty per bondage item
-                scoreRequired += Math.floor((this.defender.currentDexterity - this.attacker.currentDexterity) / 15);
+                scoreRequired = this.addRequiredScore(scoreRequired, -(Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.defender.bondageItemsOnSelf()), "BDG");
+                scoreRequired = this.addRequiredScore(scoreRequired, Math.floor((this.defender.currentDexterity - this.attacker.currentDexterity) / 15), "DEXDIFF");
 
                 if(this.defender.focus >= 0){
-                    scoreRequired += Math.floor((this.defender.focus - this.attacker.focus) / 15);
+                    scoreRequired = this.addRequiredScore(scoreRequired, Math.floor((this.defender.focus - this.attacker.focus) / 15), "FPDIFF");
                 }
                 if(this.defender.focus < 0){
-                    scoreRequired += Math.floor(this.defender.focus / 10); //It's negative, remember that
+                    scoreRequired = this.addRequiredScore(scoreRequired, Math.floor(this.defender.focus / 10), "FPZERO");
                 }
                 if(this.defender.isStunned()){
-                    scoreRequired -= 4;
+                    scoreRequired = this.addRequiredScore(scoreRequired, -4, "STUN");
                 }
             }
 
             if(this.tier != -1){
-                scoreRequired += TierDifficulty[Tier[this.tier]];
+                scoreRequired = this.addRequiredScore(scoreRequired, TierDifficulty[Tier[this.tier]], "TIER");
             }
         }
-        if(scoreRequired < 0){
-            scoreRequired = 0;
+        if(scoreRequired <= Constants.Globals.diceCount){
+            scoreRequired = Constants.Globals.diceCount;
         }
         return scoreRequired;
+    }
+
+    addRequiredScore(score, value, reason):number{
+        this.difficultyExplanation = `${this.difficultyExplanation} ${reason}:${Utils.getSignedNumber(value)}`;
+        return (score + value);
     }
 
     triggerAction():Trigger{
@@ -233,7 +242,9 @@ export class Action{
 
     actionBrawl():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.BrawlAttack);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -245,7 +256,9 @@ export class Action{
 
     actionTease():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.TeaseAttack);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -257,7 +270,9 @@ export class Action{
 
     actionSubHold():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.SubmissionHold);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -275,7 +290,9 @@ export class Action{
 
     actionSexHold():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.SexHoldAttack);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -293,7 +310,9 @@ export class Action{
 
     actionHumHold():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.HumiliationHold);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -316,7 +335,9 @@ export class Action{
             this.modifiers.push(bdModifier);
         }
         else{
-            this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
+            this.diceRollRawValue = this.attacker.roll(1);
+            this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
+            this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
             if(this.diceScore >= this.requiredDiceScore()) {
                 this.missed = false;
                 this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
@@ -331,7 +352,9 @@ export class Action{
 
     actionHighRisk():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.HighRiskAttack);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -349,28 +372,32 @@ export class Action{
 
     actionRiskyLewd():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.RiskyLewd);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * HighRiskMultipliers[Tier[this.tier]]);
-            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * 0.33);
+            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * FailedHighRiskMultipliers[Tier[this.tier]]);
         }
         else{
             this.missed = true;
             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
             this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * (HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]));
-            this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * 0.33);
+            this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * FailedHighRiskMultipliers[Tier[this.tier]]);
         }
         return Trigger.RiskyLewd;
     }
 
     actionForcedWorship():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.ForcedWorshipAttack);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
-        this.lpDamageToAtk += (this.tier+1) * 3; //deal damage anyway. They're gonna be exposed!
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
+        this.lpDamageToAtk += (this.tier+1) * 5; //deal damage anyway. They're gonna be exposed!
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -406,7 +433,9 @@ export class Action{
 
     actionDegradation():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Degradation);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()) {
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -419,7 +448,9 @@ export class Action{
 
     actionTag():Trigger{ //"skips" a turn
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Tag);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()) {
             this.attacker.lastTagTurn = this.atTurn;
             this.defender.lastTagTurn = this.atTurn;
@@ -433,19 +464,23 @@ export class Action{
     actionRest():Trigger{ //"skips" a turn
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Rest);
         this.defender = null;
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()) {
             this.missed = false;
             this.hpHealToAtk += this.attacker.hpPerHeart() * Constants.Fight.Action.Globals.hpPercentageToHealOnRest;
             this.lpHealToAtk += this.attacker.lustPerOrgasm() * Constants.Fight.Action.Globals.lpPercentageToHealOnRest;
-            this.fpHealToAtk += this.attacker.maxFocus() * Constants.Fight.Action.Globals.fpPointsToHealOnRest;
+            this.fpHealToAtk += this.attacker.maxFocus() * Constants.Fight.Action.Globals.fpPercentageToHealOnRest;
         }
         return Trigger.Rest;
     }
 
     actionStun():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Stun);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
@@ -463,7 +498,9 @@ export class Action{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Escape);
         this.defender = null;
         this.tier = this.attacker.isInHoldOfTier();
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.attacker.isInHold()){
             if(this.diceScore >= this.requiredDiceScore()){
                 this.missed = false;
@@ -490,14 +527,16 @@ export class Action{
 
     actionStrapToy():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.StrapToy);
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentSensuality / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if(this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfTurnsWearingToy = this.tier + 1;
             let lpDamage = StrapToyLPDamagePerTurn[Tier[this.tier]];
-            let strapToyModifier = new StrapToyModifier(this.defender, nbOfTurnsWearingToy, lpDamage);
+            let strapToyModifier = new StrapToyModifier(this.defender, nbOfTurnsWearingToy, lpDamage, this.fpDamageToDef);
             this.modifiers.push(strapToyModifier);
             this.fight.message.addHit("The sextoy started vibrating!");
         }
@@ -507,7 +546,9 @@ export class Action{
     actionFinisher():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Finisher);
         this.tier = Tier.Heavy;
-        this.diceScore = this.attacker.roll(1) + Math.ceil(this.attacker.currentWillpower / 10);
+        this.diceRollRawValue = this.attacker.roll(1);
+        this.diceRollBonusFromStat = Math.ceil(this.attacker.currentWillpower / 10);
+        this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
         if((this.defender.heartsRemaining <= 1 || this.defender.orgasmsRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 1) && this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.defender.triggerPermanentOutsideRing();
@@ -567,8 +608,8 @@ export class Action{
         }
 
         if(this.requiresRoll){
-            fight.message.addHint(`Rolled: ${this.diceScore}`);
-            fight.message.addHint(`Required roll: ${this.requiredDiceScore()}`);
+            fight.message.addHint(`Rolled: ${this.diceScore} (RLL: ${this.diceRollRawValue} + STAT:${this.diceRollBonusFromStat})`);
+            fight.message.addHint(`Required roll: ${this.requiredDiceScore()} [sub](${this.difficultyExplanation})[/sub]`);
             fight.message.addHint(`Damage calculation detail: (${this.diceScoreBaseDamage} + ${this.diceScoreStatDifference} + ${this.diceScoreBonusPoints})`);
         }
 

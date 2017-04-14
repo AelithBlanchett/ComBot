@@ -711,7 +711,7 @@ export class Fight{
         }
         this.message.send();
         if (this.isOver()) {
-            let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]]*Constants.Fight.Globals.tokensPerLossMultiplier;
+            let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]] * Constants.Fight.Globals.tokensForWinnerByForfeitMultiplier;
             await this.endFight(tokensToGiveToWinners, 0);
         }
         else{

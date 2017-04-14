@@ -172,8 +172,8 @@ export class Fighter{
 
     totalLust():number{
         let lust = 100;
-        if (this.endurance > 35) {
-            lust += (this.endurance - 35);
+        if (this.endurance > 10) {
+            lust += (this.endurance - 10);
         }
         switch (this.fightDuration()){
             case FightLength.Epic:
