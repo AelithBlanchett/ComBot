@@ -532,6 +532,8 @@ export class Action{
     actionReleaseHold():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Escape);
         this.defender = null;
+        this.requiresRoll = false;
+        this.missed = false;
         if(this.attacker.isApplyingHold()){
             this.attacker.releaseHoldsApplied();
         }
