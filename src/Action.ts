@@ -633,11 +633,11 @@ export class Action{
                 fight.message.addHit(Constants.Messages.HitMessage);
             }
 
-            if(this.tier == Tier.Heavy && this.attacker.isInHoldAppliedBy(this.defender.name)){
+            if(this.tier == Tier.Heavy && this.defender != null && this.attacker.isInHoldAppliedBy(this.defender.name)){
                 this.attacker.releaseHoldsAppliedBy(this.defender.name);
                 fight.message.addHit(Utils.strFormat(Constants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), this.defender.getStylizedName()]));
             }
-            else if(this.tier == Tier.Heavy && this.defender.isApplyingHold()){
+            else if(this.tier == Tier.Heavy && this.defender != null && this.defender.isApplyingHold()){
                 this.defender.releaseHoldsApplied();
                 fight.message.addHit(Utils.strFormat(Constants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), this.defender.getStylizedName()]));
             }
