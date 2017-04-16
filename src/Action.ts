@@ -598,7 +598,7 @@ export class Action{
         this.defender = null;
         this.requiresRoll = false;
         this.missed = false;
-        this.lpDamageToAtk = SelfDebaseFpDamage[Tier[this.tier]];
+        this.fpDamageToAtk = SelfDebaseFpDamage[Tier[this.tier]];
         return Trigger.PassiveAction;
     }
 
