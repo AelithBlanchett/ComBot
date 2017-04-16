@@ -93,19 +93,19 @@ describe("The database(s)", () => {
         done();
     });
 
-    xit("should give ItemPickupBonus feature to Test2", function (done) {
-        FighterRepository.load("test2").then(x => {
-            x.features.push(new Feature(x.name, FeatureType.KickStart, 1));
-            FighterRepository.persist(x).then(updWorked => {
-                expect(updWorked).toBe(true);
-                done();
-            }).catch(err => {
-                done.fail(err);
-            });
-        }).catch(err => {
-            done.fail(err);
-        });
-    },500000);
+    // xit("should give ItemPickupBonus feature to Test2", function (done) {
+    //     FighterRepository.load("test2").then(x => {
+    //         x.features.push(new Feature(x.name, FeatureType.KickStart, 1));
+    //         FighterRepository.persist(x).then(updWorked => {
+    //             expect(updWorked).toBe(true);
+    //             done();
+    //         }).catch(err => {
+    //             done.fail(err);
+    //         });
+    //     }).catch(err => {
+    //         done.fail(err);
+    //     });
+    // },500000);
 
     xit("should say test1 is already there", function (done) {
         FighterRepository.load("test1").then(x => {
