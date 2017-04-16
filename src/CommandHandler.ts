@@ -936,6 +936,7 @@ class PrivateCommandHandler {
     hidemystats = CommandHandler.prototype.hidemystats;
     howtostart = CommandHandler.prototype.howtostart;
     stats = CommandHandler.prototype.stats;
+    register = CommandHandler.prototype.register;
     //removestat = CommandHandler.prototype.removestat;
     removefeature = CommandHandler.prototype.removefeature;
     unhidemystats = CommandHandler.prototype.unhidemystats;
