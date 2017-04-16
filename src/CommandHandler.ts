@@ -326,7 +326,7 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
-    async loadmyfight(args:string, data:FChatResponse) {
+    async loadmylastfight(args:string, data:FChatResponse) {
         if (this.fight == undefined || this.fight.hasEnded || !this.fight.hasStarted) {
             try {
                 if (args) {
@@ -668,6 +668,15 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
+    releasehold(args:string, data:FChatResponse) {
+        try {
+            this.fight.prepareAction(data.character, ActionType.ReleaseHold, false, false, args);
+        }
+        catch (ex) {
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+        }
+    };
+
     forcedworship(args:string, data:FChatResponse) {
         try {
             this.fight.prepareAction(data.character, ActionType.ForcedWorship, true, false, args);
@@ -805,7 +814,16 @@ export class CommandHandler implements ICommandHandler {
 
     masturbate(args:string, data:FChatResponse) {
         try {
-            this.fight.prepareAction(data.character, ActionType.Masturbate, false, false, args);
+            this.fight.prepareAction(data.character, ActionType.Masturbate, true, false, args);
+        }
+        catch (ex) {
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+        }
+    };
+
+    selfdebase(args:string, data:FChatResponse) {
+        try {
+            this.fight.prepareAction(data.character, ActionType.SelfDebase, true, false, args);
         }
         catch (ex) {
             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);

@@ -29,6 +29,9 @@ import {FocusHealOnHit} from "./Constants";
 import {FocusDamageOnHit} from "./Constants";
 import {FeatureType} from "./Constants";
 import {FailedHighRiskMultipliers} from "./Constants";
+import {MasturbateLpDamage} from "./Constants";
+import {SelfDebaseFpDamage} from "./Constants";
+import {StrapToyDiceRollPenalty} from "./Constants";
 
 export class Action{
 
@@ -105,7 +108,7 @@ export class Action{
         }
 
         let diceBonus = 0;
-        let calculatedBonus = Math.floor(roll - TierDifficulty[Tier[tier]]);
+        let calculatedBonus = Math.floor((roll - TierDifficulty[Tier[tier]]) / 2);
         if(calculatedBonus > 0){
             diceBonus = calculatedBonus;
         }
@@ -150,7 +153,7 @@ export class Action{
                     scoreRequired = this.addRequiredScore(scoreRequired, Math.floor(this.defender.focus / 10), "FPZERO");
                 }
                 if(this.defender.isStunned()){
-                    scoreRequired = this.addRequiredScore(scoreRequired, -4, "STUN");
+                    scoreRequired = this.addRequiredScore(scoreRequired, -6, "STUN");
                 }
             }
 
@@ -234,8 +237,14 @@ export class Action{
             case ActionType.Masturbate:
                 result = this.actionMasturbate();
                 break;
+            case ActionType.SelfDebase:
+                result = this.actionSelfDebase();
+                break;
             case ActionType.Pass:
                 result = this.actionPass();
+                break;
+            case ActionType.ReleaseHold:
+                result = this.actionReleaseHold();
                 break;
             default:
                 this.fight.message.addHit("WARNING! UNKNOWN ATTACK!");
@@ -324,13 +333,15 @@ export class Action{
             let focusDamage = Math.floor(FocusDamageOnHit[Tier[this.tier]]);
             let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.HumHold, 0, 0, focusDamage);
             this.modifiers.push(holdModifier);
+            let humiliationModifier = new DegradationModifier(this.defender, this.attacker, [holdModifier.idModifier]);
+            this.modifiers.push(humiliationModifier);
         }
         return Trigger.HumiliationHold;
     }
 
     actionBondage():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Bondage);
-        if(this.defender.isInSpecificHold(Constants.Modifier.SexHold)){
+        if(this.defender.isInSpecificHold(Constants.ModifierType.SexHold)){
             this.diceScore = -1;
             this.requiresRoll = false;
             this.missed = false;
@@ -364,13 +375,13 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-            this.hpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * (HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]));
+            this.hpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * (HighRiskMultipliers[Tier[this.tier]]));
         }
         else{
             this.missed = true;
             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-            this.hpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.attacker.currentToughness, 0) * (HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]));
+            this.hpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.attacker.currentToughness, 0) * HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]);
         }
         return Trigger.HighRiskAttack;
     }
@@ -391,7 +402,7 @@ export class Action{
             this.missed = true;
             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * (HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]));
+            this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]);
             this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * FailedHighRiskMultipliers[Tier[this.tier]]);
         }
         return Trigger.RiskyLewd;
@@ -445,8 +456,6 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]] * Constants.Fight.Action.Globals.degradationFocusMultiplier;
-            let humiliationModifier = new DegradationModifier(this.defender, this.attacker);
-            this.modifiers.push(humiliationModifier);
         }
         return Trigger.Degradation;
     }
@@ -520,6 +529,15 @@ export class Action{
         return Trigger.Escape;
     }
 
+    actionReleaseHold():Trigger{
+        this.attacker.triggerMods(TriggerMoment.Before, Trigger.Escape);
+        this.defender = null;
+        if(this.attacker.isApplyingHold()){
+            this.attacker.releaseHoldsApplied();
+        }
+        return Trigger.Escape;
+    }
+
     actionSubmit():Trigger{
         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Submit);
         this.requiresRoll = false;
@@ -541,7 +559,7 @@ export class Action{
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfTurnsWearingToy = this.tier + 1;
             let lpDamage = StrapToyLPDamagePerTurn[Tier[this.tier]];
-            let strapToyModifier = new StrapToyModifier(this.defender, nbOfTurnsWearingToy, lpDamage, this.fpDamageToDef);
+            let strapToyModifier = new StrapToyModifier(this.defender, this.tier, nbOfTurnsWearingToy, lpDamage, this.fpDamageToDef, StrapToyDiceRollPenalty[Tier[this.tier]]);
             this.modifiers.push(strapToyModifier);
             this.fight.message.addHit("The sextoy started vibrating!");
         }
@@ -572,7 +590,15 @@ export class Action{
         this.defender = null;
         this.requiresRoll = false;
         this.missed = false;
-        this.lpDamageToAtk = Constants.Fight.Action.Globals.masturbateLpDamage;
+        this.lpDamageToAtk = MasturbateLpDamage[Tier[this.tier]];
+        return Trigger.PassiveAction;
+    }
+
+    actionSelfDebase():Trigger{
+        this.defender = null;
+        this.requiresRoll = false;
+        this.missed = false;
+        this.lpDamageToAtk = SelfDebaseFpDamage[Tier[this.tier]];
         return Trigger.PassiveAction;
     }
 
@@ -605,6 +631,15 @@ export class Action{
             }
             else{
                 fight.message.addHit(Constants.Messages.HitMessage);
+            }
+
+            if(this.tier == Tier.Heavy && this.attacker.isInHoldAppliedBy(this.defender.name)){
+                this.attacker.releaseHoldsAppliedBy(this.defender.name);
+                fight.message.addHit(Utils.strFormat(Constants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), this.defender.getStylizedName()]));
+            }
+            else if(this.tier == Tier.Heavy && this.defender.isApplyingHold()){
+                this.defender.releaseHoldsApplied();
+                fight.message.addHit(Utils.strFormat(Constants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), this.defender.getStylizedName()]));
             }
         }
         else{
@@ -774,8 +809,8 @@ export class Action{
         await ActionRepository.persist(this);
 
         //check for fight ending status
-        if (this.type == ActionType.Escape && this.missed == false) {
-            fight.message.addHint(`This is still your turn ${this.attacker.getStylizedName()}, time to fight back!`);
+        if ((this.type == ActionType.Escape || this.type == ActionType.ReleaseHold)  && this.missed == false) {
+            fight.message.addHint(`[b]This is still your turn ${this.attacker.getStylizedName()}![/b]`);
             fight.message.send();
             fight.waitingForAction = true;
         }
@@ -784,7 +819,7 @@ export class Action{
         }
         else {
             let tokensToGiveToWinners:number = TokensPerWin[FightTier[fight.getFightTier(fight.winnerTeam)]];
-            let tokensToGiveToLosers:number = tokensToGiveToWinners*Constants.Fight.Globals.tokensPerLossMultiplier;
+            let tokensToGiveToLosers:number = tokensToGiveToWinners * Constants.Fight.Globals.tokensPerLossMultiplier;
             if(fight.isDraw()){
                 fight.message.addHit(`DOUBLE KO! Everyone is out! It's over!`);
                 tokensToGiveToLosers = tokensToGiveToWinners;
@@ -825,7 +860,9 @@ export enum ActionType {
     StrapToy,
     Finisher,
     Masturbate,
-    Pass
+    Pass,
+    ReleaseHold,
+    SelfDebase
 }
 
 export class ActionExplanation {
@@ -838,4 +875,5 @@ export class ActionExplanation {
     static Submit = `[b][color=red]%s taps out! It's over, it's done![/color][/b]`;
     static Masturbate = `[b][color=red]%s really needed those strokes apparently![/color][/b]`;
     static Pass = `[b][color=red]%s passed their turn...[/color][/b]`;
+    static SelfDebase = `[b][color=red]%s is sinking deeper...[/color][/b]`;
 }

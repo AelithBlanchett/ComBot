@@ -2,6 +2,7 @@
 
 ##Important
 -   Private message handler
+-   Remove bondage item on opponent
 
 ###Next steps
 -   Correct all warnings, refactor the code, clean it up
@@ -21,7 +22,6 @@
     Ladder/Cage
 
 ##Bugs
--   Not correctly displaying that X player is broken after 3 turns not being focused
 
 
 #Done

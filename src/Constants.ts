@@ -59,12 +59,11 @@ export namespace Fight {
             public static stunHPDamageMultiplier: number = 0.5;
             public static dicePenaltyMultiplierWhileStunned: number = 3;
 
-            public static masturbateLpDamage: number = 7;
-
             public static passFpDamage: number = 6;
 
             public static fpHealOnNextTurn: number = 2;
 
+            public static tapoutOnlyAfterTurnNumber:number = 10;
 
 
             //Bonuses
@@ -78,8 +77,8 @@ export namespace Fight {
             public static sextoyPickupBonusDiceScore: number = 5;
             public static sextoyPickupDamageMultiplier: number = 1.5;
 
-            public static degradationUses: number = 1;
-            public static degradationFocusDamage: number = 5;
+            public static degradationUses: number = 5;
+            public static degradationFocusDamage: number = 10;
             public static degradationFocusMultiplier: number = 1.5;
 
             public static accuracyForBrawlInsideSubHold: number = 3;
@@ -210,6 +209,7 @@ export class Messages {
     `;
     static Ready = `[color=green]%s is now ready to get it on![/color] (Fight Type: %s ---- Required Teams: [color=green][b]%s[/b][/color] ---- Fight Length: %s)\n[sub]Hint: Don't forget you can change these settings with the !fighttype, the !teamscount or the !fightlength commands.[/sub]`;
     static HitMessage = ` HIT! `;
+    static ForcedHoldRelease = `%s forced %s to release their hold with this heavy blow!`;
     static changeMinTeamsInvolvedInFightOK = "Number of teams involved in the fight updated!";
     static changeMinTeamsInvolvedInFightFail = "The number of teams should be superior or equal than 2.";
     static setDiceLess = "The fight is now %susing the dice.";
@@ -255,7 +255,7 @@ export class Messages {
     static forfeitAlreadyOut = `You are already out of the match. No need to give up.`;
 
     static tapoutMessage = `%s couldn't handle it anymore! They SUBMIT!`;
-    static tapoutTooEarly = "You can't tap out right now. Submitting is only allowed after the 6th turn.";
+    static tapoutTooEarly = "You can't tap out right now. Submitting is only allowed after the %sth turn.";
 
     static finishFailMessage = `%s failed their finisher!`;
     static finishMessage = `%s couldn't fight against that! They're out!`;
@@ -310,15 +310,27 @@ export enum FightLength {
 }
 
 export enum FailedHighRiskMultipliers {
-    Light = 0.5,
+    Light = 0.7,
     Medium = 0.5,
-    Heavy = 0.5
+    Heavy = 0.3
 }
 
 export enum HighRiskMultipliers {
-    Light = 2,
+    Light = 1.3,
     Medium = 1.5,
-    Heavy = 1.2
+    Heavy = 1.8
+}
+
+export enum MasturbateLpDamage {
+    Light = 5,
+    Medium = 10,
+    Heavy = 20
+}
+
+export enum SelfDebaseFpDamage {
+    Light = 8,
+    Medium = 16,
+    Heavy = 24
 }
 
 export enum StatTier {
@@ -357,6 +369,12 @@ export enum StrapToyLPDamagePerTurn {
     Light = 4,
     Medium = 8,
     Heavy = 15
+}
+
+export enum StrapToyDiceRollPenalty {
+    Light = 3,
+    Medium = 5,
+    Heavy = 7
 }
 
 export enum TierDifficulty {

@@ -553,8 +553,8 @@ export class Fight{
         if (action == ActionType.Submit && this.fightType == FightType.LastManStanding) {
             throw new Error(Utils.strFormat(Constants.Messages.wrongMatchTypeForAction, ["submit", "Last Man Standing"]));
         }
-        if (action == ActionType.Submit && this.currentTurn <= 6) {
-            throw new Error(Constants.Messages.tapoutTooEarly);
+        if (action == ActionType.Submit && this.currentTurn <= Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
+            throw new Error(Utils.strFormat(Constants.Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
         }
     }
 

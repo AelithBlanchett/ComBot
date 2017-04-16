@@ -258,21 +258,23 @@ export class ActiveFighter extends Fighter {
         let index = this.modifiers.findIndex(x => x.idModifier == idMod);
         let listOfModsToRemove = [];
         if (index != -1) {
-            listOfModsToRemove.push(index);
+            listOfModsToRemove.push(idMod);
             for (let mod of this.modifiers) {
                 if (mod.idParentActions) {
                     if (mod.idParentActions.length == 1 && mod.idParentActions[0] == idMod) {
-                        listOfModsToRemove.push(mod);
+                        listOfModsToRemove.push(mod.idModifier);
                     }
                     else if (mod.idParentActions.indexOf(idMod) != -1) {
                         mod.idParentActions.splice(mod.idParentActions.indexOf(idMod), 1);
                     }
                 }
-
             }
         }
-        for (let modIndex of listOfModsToRemove) {
-            this.modifiers.splice(modIndex, 1);
+
+        for (let i = this.modifiers.length - 1; i >= 0; i--) {
+            if(listOfModsToRemove.indexOf(this.modifiers[i].idModifier) != -1){
+                this.modifiers.splice(i, 1);
+            }
         }
     }
 
@@ -517,39 +519,85 @@ export class ActiveFighter extends Fighter {
         return isStunned;
     }
 
-    isInHold():boolean {
-        let isInHold = false;
+    isApplyingHold():boolean {
+        let isApplyingHold = false;
         for (let mod of this.modifiers) {
-            if (mod.receiver == this && (mod.name == Constants.Modifier.SubHold || mod.name == Constants.Modifier.SexHold || mod.name == Constants.Modifier.HumHold )) {
-                isInHold = true;
+            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+                isApplyingHold = true;
             }
         }
-        return isInHold;
+        return isApplyingHold;
     }
 
-    isInSpecificHold(holdName:string):boolean {
-        let isInHold = false;
-        for (let mod of this.modifiers) {
-            if (mod.receiver == this && mod.name == holdName) {
-                isInHold = true;
-            }
-        }
-        return isInHold;
-    }
-
-    isInHoldOfTier():Tier {
+    isApplyingHoldOfTier():Tier {
         let tier = Tier.None;
         for (let mod of this.modifiers) {
-            if (mod.receiver == this && (mod.name == Constants.Modifier.SubHold || mod.name == Constants.Modifier.SexHold || mod.name == Constants.Modifier.HumHold )) {
+            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
                 tier = mod.tier;
             }
         }
         return tier;
     }
 
+    isInHold():boolean {
+        let isInHold = false;
+        for (let mod of this.modifiers) {
+            if (mod.idReceiver == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+                isInHold = true;
+            }
+        }
+        return isInHold;
+    }
+
+    isInSpecificHold(holdType:ModifierType):boolean {
+        let isInHold = false;
+        for (let mod of this.modifiers) {
+            if (mod.idReceiver == this.name && mod.type == holdType) {
+                isInHold = true;
+            }
+        }
+        return isInHold;
+    }
+
+    isInHoldAppliedBy(fighterName:string):boolean {
+        let isTrue = false;
+        for (let mod of this.modifiers) {
+            if (mod.idApplier == fighterName && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+                isTrue = true;
+            }
+        }
+        return isTrue;
+    }
+
+    isInHoldOfTier():Tier {
+        let tier = Tier.None;
+        for (let mod of this.modifiers) {
+            if (mod.idReceiver == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+                tier = mod.tier;
+            }
+        }
+        return tier;
+    }
+
+    releaseHoldsApplied() {
+        for (let mod of this.modifiers) {
+            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+                this.removeMod(mod.idModifier);
+            }
+        }
+    }
+
+    releaseHoldsAppliedBy(fighterName:string) {
+        for (let mod of this.modifiers) {
+            if (mod.idApplier == fighterName && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+                this.removeMod(mod.idModifier);
+            }
+        }
+    }
+
     escapeHolds() {
         for (let mod of this.modifiers) {
-            if (mod.receiver == this && (mod.name == Constants.Modifier.SubHold || mod.name == Constants.Modifier.SexHold || mod.name == Constants.Modifier.HumHold )) {
+            if (mod.idReceiver == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
                 this.removeMod(mod.idModifier);
             }
         }
@@ -575,9 +623,7 @@ export class ActiveFighter extends Fighter {
         let modifiersLine = `  [color=cyan]affected by: ${this.getListOfActiveModifiers()}[/color] `;
         let targetLine = `  [color=red]target: ` + (this.target != undefined ? `${this.target.getStylizedName()}` : "None") + `[/color]`;
 
-        let compiledLine = `${Utils.pad(50, nameLine, "-")} ${hpLine} ${heartsLine} ${lpLine} ${orgasmsLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${modifiersLine} ${targetLine}`;
-
-        return compiledLine;
+        return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${heartsLine} ${lpLine} ${orgasmsLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${modifiersLine} ${targetLine}`;
     }
 
     getStylizedName():string {
