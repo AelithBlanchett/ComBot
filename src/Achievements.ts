@@ -540,7 +540,7 @@ export class SomeSeriousLuckAchievement implements IAchievement{
     meetsRequirements(fighter: Fighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
         let flag = false;
         if(activeFighter != null){
-            flag = (activeFighter.lastDiceRoll >= 20);
+            flag = (activeFighter.lastDiceRoll >= 20 && activeFighter.lastDiceRoll <= 40);
         }
         return flag;
     }
