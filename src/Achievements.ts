@@ -23,7 +23,9 @@ export class EnabledAchievements{ //Keep track of the enabled achivements here, 
             new LongFightAchievement(),
             new SeasonOneAchievement(),
             new DoubleKOAchievement(),
-            new CumFestAchievement()
+            new CumFestAchievement(),
+            new SomeSeriousLuckAchievement(),
+            new OneMoveTwoStonesAchievement()
         ];
     }
 }
@@ -504,6 +506,62 @@ export class CumFestAchievement implements IAchievement{
     }
 }
 
+export class OneMoveTwoStonesAchievement implements IAchievement{
+    createdAt: Date;
+
+    meetsRequirements(fighter: Fighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+        let flag = false;
+        if(fight != null){
+            flag = (fight.fighters.filter(x => x.heartsDamageLastRound == 1).length >= 2);
+        }
+        return flag;
+    }
+
+    getDetailedDescription(): string {
+        return "Have two players lose a heart on the same round";
+    }
+
+    getReward(): number {
+        return 7.5;
+    }
+
+    getUniqueShortName(): string {
+        return "One Move Two Stones";
+    }
+
+    getType():AchievementType{
+        return AchievementType.OneMoveTwoStones;
+    }
+}
+
+export class SomeSeriousLuckAchievement implements IAchievement{
+    createdAt: Date;
+
+    meetsRequirements(fighter: Fighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+        let flag = false;
+        if(activeFighter != null){
+            flag = (activeFighter.lastDiceRoll >= 20);
+        }
+        return flag;
+    }
+
+    getDetailedDescription(): string {
+        return "Roll 20 (or more)";
+    }
+
+    getReward(): number {
+        return 7.5;
+    }
+
+    getUniqueShortName(): string {
+        return "Some Serious Luck";
+    }
+
+    getType():AchievementType{
+        return AchievementType.SomeSeriousLuck;
+    }
+}
+
 export enum AchievementType {
     Rookie = 0,
     FiveFights = 1,
@@ -521,5 +579,7 @@ export enum AchievementType {
     LongFight = 13,
     SeasonOne = 14,
     DoubleKO = 15,
-    CumFest = 16
+    CumFest = 16,
+    SomeSeriousLuck = 17,
+    OneMoveTwoStones = 18
 }
