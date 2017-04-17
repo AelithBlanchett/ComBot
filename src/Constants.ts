@@ -311,8 +311,8 @@ export enum FightLength {
 
 export enum FailedHighRiskMultipliers {
     Light = 0.6,
-    Medium = 0.4,
-    Heavy = 0.3
+    Medium = 0.5,
+    Heavy = 0.4
 }
 
 export enum HighRiskMultipliers {
