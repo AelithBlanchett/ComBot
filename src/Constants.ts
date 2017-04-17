@@ -310,8 +310,8 @@ export enum FightLength {
 }
 
 export enum FailedHighRiskMultipliers {
-    Light = 0.7,
-    Medium = 0.5,
+    Light = 0.6,
+    Medium = 0.4,
     Heavy = 0.3
 }
 
@@ -341,8 +341,8 @@ export enum StatTier {
 
 export enum BaseDamage {
     Light = 1,
-    Medium = 15,
-    Heavy = 25
+    Medium = 10,
+    Heavy = 20
 }
 
 export enum FocusDamageOnMiss {
@@ -368,7 +368,7 @@ export enum FocusDamageOnHit {
 export enum StrapToyLPDamagePerTurn {
     Light = 4,
     Medium = 8,
-    Heavy = 15
+    Heavy = 12
 }
 
 export enum StrapToyDiceRollPenalty {

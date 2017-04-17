@@ -126,7 +126,7 @@ export class Fighter{
     }
 
     totalHp():number{
-        let hp = 100;
+        let hp = 130;
         if (this.toughness > 10) {
             hp += (this.toughness - 10);
         }
@@ -171,7 +171,7 @@ export class Fighter{
     }
 
     totalLust():number{
-        let lust = 100;
+        let lust = 130;
         if (this.endurance > 10) {
             lust += (this.endurance - 10);
         }
@@ -220,8 +220,8 @@ export class Fighter{
     }
 
     focusResistance():number{
-        let resistance = 20;
-        if (this.willpower > 20) {
+        let resistance = 30;
+        if (this.willpower > 10) {
             resistance += (this.willpower - 10);
         }
         return resistance;

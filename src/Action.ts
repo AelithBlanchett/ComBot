@@ -150,7 +150,7 @@ export class Action{
                     scoreRequired = this.addRequiredScore(scoreRequired, Math.floor((this.defender.focus - this.attacker.focus) / 15), "FPDIFF");
                 }
                 if(this.defender.focus < 0){
-                    scoreRequired = this.addRequiredScore(scoreRequired, Math.floor(this.defender.focus / 10), "FPZERO");
+                    scoreRequired = this.addRequiredScore(scoreRequired, Math.floor(this.defender.focus / 10) - 1, "FPZERO");
                 }
                 if(this.defender.isStunned()){
                     scoreRequired = this.addRequiredScore(scoreRequired, -6, "STUN");
