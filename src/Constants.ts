@@ -79,7 +79,7 @@ export namespace Fight {
 
             public static degradationUses: number = 5;
             public static degradationFocusDamage: number = 10;
-            public static degradationFocusMultiplier: number = 1.5;
+            public static degradationFocusMultiplier: number = 1.66;
 
             public static accuracyForBrawlInsideSubHold: number = 3;
             public static accuracyForSexStrikeInsideSexHold: number = 3;
