@@ -58,7 +58,7 @@ export class StrapToyModifier extends Modifier {
 
 export class DegradationModifier extends Modifier {
     constructor(receiver:ActiveFighter, applier:ActiveFighter, parentIds?:Array<string>) {
-        super(receiver.name, (applier != null ? applier.name : null), Tier.None, ModifierType.DegradationMalus, 0, 0, Constants.Fight.Action.Globals.degradationFocusDamage, 0, 0, Constants.Fight.Action.Globals.degradationUses, Constants.TriggerMoment.Before, Constants.Trigger.FocusDamage, parentIds, false);
+        super(receiver.name, (applier != null ? applier.name : null), Tier.None, ModifierType.DegradationMalus, 0, 0, Constants.Fight.Action.Globals.degradationFocusDamage, 0, 0, Constants.Fight.Action.Globals.degradationUses, Constants.TriggerMoment.Before, Constants.Trigger.Degradation, parentIds, false);
         this.build(receiver, applier, receiver.fight);
     }
 }
