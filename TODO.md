@@ -1,25 +1,21 @@
 #TODO
 
 ##Important
--   Private message handler
--   Remove bondage item on opponent
+-   Stun modifier isn't removed properly 
+-   Rework how hearts/orgasms work, have one single "stock" of lives
 
 ###Next steps
--   Correct all warnings, refactor the code, clean it up
--   Do the guide on F-list profile
--   Give more tokens to lower tier fighters when matched against a higher
+-   Saving throw for degradation modifier, forcing one to debase/masturbate
 
-####Optional/Ideas
--   Hide stats if the fight is of another type?
+####Optional/Ideas, by order of importance
+-   Betting system
+-   Web interface? A quick one!
 -   More achievements
--   Rework Triggers so we can add more
--   Add admin commands
--   Add inventory/gallery to store belts/records/other?
--   Rename/add stages
 -   Use constants everywhere.
 -   Implement different kind of matches, and display them before starting the fight: (in order of priority)
     Tables
     Ladder/Cage
+-   Correct all warnings, refactor the code, clean it up
 
 ##Bugs
 

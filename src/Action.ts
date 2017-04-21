@@ -499,7 +499,7 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-            let nbOfAttacksStunned = this.tier + 1;
+            let nbOfAttacksStunned = 2;
             this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);
             let stunModifier = new StunModifier(this.defender, this.attacker, -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned), nbOfAttacksStunned);
             this.modifiers.push(stunModifier);

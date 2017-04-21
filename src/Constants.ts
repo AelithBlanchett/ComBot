@@ -56,8 +56,8 @@ export namespace Fight {
             //HighRisk
             public static multiplierHighRiskAttack: number = 2;
             //Stun
-            public static stunHPDamageMultiplier: number = 0.5;
-            public static dicePenaltyMultiplierWhileStunned: number = 3;
+            public static stunHPDamageMultiplier: number = 0.33;
+            public static dicePenaltyMultiplierWhileStunned: number = 2;
 
             public static passFpDamage: number = 6;
 
@@ -97,7 +97,7 @@ export class Modifier {
     static DegradationMalus = "degradation malus";
     static ItemPickupBonus = "HP Dmg++ (item pickup)";
     static SextoyPickupBonus = "LP Dmg++ (sextoy pickup)";
-    static Stun = "stunned";
+    static Stun = "stun";
     static StrapToy = "strapped sex-toy"
 }
 
