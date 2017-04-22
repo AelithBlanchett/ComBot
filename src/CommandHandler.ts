@@ -603,7 +603,7 @@ export class CommandHandler implements ICommandHandler {
     async teamscount(args:string, data:FChatResponse) {
         let parsedTeams:number = Parser.Commands.setTeamsCount(args);
         if (parsedTeams <= 1) {
-            this.fChatLibInstance.sendMessage("[color=red]The number of teams involved must be a numeral higher than 1.[/color]", this.channel);
+            this.fChatLibInstance.sendMessage("[color=red]The number of teams involved must be a numeral higher than 1 and lower than 6.[/color]", this.channel);
             return;
         }
         let fighter:Fighter = await FighterRepository.load(data.character);

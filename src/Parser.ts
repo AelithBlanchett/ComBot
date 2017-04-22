@@ -178,6 +178,11 @@ export class Commands{
         if(isNaN(args)){
             return -1;
         }
+        else{
+            if(args > 6){
+                return -1;
+            }
+        }
         return Number(args);
     }
 }
