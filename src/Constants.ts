@@ -277,7 +277,11 @@ export enum Team {
     Yellow = 2,
     Orange = 3,
     Pink = 4,
-    Purple = 5
+    Purple = 5,
+    Green = 6,
+    Gray = 7,
+    Cyan = 8,
+    Brown = 9,
 }
 
 export enum Stats {

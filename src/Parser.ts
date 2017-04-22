@@ -179,7 +179,7 @@ export class Commands{
             return -1;
         }
         else{
-            if(args > 6){
+            if(args > 10){
                 return -1;
             }
         }
