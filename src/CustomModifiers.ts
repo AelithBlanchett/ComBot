@@ -64,8 +64,8 @@ export class DegradationModifier extends Modifier {
 }
 
 export class StunModifier extends Modifier {
-    constructor(receiver:ActiveFighter, applier:ActiveFighter, dicePenalty:number, uses:number, parentIds?:Array<string>) {
-        super(receiver.name, (applier != null ? applier.name : null), Tier.None, ModifierType.Stun, 0, 0, 0, dicePenalty, dicePenalty, uses, Constants.TriggerMoment.Before, Constants.Trigger.AnyOffensiveAction, parentIds, false);
+    constructor(receiver:ActiveFighter, applier:ActiveFighter, tier:Tier, dicePenalty:number, uses:number, parentIds?:Array<string>) {
+        super(receiver.name, (applier != null ? applier.name : null), tier, ModifierType.Stun, 0, 0, 0, dicePenalty, dicePenalty, uses, Constants.TriggerMoment.Before, Constants.Trigger.AnyOffensiveAction, parentIds, false);
         this.build(receiver, applier, receiver.fight);
     }
 }

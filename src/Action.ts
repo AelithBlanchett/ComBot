@@ -152,8 +152,20 @@ export class Action{
                 if(this.defender.focus < 0){
                     scoreRequired = this.addRequiredScore(scoreRequired, Math.floor(this.defender.focus / 10) - 1, "FPZERO");
                 }
-                if(this.defender.isStunned()){
-                    scoreRequired = this.addRequiredScore(scoreRequired, -6, "STUN");
+
+                let defenderStunnedTier = this.defender.isStunned();
+                if(defenderStunnedTier >= 0){
+                    switch(defenderStunnedTier){
+                        case Tier.Light:
+                            scoreRequired = this.addRequiredScore(scoreRequired, -2, "L-STUN");
+                            break;
+                        case Tier.Medium:
+                            scoreRequired = this.addRequiredScore(scoreRequired, -4, "M-STUN");
+                            break;
+                        case Tier.Heavy:
+                            scoreRequired = this.addRequiredScore(scoreRequired, -6, "H-STUN");
+                            break;
+                    }
                 }
             }
 
@@ -501,7 +513,7 @@ export class Action{
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfAttacksStunned = 2;
             this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);
-            let stunModifier = new StunModifier(this.defender, this.attacker, -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned), nbOfAttacksStunned);
+            let stunModifier = new StunModifier(this.defender, this.attacker, this.tier, -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned), nbOfAttacksStunned);
             this.modifiers.push(stunModifier);
             this.fight.message.addHit("STUNNED!");
         }

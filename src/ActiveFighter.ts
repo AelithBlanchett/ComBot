@@ -509,14 +509,14 @@ export class ActiveFighter extends Fighter {
         return this.wantsDraw;
     }
 
-    isStunned():boolean {
-        let isStunned = false;
+    isStunned():Tier {
+        let stunTier = Tier.None;
         for (let mod of this.modifiers) {
             if (mod.receiver == this && mod.type == ModifierType.Stun) {
-                isStunned = true;
+                stunTier = mod.tier;
             }
         }
-        return isStunned;
+        return stunTier;
     }
 
     isApplyingHold():boolean {
