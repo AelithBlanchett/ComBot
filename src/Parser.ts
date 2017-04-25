@@ -48,10 +48,10 @@ export class Commands{
         }
 
         if (arrParam.length != 6) {
-           return "The number of parameters was incorrect. Example: !register 30,30,30,30,30,50";
+           return "The number of parameters was incorrect. Example: !register 60,30,30,30,30,50";
         }
         else if (!arrParam.every(arg => Commands.isInt(arg))) {
-            return "All the parameters aren't integers. Example: !register 30,30,30,30,30,50";
+            return "All the parameters aren't integers. Example: !register 60,30,30,30,30,50";
         }
         else {
             //register
@@ -60,25 +60,25 @@ export class Commands{
                 return a + b;
             }, 0);
             if (total != numberOfRequiredPoints) {
-                return "The total of points you've spent isn't equal to "+numberOfRequiredPoints+". (" + total + "). Example: !register 30,30,30,30,30,50";
+                return "The total of stat points you've spent isn't equal to "+numberOfRequiredPoints+". (" + total + "). Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
             }
-            else if (arrParam[0] > 100 || (arrParam[0] < 1)) {
-                return "The Power stat must be higher than 0 and lower than 100. Example: !register 30,30,30,30,30,50";
+            else if (arrParam[0] > 100 || (arrParam[0] < 10)) {
+                return "The Power stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
             }
-            else if (arrParam[1] > 100 || (arrParam[1] < 1)) {
-                return "The Sensuality stat must be higher than 0 and lower than 100. Example: !register 30,30,30,30,30,50";
+            else if (arrParam[1] > 100 || (arrParam[1] < 10)) {
+                return "The Sensuality stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
             }
-            else if (arrParam[2] > 100 || (arrParam[2] < 1)) {
-                return "The Toughness stat must be higher than 0 and lower than 100. Example: !register 30,30,30,30,30,50";
+            else if (arrParam[2] > 100 || (arrParam[2] < 10)) {
+                return "The Toughness stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
             }
-            else if (arrParam[3] > 100 || (arrParam[3] < 1)) {
-                return "The Endurance stat must be higher than 0 and lower than 100. Example: !register 30,30,30,30,30,50";
+            else if (arrParam[3] > 100 || (arrParam[3] < 10)) {
+                return "The Endurance stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
             }
-            else if (arrParam[4] > 100 || (arrParam[4] < 1)) {
-                return "The Dexterity stat must be higher than 0 and lower than 100. Example: !register 30,30,30,30,30,50";
+            else if (arrParam[4] > 100 || (arrParam[4] < 10)) {
+                return "The Dexterity stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
             }
-            else if (arrParam[5] > 100 || (arrParam[5] < 1)) {
-                return "The Willpower stat must be higher than 0 and lower than 100. Example: !register 30,30,30,30,30,50";
+            else if (arrParam[5] > 100 || (arrParam[5] < 10)) {
+                return "The Willpower stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
             }
             else {
                 return "";

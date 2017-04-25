@@ -4,7 +4,7 @@ export class Globals {
     public static currentSeason:number = 1;
     public static diceSides:number = 10;
     public static diceCount:number = 2;
-    public static numberOfRequiredStatPoints:number = 200;
+    public static numberOfRequiredStatPoints:number = 230;
     public static restatCostInTokens:number = 5;
     public static botName:string = "Miss_Spencer";
 }
@@ -249,6 +249,8 @@ export class Messages {
 
     static doActionNotActorsTurn = `This isn't your turn.`;
     static doActionTargetIsSameTeam = "The target for this attack can't be in your team.";
+
+    static targetAlreadyStunned = "Your target is already stunned, you can't stack the effects.";
 
     static forfeitItemApply = `%s forfeits! Which means... %s bondage items landing on them to punish them!`;
     static forfeitTooManyItems = `%s has too many items on them to possibly fight! [b][color=red]They're out![/color][/b]`;

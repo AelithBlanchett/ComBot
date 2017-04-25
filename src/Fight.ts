@@ -25,6 +25,7 @@ import {FighterRepository} from "./FighterRepository";
 import {FeatureType} from "./Constants";
 import {TransactionType} from "./Constants";
 import {FightLength} from "./Constants";
+import {Commands} from "./Parser";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -183,6 +184,11 @@ export class Fight{
                 }
                 if(activeFighter.tokens < 10){
                     throw new Error("You don't have enough tokens (It costs 10 tokens). Get to work and earn it!");
+                }
+                let statsInString = `${activeFighter.power},${activeFighter.sensuality},${activeFighter.toughness},${activeFighter.endurance},${activeFighter.dexterity},${activeFighter.willpower}`;
+                let areStatsValid = Commands.checkIfValidStats(statsInString, Constants.Globals.numberOfRequiredStatPoints);
+                if(areStatsValid != ""){
+                    throw new Error(areStatsValid);
                 }
                 activeFighter.assignFight(this);
                 activeFighter.initialize();
@@ -393,10 +399,6 @@ export class Fight{
         return this.getTeamsStillInGame().length == 0;
     }
 
-    playerStillInFight(fighter:ActiveFighter):void{
-
-    }
-
     //Fighting info displays
 
     outputStatus(){
@@ -555,6 +557,9 @@ export class Fight{
         }
         if (action == ActionType.Submit && this.currentTurn <= Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
             throw new Error(Utils.strFormat(Constants.Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
+        }
+        if (action == ActionType.Stun && this.currentTarget != null && this.currentTarget.isStunned()) {
+            throw new Error(Constants.Messages.targetAlreadyStunned);
         }
     }
 

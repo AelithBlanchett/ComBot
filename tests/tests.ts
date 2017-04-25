@@ -131,9 +131,8 @@ function createFighter(name, intStatsToAssign:number = 3):ActiveFighter {
         myFighter.id = randomId;
         myFighter.name = name;
         myFighter.hp = myFighter.hpPerHeart();
-        myFighter.heartsRemaining = myFighter.maxHearts();
+        myFighter.livesRemaining = myFighter.maxLives();
         myFighter.lust = 0;
-        myFighter.orgasmsRemaining = myFighter.maxOrgasms();
         myFighter.focus = myFighter.willpower;
         myFighter.dice = new Dice(10);
         usedFighters.push(myFighter);
@@ -172,7 +171,7 @@ function wasHealthHit(cmd:CommandHandler, name:string) {
     return (
         (
             cmd.fight.getFighterByName(name).hp == cmd.fight.getFighterByName(name).hpPerHeart() &&
-            cmd.fight.getFighterByName(name).heartsRemaining < cmd.fight.getFighterByName(name).maxHearts()
+            cmd.fight.getFighterByName(name).livesRemaining < cmd.fight.getFighterByName(name).maxLives()
         )
         ||
         cmd.fight.getFighterByName(name).hp < cmd.fight.getFighterByName(name).hpPerHeart()
@@ -183,7 +182,7 @@ function wasLustHit(cmd:CommandHandler, name:string) {
     return (
         (
             cmd.fight.getFighterByName(name).lust == cmd.fight.getFighterByName(name).lustPerOrgasm() &&
-            cmd.fight.getFighterByName(name).orgasmsRemaining < cmd.fight.getFighterByName(name).maxOrgasms()
+            cmd.fight.getFighterByName(name).livesRemaining < cmd.fight.getFighterByName(name).maxLives()
         )
         ||
         cmd.fight.getFighterByName(name).lust < cmd.fight.getFighterByName(name).lustPerOrgasm()
@@ -219,8 +218,7 @@ function wasPrivMessageSent(msg) {
 }
 
 function refillHPLPFP(cmd, name) {
-    cmd.fight.getFighterByName(name).orgasmsRemaining = cmd.fight.getFighterByName(name).maxOrgasms(); //to prevent ending the fight this way
-    cmd.fight.getFighterByName(name).heartsRemaining = cmd.fight.getFighterByName(name).maxHearts();
+    cmd.fight.getFighterByName(name).livesRemaining = cmd.fight.getFighterByName(name).maxLives();
     cmd.fight.getFighterByName(name).consecutiveTurnsWithoutFocus = 0; //to prevent ending the fight this way
     cmd.fight.getFighterByName(name).focus = cmd.fight.getFighterByName(name).maxFocus();
 }

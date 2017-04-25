@@ -70,6 +70,7 @@ export class Action{
     diceScoreStatDifference:number;
     diceScoreBonusPoints:number;
     difficultyExplanation:string;
+    diceRequiredRoll:number;
 
     modifiers:Modifier[] = [];
 
@@ -176,6 +177,7 @@ export class Action{
         if(scoreRequired <= Constants.Globals.diceCount){
             scoreRequired = Constants.Globals.diceCount;
         }
+        this.diceRequiredRoll = scoreRequired;
         return scoreRequired;
     }
 
@@ -586,7 +588,7 @@ export class Action{
         this.diceRollRawValue = this.attacker.roll(1);
         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentWillpower / 10);
         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-        if((this.defender.heartsRemaining <= 1 || this.defender.orgasmsRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 1) && this.diceScore >= this.requiredDiceScore()){
+        if((this.defender.livesRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 2) && this.diceScore >= this.requiredDiceScore()){
             this.missed = false;
             this.defender.triggerPermanentOutsideRing();
             this.fight.message.addHit(Utils.strFormat(Constants.Messages.finishMessage, [this.defender.getStylizedName()]));
@@ -663,7 +665,7 @@ export class Action{
 
         if(this.requiresRoll){
             fight.message.addHint(`Rolled: ${this.diceScore} [sub](RLL: ${this.diceRollRawValue} + STAT:${this.diceRollBonusFromStat})[/sub]`);
-            fight.message.addHint(`Required roll: ${this.requiredDiceScore()} [sub](${this.difficultyExplanation})[/sub]`);
+            fight.message.addHint(`Required roll: ${this.diceRequiredRoll} [sub](${this.difficultyExplanation})[/sub]`);
             fight.message.addHint(`Damage calculation detail: [sub](BSE:${this.diceScoreBaseDamage} + STA:${this.diceScoreStatDifference} + OVR:${this.diceScoreBonusPoints})[/sub]`);
         }
 

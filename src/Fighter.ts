@@ -73,8 +73,8 @@ export class Fighter{
     eloRating:number = 2000;
     globalRank:number;
 
-    forfeits;
-    quits;
+    forfeits:number;
+    quits:number;
 
     features:Feature[] = [];
     achievements:IAchievement[] = [];
@@ -148,26 +148,7 @@ export class Fighter{
     }
 
     hpPerHeart():number {
-        return Math.ceil(this.totalHp() / this.maxHearts());
-    }
-
-    maxHearts():number {
-        let maxHearts = -1;
-        switch (this.fightDuration()){
-            case FightLength.Epic:
-                maxHearts = 4;
-                break;
-            case FightLength.Long:
-                maxHearts = 3;
-                break;
-            case FightLength.Medium:
-                maxHearts = 2;
-                break;
-            case FightLength.Short:
-                maxHearts = 1;
-                break;
-        }
-        return maxHearts;
+        return Math.ceil(this.totalHp() / this.maxLives());
     }
 
     totalLust():number{
@@ -193,26 +174,26 @@ export class Fighter{
     }
 
     lustPerOrgasm():number {
-        return Math.ceil(this.totalLust() / this.maxOrgasms());
+        return Math.ceil(this.totalLust() / this.maxLives());
     }
 
-    maxOrgasms():number {
-        let maxOrgasms = -1;
+    maxLives():number {
+        let maxLives = -1;
         switch (this.fightDuration()){
             case FightLength.Epic:
-                maxOrgasms = 4;
+                maxLives = 4;
                 break;
             case FightLength.Long:
-                maxOrgasms = 3;
+                maxLives = 3;
                 break;
             case FightLength.Medium:
-                maxOrgasms = 2;
+                maxLives = 2;
                 break;
             case FightLength.Short:
-                maxOrgasms = 1;
+                maxLives = 1;
                 break;
         }
-        return maxOrgasms;
+        return maxLives;
     }
 
     minFocus():number {
@@ -256,14 +237,15 @@ export class Fighter{
 
     outputStats():string{
         return "[b]" + this.name + "[/b]'s stats" + "\n" +
-            "[b][color=red]Power[/color][/b]:  " + this.power + "      " + "    --            [b][color=red]Hearts[/color][/b]: " + this.maxHearts() + " * " + this.hpPerHeart() +" [b][color=red]HP[/color] per heart[/b]"+"\n" +
-            "[b][color=purple]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Orgasms[/color][/b]: " + this.maxOrgasms() + " * " + this.lustPerOrgasm() +" [b][color=pink]Lust[/color] per Orgasm[/b]"+"\n" +
+            "[b][color=red]Power[/color][/b]:  " + this.power + "      " + "    --             " + this.hpPerHeart() + " [b][color=red]LP[/color] per life[/b] " + this.lustPerOrgasm() +" [b][color=red]LP[/color] per life[/b]"+"\n" +
+            "[b][color=purple]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Total Lives[/color][/b]: " + this.maxLives() + "\n" +
             "[b][color=orange]Toughness[/color][/b]: " + this.toughness + "\n" +
             "[b][color=cyan]Endurance[/color][/b]: " + this.endurance + "      " + "[b][color=green]Win[/color]/[color=red]Loss[/color] record[/b]: " + this.wins + " - " + this.losses + "\n" +
             "[b][color=green]Dexterity[/color][/b]: " + this.dexterity + "\n" +
             "[b][color=brown]Willpower[/color][/b]: " + this.willpower +  "      " + "[b][color=orange]Tokens[/color][/b]: " + this.tokens + "         [b][color=orange]Total spent[/color][/b]: "+this.tokensSpent+"\n"  +
             "[b][color=red]Features[/color][/b]: [b]" + this.getFeaturesList() + "[/b]\n" +
-            "[b][color=yellow]Achievements[/color][/b]: [sub]" + this.getAchievementsList() + "[/sub]";
+            "[b][color=yellow]Achievements[/color][/b]: [sub]" + this.getAchievementsList() + "[/sub]\n" +
+            `[b][color=white]Fun stats[/color][/b]: [sub]Avg. roll: ${this.averageDiceRoll}, Fav. tag partner: ${(this.favoriteTagPartner != null && this.favoriteTagPartner != "" ? this.favoriteTagPartner : "None!")}, Moves done: ${this.actionsCount}, Nemesis: ${this.nemesis} [/sub]`;
     }
 
     getFeaturesList(){
@@ -289,7 +271,7 @@ export class Fighter{
         return strResult.join(", ");
     }
 
-    async removeFeature(type:FeatureType):Promise<void>{
+    removeFeature(type:FeatureType):void{
         let index = this.features.findIndex(x => x.type == type);
         if(index != -1){
             this.features.splice(index, 1);

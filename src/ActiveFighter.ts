@@ -22,9 +22,8 @@ export class ActiveFighter extends Fighter {
     target:ActiveFighter;
     isReady:boolean = false;
     hp:number = 0;
-    heartsRemaining:number = 0;
     lust:number = 0;
-    orgasmsRemaining:number = 0;
+    livesRemaining:number = 0;
     focus:number = 0;
     lastDiceRoll:number;
     isInTheRing:boolean = true;
@@ -85,9 +84,8 @@ export class ActiveFighter extends Fighter {
         this.startingDexterity = this.dexterity;
 
         this.hp = this.hpPerHeart();
-        this.heartsRemaining = this.maxHearts();
         this.lust = 0;
-        this.orgasmsRemaining = this.maxOrgasms();
+        this.livesRemaining = this.maxLives();
         this.focus = this.initialFocus();
 
         this.assignedTeam = Team.Unknown;
@@ -143,9 +141,8 @@ export class ActiveFighter extends Fighter {
         this.startingDexterity = this.dexterity;
 
         this.hp = this.hpPerHeart();
-        this.heartsRemaining = this.maxHearts();
         this.lust = 0;
-        this.orgasmsRemaining = this.maxOrgasms();
+        this.livesRemaining = this.maxLives();
         this.focus = this.initialFocus();
 
         this.powerDelta = 0;
@@ -213,6 +210,14 @@ export class ActiveFighter extends Fighter {
 
     set currentWillpower(delta:number){
         this.willpowerDelta += delta;
+    }
+
+    get livesDamageLastRound():number{
+        return this.heartsDamageLastRound + this.orgasmsDamageLastRound;
+    }
+
+    get livesHealLastRound():number{
+        return this.heartsHealLastRound + this.orgasmsHealLastRound;
     }
 
     //returns dice score
@@ -354,14 +359,15 @@ export class ActiveFighter extends Fighter {
         if (this.hp <= 0) {
             this.triggerMods(TriggerMoment.Before, Trigger.HeartLoss);
             this.hp = 0;
-            this.heartsRemaining--;
+            //this.heartsRemaining--;
+            this.livesRemaining--;
             this.heartsDamageLastRound += 1;
-            this.fight.message.addHit(`[b][color=red]Heart broken![/color][/b] ${this.name} has ${this.heartsRemaining} hearts left.`);
-            if (this.heartsRemaining > 0) {
+            this.fight.message.addHit(`[b][color=red]Heart broken![/color][/b] ${this.name} has ${this.livesRemaining} lives left.`);
+            if (this.livesRemaining > 0) {
                 this.hp = this.hpPerHeart();
             }
-            else if (this.heartsRemaining == 1) {
-                this.fight.message.addHit(`[b][color=red]Last heart[/color][/b] for ${this.name}!`);
+            else if (this.livesRemaining == 1) {
+                this.fight.message.addHit(`[b][color=red]Last life[/color][/b] for ${this.name}!`);
             }
             this.triggerMods(TriggerMoment.After, Trigger.HeartLoss);
         }
@@ -383,15 +389,16 @@ export class ActiveFighter extends Fighter {
         if (this.lust >= this.lustPerOrgasm()) {
             this.triggerMods(TriggerMoment.Before, Trigger.Orgasm);
             this.lust = 0;
-            this.orgasmsRemaining--;
+            //this.orgasmsRemaining--;
+            this.livesRemaining--;
             this.orgasmsDamageLastRound += 1;
-            this.fight.message.addHit(`[b][color=pink]Orgasm on the mat![/color][/b] ${this.name} has ${this.orgasmsRemaining} orgasms left.`);
+            this.fight.message.addHit(`[b][color=pink]Orgasm on the mat![/color][/b] ${this.name} has ${this.livesRemaining} lives left.`);
             this.lust = 0;
             if (triggerMods) {
                 this.triggerMods(TriggerMoment.After, Trigger.Orgasm);
             }
-            if (this.orgasmsRemaining == 1) {
-                this.fight.message.addHit(`[b][color=red]Last orgasm[/color][/b] for ${this.name}!`);
+            if (this.livesRemaining == 1) {
+                this.fight.message.addHit(`[b][color=red]Last life[/color][/b] for ${this.name}!`);
             }
         }
         this.triggerMods(TriggerMoment.After, Trigger.LustDamage);
@@ -431,15 +438,15 @@ export class ActiveFighter extends Fighter {
     }
 
     isDead(displayMessage:boolean = false):boolean {
-        let condition = (this.heartsRemaining == 0);
+        let condition = (this.livesRemaining == 0);
         if(condition && displayMessage){
-            this.fight.message.addHit(`${this.getStylizedName()} couldn't take the hits anymore! They're out!`);
+            this.fight.message.addHit(`${this.getStylizedName()} couldn't take it anymore! They're out!`);
         }
         return condition;
     }
 
     isSexuallyExhausted(displayMessage:boolean = false):boolean {
-        let condition = (this.orgasmsRemaining == 0);
+        let condition = (this.livesRemaining == 0);
         if(condition && displayMessage){
             this.fight.message.addHit(`${this.getStylizedName()} got wrecked sexually! They're out!`);
         }
@@ -614,16 +621,17 @@ export class ActiveFighter extends Fighter {
     outputStatus() {
         let nameLine = `${this.getStylizedName()}:`;
         let hpLine = `  [color=yellow]hit points: ${this.hp}${((this.hpDamageLastRound > 0 || this.hpHealLastRound > 0) ? `${(((-this.hpDamageLastRound + this.hpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.hpDamageLastRound + this.hpHealLastRound)})[/color]` : "")}|${this.hpPerHeart()}[/color] `;
-        let heartsLine = `  [color=yellow]hearts: ${this.heartsRemaining}${((this.heartsDamageLastRound > 0 || this.heartsHealLastRound > 0) ? `${(((-this.heartsDamageLastRound + this.heartsHealLastRound) < 0) ? "[color=red]" : "[color=green]")}  (${Utils.getSignedNumber(-this.heartsDamageLastRound + this.heartsHealLastRound)})[/color]` : "")}|${this.maxHearts()}[/color] `;
+        //let heartsLine = `  [color=yellow]hearts: ${this.heartsRemaining}${((this.heartsDamageLastRound > 0 || this.heartsHealLastRound > 0) ? `${(((-this.heartsDamageLastRound + this.heartsHealLastRound) < 0) ? "[color=red]" : "[color=green]")}  (${Utils.getSignedNumber(-this.heartsDamageLastRound + this.heartsHealLastRound)})[/color]` : "")}|${this.maxHearts()}[/color] `;
         let lpLine = `  [color=pink]lust points: ${this.lust}${((this.lpDamageLastRound > 0 || this.lpHealLastRound > 0) ? `${(((-this.lpDamageLastRound + this.lpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(this.lpDamageLastRound - this.lpHealLastRound)})[/color]` : "")}|${this.lustPerOrgasm()}[/color] `;
-        let orgasmsLine = `  [color=pink]orgasms: ${this.orgasmsRemaining}${((this.orgasmsDamageLastRound > 0 || this.orgasmsHealLastRound > 0) ? `${(((-this.orgasmsDamageLastRound + this.orgasmsHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.orgasmsDamageLastRound + this.orgasmsHealLastRound)})[/color]` : "")}|${this.maxOrgasms()}[/color] `;
+        //let orgasmsLine = `  [color=pink]orgasms: ${this.orgasmsRemaining}${((this.orgasmsDamageLastRound > 0 || this.orgasmsHealLastRound > 0) ? `${(((-this.orgasmsDamageLastRound + this.orgasmsHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.orgasmsDamageLastRound + this.orgasmsHealLastRound)})[/color]` : "")}|${this.maxOrgasms()}[/color] `;
+        let livesLine = `  [color=brown]lives: ${this.livesRemaining}${((this.orgasmsDamageLastRound > 0 || this.orgasmsHealLastRound > 0) ? `${(((-this.orgasmsDamageLastRound + this.orgasmsHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.orgasmsDamageLastRound + this.orgasmsHealLastRound)} orgasm(s))[/color]` : "")}${((this.heartsDamageLastRound > 0 || this.heartsHealLastRound > 0) ? `${(((-this.heartsDamageLastRound + this.heartsHealLastRound) < 0) ? "[color=red]" : "[color=green]")}  (${Utils.getSignedNumber(-this.heartsDamageLastRound + this.heartsHealLastRound)} heart(s))[/color]` : "")}|${this.maxLives()}[/color] `;
         let focusLine = `  [color=orange]${this.hasFeature(FeatureType.DomSubLover) ? "submissiveness" : "focus"}:[/color] [b][color=${(this.focus <= 0 ? "red" : "orange")}]${this.focus}[/color][/b]${(((this.fpDamageLastRound > 0 || this.fpHealLastRound > 0) && (this.fpDamageLastRound - this.fpHealLastRound != 0)) ? `${(((-this.fpDamageLastRound + this.fpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.fpDamageLastRound + this.fpHealLastRound)})[/color]` : "")}|[color=green]${this.maxFocus()}[/color] `;
         let turnsFocusLine = `  [color=orange]turns ${this.hasFeature(FeatureType.DomSubLover) ? "being too submissive" : "without focus"}: ${this.consecutiveTurnsWithoutFocus}|${Constants.Fight.Action.Globals.maxTurnsWithoutFocus}[/color] `;
         let bondageLine = `  [color=purple]bondage items ${this.bondageItemsOnSelf()}|${Constants.Fight.Action.Globals.maxBondageItemsOnSelf}[/color] `;
         let modifiersLine = `  [color=cyan]affected by: ${this.getListOfActiveModifiers()}[/color] `;
-        let targetLine = `  [color=red]target: ` + (this.target != undefined ? `${this.target.getStylizedName()}` : "None") + `[/color]`;
+        let targetLine = `  [color=red]target: ` + (this.target != undefined ? `${this.target.getStylizedName()}` : "None set yet! (!target charactername)") + `[/color]`;
 
-        return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${heartsLine} ${lpLine} ${orgasmsLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${modifiersLine} ${targetLine}`;
+        return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${modifiersLine} ${targetLine}`;
     }
 
     getStylizedName():string {

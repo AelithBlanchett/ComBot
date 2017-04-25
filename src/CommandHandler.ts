@@ -211,8 +211,7 @@ export class CommandHandler implements ICommandHandler {
     resetdmg(args:string, data:FChatResponse) {
         if (this.fChatLibInstance.isUserMaster(data.character, "") && this.fight.hasStarted && this.fight.debug) {
             for(let fighter of this.fight.fighters){
-                fighter.orgasmsRemaining = fighter.maxOrgasms(); //to prevent ending the fight this way
-                fighter.heartsRemaining = fighter.maxHearts();
+                fighter.livesRemaining = fighter.maxLives(); //to prevent ending the fight this way
                 fighter.consecutiveTurnsWithoutFocus = 0; //to prevent ending the fight this way
                 fighter.focus = fighter.initialFocus();
             }
@@ -419,7 +418,7 @@ export class CommandHandler implements ICommandHandler {
                 newFighter.dexterity = arrParam[4];
                 newFighter.willpower = arrParam[5];
                 await FighterRepository.persist(newFighter);
-                this.fChatLibInstance.sendPrivMessage("[color=green]You are now registered! Welcome! Don't forget to type !howtostart here if you haven't read the quickstart guide yet.[/color]", data.character);
+                this.fChatLibInstance.sendPrivMessage("[color=green]You are now registered! Welcome! Don't forget to read the quickstart guide AND the two collapses under Core Mechanics on [user]Rendezvous Wrestling[/user]'s profile.[/color]", data.character);
             }
             catch (ex) {
                 this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
