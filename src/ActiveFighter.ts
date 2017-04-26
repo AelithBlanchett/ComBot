@@ -223,7 +223,7 @@ export class ActiveFighter extends Fighter {
     get displayRemainingLives():string{
         let str = "";
         for(let i = 0; i < this.livesRemaining; i++){
-            str += "❤";
+            str += "❤️";
         }
         return str;
     }
