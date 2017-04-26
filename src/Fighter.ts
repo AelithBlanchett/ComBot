@@ -237,8 +237,8 @@ export class Fighter{
 
     outputStats():string{
         return "[b]" + this.name + "[/b]'s stats" + "\n" +
-            "[b][color=red]Power[/color][/b]:  " + this.power + "      " + "    --             " + this.hpPerHeart() + " [b][color=red]HP[/color]/❤[/b] " + this.lustPerOrgasm() +" [b][color=pink]LP[/color]/❤[/b]"+"\n" +
-            "[b][color=purple]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Total ❤[/color][/b]: " + this.maxLives() + "\n" +
+            "[b][color=red]Power[/color][/b]:  " + this.power + "      " + "    --             " + this.hpPerHeart() + " [b][color=red]HP[/color]/❤️ [/b] " + this.lustPerOrgasm() +" [b][color=pink]LP[/color]/❤️[/b]"+"\n" +
+            "[b][color=purple]Sensuality[/color][/b]:  " + this.sensuality + "      " + "[b][color=pink]Total ❤️[/color][/b]: " + this.maxLives() + "\n" +
             "[b][color=orange]Toughness[/color][/b]: " + this.toughness + "\n" +
             "[b][color=cyan]Endurance[/color][/b]: " + this.endurance + "      " + "[b][color=green]Win[/color]/[color=red]Loss[/color] record[/b]: " + this.wins + " - " + this.losses + "\n" +
             "[b][color=green]Dexterity[/color][/b]: " + this.dexterity + "\n" +
