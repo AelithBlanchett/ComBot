@@ -541,6 +541,16 @@ export class CommandHandler implements ICommandHandler {
         }
     };
 
+    async statsforprofile(args:string, data:FChatResponse) {
+        let fighter:Fighter = await FighterRepository.load(data.character);
+        if (fighter != null) {
+            this.fChatLibInstance.sendPrivMessage(`[noparse]${fighter.outputStats()}[/noparse]`, fighter.name);
+        }
+        else {
+            this.fChatLibInstance.sendPrivMessage("[color=red]You are not registered.[/color]", data.character);
+        }
+    };
+
     async tokens(args:string, data:FChatResponse) {
         let fighter:Fighter = await FighterRepository.load(data.character);
         if (fighter != null) {
@@ -940,6 +950,7 @@ class PrivateCommandHandler {
     removefeature = CommandHandler.prototype.removefeature;
     unhidemystats = CommandHandler.prototype.unhidemystats;
     restat = CommandHandler.prototype.restat;
+    statsforprofile = CommandHandler.prototype.statsforprofile;
 }
 
 var privMsgEventHandler = function (parent, data) {
