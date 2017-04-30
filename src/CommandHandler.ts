@@ -16,6 +16,9 @@ import {FighterRepository} from "./FighterRepository";
 import {FightRepository} from "./FightRepository";
 import {TransactionType} from "./Constants";
 import {FightLength} from "./Constants";
+import * as express from "express";
+import * as bodyParser from "body-parser";
+let CircularJSON = require('circular-json');
 
 export class CommandHandler implements ICommandHandler {
     fChatLibInstance:IFChatLib;
@@ -25,6 +28,9 @@ export class CommandHandler implements ICommandHandler {
     blnAutofight:boolean = false;
     debugImpersonatedCharacter:string = "Tina Armstrong";
 
+    webserviceApp:any;
+    webserviceServer:any;
+
     constructor(fChatLib:IFChatLib, chan:string) {
         this.fChatLibInstance = fChatLib;
         this.channel = chan;
@@ -32,6 +38,41 @@ export class CommandHandler implements ICommandHandler {
         this.fight.build(fChatLib, chan);
         this.fChatLibInstance.addPrivateMessageListener(privMsgEventHandler);
     }
+
+    initializeWeb(){
+        this.webserviceApp = express();
+        this.webserviceApp.use(bodyParser.urlencoded({ extended: true }));
+        this.webserviceApp.use(bodyParser.json());
+        this.webserviceApp.get('/command/:command/:parameters', async (req, res) => {
+            let opts = {
+                command: String(req.params.command.split(' ')[0]).replace('!', '').trim().toLowerCase(),
+                argument: req.params.parameters.trim()
+            };
+            let charData:FChatResponse = {character: "Aelith Blanchette", channel: this.channel};
+            await this[opts.command].apply(this, [opts.argument, charData]);
+            res.send('OK');
+        });
+
+        this.webserviceApp.get('/currentfight', (req, res) => {
+            let jsonResponse =  CircularJSON.stringify(this.fight);
+            res.send(jsonResponse);
+        });
+
+        this.webserviceServer = this.webserviceApp.listen(8093);
+    }
+
+    listenweb(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+            this.initializeWeb();
+        }
+    }
+
+    unlistenweb(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+            this.webserviceServer.close();
+        }
+    }
+
 
     private wait(ms){
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -966,4 +1007,3 @@ var privMsgEventHandler = function (parent, data) {
         privHandler[opts.command](opts.argument, data);
     }
 };
-
