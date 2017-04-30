@@ -34,6 +34,7 @@ export interface IModifier{
     fight:Fight;
 
     isOver():boolean;
+    remove():void;
     trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):void;
     willTriggerForEvent(moment: TriggerMoment, event:Trigger):boolean;
     build(receiver:ActiveFighter, applier:ActiveFighter, fight:Fight):void;
