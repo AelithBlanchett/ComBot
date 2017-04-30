@@ -43,13 +43,15 @@ export class CommandHandler implements ICommandHandler {
         this.webserviceApp = express();
         this.webserviceApp.use(bodyParser.urlencoded({ extended: true }));
         this.webserviceApp.use(bodyParser.json());
-        this.webserviceApp.get('/command/:command/:parameters', async (req, res) => {
-            let opts = {
-                command: String(req.params.command.split(' ')[0]).replace('!', '').trim().toLowerCase(),
-                argument: req.params.parameters.trim()
-            };
+
+        this.webserviceApp.get('/command/:command/:parameters?', async (req, res) => {
+            let command = String(req.params.command.split(' ')[0]).replace('!', '').trim().toLowerCase();
+            let argument = "";
+            if(req.params.parameters){
+                argument = req.params.parameters.trim();
+            }
             let charData:FChatResponse = {character: "Aelith Blanchette", channel: this.channel};
-            await this[opts.command].apply(this, [opts.argument, charData]);
+            await this[command].apply(this, [argument, charData]);
             res.send('OK');
         });
 
@@ -69,7 +71,9 @@ export class CommandHandler implements ICommandHandler {
 
     unlistenweb(args:string, data:FChatResponse) {
         if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+            this.webserviceApp = null;
             this.webserviceServer.close();
+            this.webserviceServer = null;
         }
     }
 
