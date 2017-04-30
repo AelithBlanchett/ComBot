@@ -60,7 +60,7 @@ export class CommandHandler implements ICommandHandler {
             res.send(jsonResponse);
         });
 
-        this.webserviceServer = this.webserviceApp.listen(8093);
+        this.webserviceServer = this.webserviceApp.listen(8093, '127.0.0.1');
     }
 
     listenweb(args:string, data:FChatResponse) {
