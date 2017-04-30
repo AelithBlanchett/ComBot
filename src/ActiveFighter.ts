@@ -277,25 +277,8 @@ export class ActiveFighter extends Fighter {
 
     removeMod(idMod:string) { //removes a mod, and also its children. If a children has two parent Ids, then it doesn't remove the mod.
         let index = this.modifiers.findIndex(x => x.idModifier == idMod);
-        let listOfModsToRemove = [];
         if (index != -1) {
-            listOfModsToRemove.push(idMod);
-            for (let mod of this.modifiers) {
-                if (mod.idParentActions) {
-                    if (mod.idParentActions.length == 1 && mod.idParentActions[0] == idMod) {
-                        listOfModsToRemove.push(mod.idModifier);
-                    }
-                    else if (mod.idParentActions.indexOf(idMod) != -1) {
-                        mod.idParentActions.splice(mod.idParentActions.indexOf(idMod), 1);
-                    }
-                }
-            }
-        }
-
-        for (let i = this.modifiers.length - 1; i >= 0; i--) {
-            if(listOfModsToRemove.indexOf(this.modifiers[i].idModifier) != -1){
-                this.modifiers.splice(i, 1);
-            }
+            this.modifiers[index].remove();
         }
     }
 
