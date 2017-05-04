@@ -265,9 +265,40 @@ export class CommandHandler implements ICommandHandler {
         }
     }
 
+    sethp(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "") && this.fight.hasStarted && this.fight.debug) {
+            let splitted = args.split(",");
+            try{
+                this.fight.getFighterByName(splitted[0]).hp = parseInt(splitted[1]);
+                this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s hp to ${splitted[1]}`, data.character);
+            }
+            catch(ex){
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            }
+        }
+    }
+
+    setlp(args:string, data:FChatResponse) {
+        if (this.fChatLibInstance.isUserMaster(data.character, "") && this.fight.hasStarted && this.fight.debug) {
+            let splitted = args.split(",");
+            try{
+                this.fight.getFighterByName(splitted[0]).lust = parseInt(splitted[1]);
+                this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s lp to ${splitted[1]}`, data.character);
+            }
+            catch(ex){
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            }
+        }
+    }
+
     exec(args:string, data:FChatResponse) {
         if (this.fChatLibInstance.isUserMaster(data.character, "")) {
-            eval(args);
+            try{
+                eval(args);
+            }
+            catch(ex){
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            }
         }
     }
 
@@ -433,9 +464,15 @@ export class CommandHandler implements ICommandHandler {
             this.fight = new Fight();
             this.fight.build(this.fChatLibInstance, this.channel);
         }
-        let result:boolean = await this.fight.setFighterReady(data.character);
-        if (!result) { //else, the match starts!
-            this.fChatLibInstance.sendMessage("[color=red]You are already ready.[/color]", this.channel);
+
+        try{
+            let result:boolean = await this.fight.setFighterReady(data.character);
+            if (!result) { //else, the match starts!
+                this.fChatLibInstance.sendMessage("[color=red]You are already ready.[/color]", this.channel);
+            }
+        }
+        catch (ex) {
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
         }
     };
 
@@ -671,7 +708,7 @@ export class CommandHandler implements ICommandHandler {
 
     async unhidemystats(args:string, data:FChatResponse) {
         let fighter:Fighter = await FighterRepository.load(data.character);
-        if (fighter != undefined) {
+        if (fighter != null) {
             fighter.areStatsPrivate = false;
             try {
                 await FighterRepository.persist(fighter);

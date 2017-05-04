@@ -1,7 +1,6 @@
 #TODO
 
 ##Important
--   Accuracy++ on sexual hold is not ended on ATTACKER
 
 ###Next steps
 -   Saving throw for degradation modifier, if failed, forces one to debase/masturbate
