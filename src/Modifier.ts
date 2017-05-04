@@ -85,10 +85,13 @@ export class Modifier implements IModifier{
              this.receiver.modifiers.splice(indexModReceiver, 1);
         }
 
-        let indexModApplier = this.applier.modifiers.findIndex(x => x.idModifier == this.idModifier);
-        if (indexModApplier != -1) {
-            this.applier.modifiers.splice(indexModApplier, 1);
+        if(this.applier != null){
+            let indexModApplier = this.applier.modifiers.findIndex(x => x.idModifier == this.idModifier);
+            if (indexModApplier != -1) {
+                this.applier.modifiers.splice(indexModApplier, 1);
+            }
         }
+
 
         for (let mod of this.receiver.modifiers) {
             if (mod.idParentActions) {
@@ -101,13 +104,15 @@ export class Modifier implements IModifier{
             }
         }
 
-        for (let mod of this.applier.modifiers) {
-            if (mod.idParentActions) {
-                if (mod.idParentActions.length == 1 && mod.idParentActions[0] == this.idModifier) {
-                    mod.remove();
-                }
-                else if (mod.idParentActions.indexOf(this.idModifier) != -1) {
-                    mod.idParentActions.splice(mod.idParentActions.indexOf(this.idModifier), 1);
+        if(this.applier != null) {
+            for (let mod of this.applier.modifiers) {
+                if (mod.idParentActions) {
+                    if (mod.idParentActions.length == 1 && mod.idParentActions[0] == this.idModifier) {
+                        mod.remove();
+                    }
+                    else if (mod.idParentActions.indexOf(this.idModifier) != -1) {
+                        mod.idParentActions.splice(mod.idParentActions.indexOf(this.idModifier), 1);
+                    }
                 }
             }
         }
