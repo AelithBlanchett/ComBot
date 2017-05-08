@@ -515,14 +515,18 @@ export class ActiveFighter extends Fighter {
         return this.wantsDraw;
     }
 
-    isStunned():Tier {
+    getStunnedTier():Tier {
         let stunTier = Tier.None;
         for (let mod of this.modifiers) {
-            if (mod.receiver == this && mod.type == ModifierType.Stun) {
+            if (mod.idReceiver == this.name && mod.type == ModifierType.Stun) {
                 stunTier = mod.tier;
             }
         }
         return stunTier;
+    }
+
+    isStunned():boolean {
+        return this.getStunnedTier() >= 0;
     }
 
     isApplyingHold():boolean {
@@ -588,7 +592,7 @@ export class ActiveFighter extends Fighter {
     releaseHoldsApplied() {
         for (let mod of this.modifiers) {
             if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                this.removeMod(mod.idModifier);
+                mod.receiver.releaseHoldsAppliedBy(mod.idApplier);
             }
         }
     }

@@ -154,8 +154,8 @@ export class Action{
                     scoreRequired = this.addRequiredScore(scoreRequired, Math.floor(this.defender.focus / 10) - 1, "FPZERO");
                 }
 
-                let defenderStunnedTier = this.defender.isStunned();
-                if(defenderStunnedTier >= 0){
+                let defenderStunnedTier = this.defender.getStunnedTier();
+                if(defenderStunnedTier >= Tier.Light){
                     switch(defenderStunnedTier){
                         case Tier.Light:
                             scoreRequired = this.addRequiredScore(scoreRequired, -2, "L-STUN");
