@@ -781,7 +781,7 @@ export class Action{
                     }
                     for(let mod of this.attacker.modifiers){
                         //update the bonus modifiers length
-                        if(mod.idParentActions.indexOf(idOfFormerHold) != -1){
+                        if(mod.idParentActions && mod.idParentActions.indexOf(idOfFormerHold) != -1){
                             mod.uses += this.modifiers[indexOfNewHold].uses;
                         }
                     }
