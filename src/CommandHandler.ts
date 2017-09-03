@@ -36,7 +36,7 @@ export class CommandHandler implements ICommandHandler {
         this.channel = chan;
         this.fight = new Fight();
         this.fight.build(fChatLib, chan);
-        this.fChatLibInstance.addPrivateMessageListener(privMsgEventHandler);
+        //this.fChatLibInstance.addPrivateMessageListener(privMsgEventHandler);
     }
 
     initializeWeb(){
@@ -1035,16 +1035,16 @@ class PrivateCommandHandler {
     statsforprofile = CommandHandler.prototype.statsforprofile;
 }
 
-var privMsgEventHandler = function (parent, data) {
-
-    var privHandler = new PrivateCommandHandler(parent);
-
-    var opts = {
-        command: String(data.message.split(' ')[0]).replace('!', '').trim().toLowerCase(),
-        argument: data.message.substring(String(data.message.split(' ')[0]).length).trim()
-    };
-
-    if (typeof privHandler[opts.command] === 'function') {
-        privHandler[opts.command](opts.argument, data);
-    }
-};
+// var privMsgEventHandler = function (data) {
+//
+//     var privHandler = new PrivateCommandHandler(parent);
+//
+//     var opts = {
+//         command: String(data.message.split(' ')[0]).replace('!', '').trim().toLowerCase(),
+//         argument: data.message.substring(String(data.message.split(' ')[0]).length).trim()
+//     };
+//
+//     if (typeof privHandler[opts.command] === 'function') {
+//         privHandler[opts.command](opts.argument, data);
+//     }
+// };
