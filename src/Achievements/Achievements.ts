@@ -1,8 +1,8 @@
-import {IAchievement} from "./interfaces/IAchievement";
-import {Fighter} from "./Fighter";
-import {ActiveFighter} from "./ActiveFighter";
-import {Fight} from "./Fight";
-import {FightTier} from "./Constants";
+import {IAchievement} from "./IAchievement";
+import {Fighter} from "../FightSystem/Fighter";
+import {ActiveFighter} from "../FightSystem/ActiveFighter";
+import {Fight} from "../FightSystem/Fight";
+import {FightTier} from "../FightSystem/Constants";
 
 export class EnabledAchievements{ //Keep track of the enabled achievements here, instead of doing reflection
     static getAll():IAchievement[]{

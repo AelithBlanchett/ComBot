@@ -1,10 +1,10 @@
 import {Modifier} from "./Modifier";
-import * as Constants from "./Constants";
+import * as Constants from "../Constants";
 import Trigger = Constants.Trigger;
 import ModifierType = Constants.ModifierType;
 import TriggerMoment = Constants.TriggerMoment;
-import {Tier} from "./Constants";
-import {ActiveFighter} from "./ActiveFighter";
+import {Tier} from "../Constants";
+import {ActiveFighter} from "../ActiveFighter";
 
 
 export class BondageModifier extends Modifier {

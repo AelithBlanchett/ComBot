@@ -1,4 +1,4 @@
-import * as Constants from "./Constants";
+import * as Constants from "../FightSystem/Constants";
 import Team = Constants.Team;
 import StatTier = Constants.StatTier;
 var vsprintf = require('sprintf-js').vsprintf;

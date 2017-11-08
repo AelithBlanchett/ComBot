@@ -1,7 +1,7 @@
 import {Action, ActionType} from "./Action";
-import {IFChatLib} from "./interfaces/IFChatLib";
-import {Utils} from "./Utils";
-import {Dictionary} from "./Dictionary";
+import {IFChatLib} from "../Utils/IFChatLib";
+import {Utils} from "../Utils/Utils";
+import {Dictionary} from "../Utils/Dictionary";
 import * as Constants from "./Constants";
 import Team = Constants.Team;
 import Tier = Constants.Tier;
@@ -9,17 +9,17 @@ import FightType = Constants.FightType;
 import FightTier = Constants.FightTier;
 import TokensPerWin = Constants.TokensPerWin;
 import Trigger = Constants.Trigger;
-import {BondageModifier} from "./CustomModifiers";
+import {BondageModifier} from "./Modifiers/CustomModifiers";
 import TriggerMoment = Constants.TriggerMoment;
-import {Message} from "./Messaging";
+import {Message} from "../Utils/Messaging";
 import {ActiveFighter} from "./ActiveFighter";
-import {ActiveFighterRepository} from "./ActiveFighterRepository";
-import {FightRepository} from "./FightRepository";
-import {FighterRepository} from "./FighterRepository";
+import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
+import {FightRepository} from "../Repositories/FightRepository";
+import {FighterRepository} from "../Repositories/FighterRepository";
 import {FeatureType} from "./Constants";
 import {TransactionType} from "./Constants";
 import {FightLength} from "./Constants";
-import {Commands} from "./Parser";
+import {Commands} from "../Utils/Parser";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -435,7 +435,7 @@ export class Fight{
     setCurrentPlayer(fighterName:string){
         let index = this.fighters.findIndex((x) => x.name == fighterName && !x.isTechnicallyOut());
         if (index != -1 && this.fighters[this.currentPlayerIndex].name != fighterName) { //switch positions
-            var temp = this.fighters[this.currentPlayerIndex];
+            let temp = this.fighters[this.currentPlayerIndex];
             this.fighters[this.currentPlayerIndex] = this.fighters[index];
             this.fighters[index] = temp;
             this.fighters[this.currentPlayerIndex].isInTheRing = true;
@@ -653,14 +653,14 @@ export class Fight{
     }
 
     getFightTier(winnerTeam){
-        var highestWinnerTier = FightTier.Bronze;
+        let highestWinnerTier = FightTier.Bronze;
         for (let fighter of this.getTeam(winnerTeam)) {
             if(fighter.tier() > highestWinnerTier){
                 highestWinnerTier = fighter.tier();
             }
         }
 
-        var lowestLoserTier = -99;
+        let lowestLoserTier = -99;
         for (let fighter of this.fighters) {
             if(fighter.assignedTeam != winnerTeam){
                 if(lowestLoserTier == -99){
@@ -672,13 +672,13 @@ export class Fight{
             }
         }
 
-        var fightTier;
 
-        if(lowestLoserTier >= highestWinnerTier){ //if the weakest wrestler was equal or more powerful, the fight tier matches the loser's tier
+
+        //If the loser was weaker, the fight tier matches the winner's tier
+        //if the weakest wrestler was equal or more powerful, the fight tier matches the loser's tier
+        let fightTier = highestWinnerTier;
+        if(lowestLoserTier >= highestWinnerTier){
             fightTier = lowestLoserTier;
-        }
-        else{ //If the loser was weaker, the fight tier matches the winner's tier
-            fightTier = highestWinnerTier;
         }
 
         return fightTier;

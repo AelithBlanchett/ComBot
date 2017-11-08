@@ -1,4 +1,4 @@
-import {FighterRepository} from "../src/FighterRepository";
+import {FighterRepository} from "../src/Repositories/FighterRepository";
 
 try{
     FighterRepository.load("Aelith Blanchette");

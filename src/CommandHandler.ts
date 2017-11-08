@@ -1,26 +1,23 @@
-import {Fighter} from "./Fighter";
-import * as Parser from "./Parser";
-import {Fight} from "./Fight";
-import {ICommandHandler} from "./interfaces/ICommandHandler";
-import {IFChatLib} from "./interfaces/IFChatLib";
-import * as Constants from "./Constants";
-import {Utils} from "./Utils";
-import Tier = Constants.Tier;
-import {Stats} from "./Constants";
-import {FightType} from "./Constants";
-import {FeatureType} from "./Constants";
-import {EnumEx} from "./Utils";
-import {ActionType} from "./Action";
-import {Team} from "./Constants";
-import {FighterRepository} from "./FighterRepository";
-import {FightRepository} from "./FightRepository";
-import {TransactionType} from "./Constants";
-import {FightLength} from "./Constants";
+import {Fighter} from "./FightSystem/Fighter";
+import * as Parser from "./Utils/Parser";
+import {Fight} from "./FightSystem/Fight";
+import {IFChatLib} from "./Utils/IFChatLib";
+import * as Constants from "./FightSystem/Constants";
+import {Utils} from "./Utils/Utils";
+import {FightType} from "./FightSystem/Constants";
+import {FeatureType} from "./FightSystem/Constants";
+import {EnumEx} from "./Utils/Utils";
+import {ActionType} from "./FightSystem/Action";
+import {Team} from "./FightSystem/Constants";
+import {FighterRepository} from "./Repositories/FighterRepository";
+import {FightRepository} from "./Repositories/FightRepository";
+import {TransactionType} from "./FightSystem/Constants";
+import {FightLength} from "./FightSystem/Constants";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 let CircularJSON = require('circular-json');
 
-export class CommandHandler implements ICommandHandler {
+export class CommandHandler {
     fChatLibInstance:IFChatLib;
     channel:string;
     fight:Fight;

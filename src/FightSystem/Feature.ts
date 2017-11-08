@@ -1,10 +1,10 @@
-import {Utils} from "./Utils";
+import {Utils} from "../Utils/Utils";
 import * as Constants from "./Constants";
-import {ItemPickupModifier, SextoyPickupModifier, BondageModifier} from "./CustomModifiers";
+import {ItemPickupModifier, SextoyPickupModifier, BondageModifier} from "./Modifiers/CustomModifiers";
 import {Fight} from "./Fight";
 import {FeatureType} from "./Constants";
 import {ActiveFighter} from "./ActiveFighter";
-import {IModifier} from "./interfaces/IModifier";
+import {IModifier} from "./Modifiers/IModifier";
 
 export class Feature{
 

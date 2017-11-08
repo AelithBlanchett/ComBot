@@ -3,8 +3,8 @@ import {FeatureType, Team} from "./Constants";
 import {FightTier} from "./Constants";
 import {Fight} from "./Fight";
 import {Feature} from "./Feature";
-import {IAchievement} from "./interfaces/IAchievement";
-import {AchievementManager} from "./AchievementManager";
+import {IAchievement} from "../Achievements/IAchievement";
+import {AchievementManager} from "../Achievements/AchievementManager";
 import {ActiveFighter} from "./ActiveFighter";
 import {FightLength} from "./Constants";
 

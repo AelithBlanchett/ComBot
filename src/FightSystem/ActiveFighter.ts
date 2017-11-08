@@ -1,4 +1,4 @@
-import {Dice} from "./Dice";
+import {Dice} from "../Utils/Dice";
 import {Fight, FightStatus} from "./Fight";
 import {Team} from "./Constants";
 import {Action} from "./Action";
@@ -8,9 +8,9 @@ import {FightType} from "./Constants";
 import * as Constants from "./Constants";
 import {ModifierType} from "./Constants";
 import {Tier} from "./Constants";
-import {Utils} from "./Utils";
+import {Utils} from "../Utils/Utils";
 import {FeatureType} from "./Constants";
-import {Modifier} from "./Modifier";
+import {Modifier} from "./Modifiers/Modifier";
 import {Fighter} from "./Fighter";
 
 export class ActiveFighter extends Fighter {

@@ -1,7 +1,7 @@
-import {Action, EmptyAction} from "./Action";
-import {Model} from "./Model";
-import {Utils} from "./Utils";
-import * as Constants from "./Constants";
+import {Action, EmptyAction} from "../FightSystem/Action";
+import {Model} from "../Utils/Model";
+import {Utils} from "../Utils/Utils";
+import * as Constants from "../FightSystem/Constants";
 
 export class ActionRepository{
 

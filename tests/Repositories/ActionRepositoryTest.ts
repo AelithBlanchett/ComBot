@@ -1,6 +1,6 @@
-import {Action, ActionType, EmptyAction} from "../../src/Action";
-import {ActionRepository} from "../../src/ActionRepository";
-import {Utils} from "../../src/Utils";
+import {Action, ActionType, EmptyAction} from "../../src/FightSystem/Action";
+import {ActionRepository} from "../../src/Repositories/ActionRepository";
+import {Utils} from "../../src/Utils/Utils";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 

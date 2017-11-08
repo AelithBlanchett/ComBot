@@ -1,12 +1,12 @@
-import * as Constants from "./Constants";
+import * as Constants from "../Constants";
 import Trigger = Constants.Trigger;
-import {Utils} from "./Utils";
+import {Utils} from "../../Utils/Utils";
 import ModifierType = Constants.ModifierType;
 import TriggerMoment = Constants.TriggerMoment;
-import {Tier} from "./Constants";
-import {ActiveFighter} from "./ActiveFighter";
-import {IModifier} from "./interfaces/IModifier";
-import {Fight} from "./Fight";
+import {Tier} from "../Constants";
+import {ActiveFighter} from "../ActiveFighter";
+import {IModifier} from "./IModifier";
+import {Fight} from "../Fight";
 
 export class Modifier implements IModifier{
     idModifier: string;

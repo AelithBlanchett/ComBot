@@ -1,7 +1,7 @@
-import {Fighter} from "../Fighter";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import {AchievementType} from "../Achievements";
+import {Fighter} from "../FightSystem/Fighter";
+import {ActiveFighter} from "../FightSystem/ActiveFighter";
+import {Fight} from "../FightSystem/Fight";
+import {AchievementType} from "./Achievements";
 export interface IAchievement{
     createdAt:Date;
 

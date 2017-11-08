@@ -1,8 +1,8 @@
-import {Model} from "./Model";
-import {Utils} from "./Utils";
-import {Modifier} from "./Modifier";
-import {EmptyModifier} from "./CustomModifiers";
-import * as Constants from "./Constants";
+import {Model} from "../Utils/Model";
+import {Utils} from "../Utils/Utils";
+import {Modifier} from "../FightSystem/Modifiers/Modifier";
+import {EmptyModifier} from "../FightSystem/Modifiers/CustomModifiers";
+import * as Constants from "../FightSystem/Constants";
 
 export class ModifierRepository{
 

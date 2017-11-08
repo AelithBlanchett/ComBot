@@ -1,5 +1,5 @@
 import Knex = require("knex");
-import {config} from "../config/config.mysql"
+import {config} from "../../config/config.mysql"
 
 export abstract class Model {
     static _db:Knex = null;

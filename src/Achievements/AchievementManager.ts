@@ -1,12 +1,11 @@
-import {Fighter} from "./Fighter";
-import Knex = require("knex");
-import {Fight} from "./Fight";
-import {IAchievement} from "./interfaces/IAchievement";
+import {Fighter} from "../FightSystem/Fighter";
+import {Fight} from "../FightSystem/Fight";
+import {IAchievement} from "./IAchievement";
 import {EnabledAchievements, AchievementType} from "./Achievements";
-import {ActiveFighter} from "./ActiveFighter";
-import {FighterRepository} from "./FighterRepository";
-import * as Constants from "./Constants";
-import {TransactionType} from "./Constants";
+import {ActiveFighter} from "../FightSystem/ActiveFighter";
+import {FighterRepository} from "../Repositories/FighterRepository";
+import * as Constants from "../FightSystem/Constants";
+import {TransactionType} from "../FightSystem/Constants";
 
 export class AchievementManager {
 

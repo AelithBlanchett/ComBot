@@ -1,5 +1,5 @@
-import {IFChatLib} from "./interfaces/IFChatLib";
-import {IMessage} from "./interfaces/IMessage";
+import {IFChatLib} from "./IFChatLib";
+import {IMessage} from "./IMessage";
 
 export class Message implements IMessage {
     fChatLib:IFChatLib;

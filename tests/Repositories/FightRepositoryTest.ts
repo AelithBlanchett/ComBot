@@ -1,9 +1,9 @@
-import {Fight} from "../../src/Fight";
-import {Model} from "../../src/Model";
-import {FightRepository} from "../../src/FightRepository";
+import {Fight} from "../../src/FightSystem/Fight";
+import {Model} from "../../src/Utils/Model";
+import {FightRepository} from "../../src/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as Constants from "../../src/Constants";
+import * as Constants from "../../src/FightSystem/Constants";
 
 describe("The Fight Repository", () => {
 
