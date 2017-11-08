@@ -53,7 +53,7 @@ function getMock(mockedClass) {
 function abstractDatabase() {
 
     FighterRepository.load = async function (name) {
-        return new Promise(function (resolve, reject) {
+        return new Promise<Fighter>(function (resolve, reject) {
             resolve(createFighter(name));
         });
     };
@@ -68,7 +68,7 @@ function abstractDatabase() {
     };
 
     ActiveFighterRepository.load = async function (name, fightId) {
-        return new Promise(function (resolve, reject) {
+        return new Promise<ActiveFighter>(function (resolve, reject) {
             resolve(createFighter(name));
         });
     };
@@ -93,7 +93,7 @@ function abstractDatabase() {
     };
 
     FighterRepository.exists = async function (a) {
-        return new Promise(function (resolve, reject) {
+        return new Promise<boolean>(function (resolve, reject) {
             resolve(true);
         });
     };

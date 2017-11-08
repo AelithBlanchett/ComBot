@@ -58,79 +58,6 @@ export class Message implements IMessage {
         return "Action: [color=yellow]" + this.action.join(" ") + "[/color]";
     }
 
-    getDeltaHPLPFP() {
-        let isDifferentDef = false;
-        let msgAtk = "";
-        let msg = "Defender: [color=red](";
-        if(this.HPDamageDef > 0){
-            msg += " HP Damage: " + this.HPDamageDef;
-            isDifferentDef = true;
-        }
-        if(this.LPDamageDef > 0){
-            msg += " Lust Damage: " + this.LPDamageDef;
-            isDifferentDef = true;
-        }
-        if(this.FPDamageDef > 0){
-            msg += " Focus Damage: " + this.FPDamageDef;
-            isDifferentDef = true;
-        }
-        if(this.HPHealDef > 0){
-            msg += " HP Healed: " + this.HPHealDef;
-            isDifferentDef = true;
-        }
-        if(this.LPHealDef > 0){
-            msg += " Lust Healed: " + this.LPHealDef;
-            isDifferentDef = true;
-        }
-        if(this.FPHealDef > 0){
-            msg += " Focus Healed: " + this.FPHealDef;
-            isDifferentDef = true;
-        }
-        msg += ")[/color]";
-
-        if(!isDifferentDef){ //If there are no changes, then don't send the message
-            msg = "";
-        }
-        else{
-            msgAtk = "\n";
-        }
-
-        let isDifferentAtk = false;
-
-        msgAtk += "Attacker: [color=yellow](";
-        if(this.HPDamageAtk > 0){
-            msgAtk += " HP Damage: " + this.HPDamageAtk;
-            isDifferentAtk = true;
-        }
-        if(this.LPDamageAtk > 0){
-            msgAtk += " Lust Damage: " + this.LPDamageAtk;
-            isDifferentAtk = true;
-        }
-        if(this.FPDamageAtk > 0){
-            msgAtk += " Focus Damage: " + this.FPDamageAtk;
-            isDifferentAtk = true;
-        }
-        if(this.HPHealAtk > 0){
-            msgAtk += " HP Healed: " + this.HPHealAtk;
-            isDifferentAtk = true;
-        }
-        if(this.LPHealAtk > 0){
-            msgAtk += " Lust Healed: " + this.LPHealAtk;
-            isDifferentAtk = true;
-        }
-        if(this.FPHealAtk > 0){
-            msgAtk += " Focus Healed: " + this.FPHealAtk;
-            isDifferentAtk = true;
-        }
-        msgAtk += ")[/color]";
-
-        if(!isDifferentAtk){ //If there are no changes, then don't send the message
-            msgAtk = "";
-        }
-
-        return msg+""+msgAtk;
-    }
-
     getHit() {
         return "[color=red][b]" + this.hit.join("\n") + "[/b][/color]\n";
     }
@@ -185,23 +112,17 @@ export class Message implements IMessage {
 
 
     getMessage() {
-        let message = "";
-
-        var lines = [];
+        let lines = [];
 
         if (this.info.length) lines.push(this.getInfo());
         if (this.action.length) lines.push(this.getAction());
         if (this.hit.length) lines.push(this.getHit());
         if (this.status.length) lines.push(this.getStatus());
-        // let damages = this.getDeltaHPLPFP();
-        // if(damages != "") lines.push(damages);
         if (this.hint.length) lines.push(this.getHint());
         if (this.special.length) lines.push(this.getSpecial());
         if (this.error.length) lines.push(this.getError());
 
-        message = lines.join("\n");
-
-        return message;
+        return lines.join("\n");
     }
 
     send() {

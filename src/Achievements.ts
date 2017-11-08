@@ -4,7 +4,7 @@ import {ActiveFighter} from "./ActiveFighter";
 import {Fight} from "./Fight";
 import {FightTier} from "./Constants";
 
-export class EnabledAchievements{ //Keep track of the enabled achivements here, instead of doing reflection
+export class EnabledAchievements{ //Keep track of the enabled achievements here, instead of doing reflection
     static getAll():IAchievement[]{
         return [
             new RookieAchievement(),

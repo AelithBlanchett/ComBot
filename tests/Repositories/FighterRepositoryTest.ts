@@ -1,18 +1,9 @@
-/**
- * Created by Canardlaquay on 18/févr./2017.
- */
-import {Action, ActionType} from "../../src/Action";
-import {ActionRepository} from "../../src/ActionRepository";
-import {Utils} from "../../src/Utils";
-import {ActiveFighter} from "../../src/ActiveFighter";
-import {ActiveFighterRepository} from "../../src/ActiveFighterRepository";
-import {Team} from "../../src/Constants";
-import {FightStatus} from "../../src/Fight";
 import {Model} from "../../src/Model";
 import {Fighter} from "../../src/Fighter";
 import {FighterRepository} from "../../src/FighterRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
+import * as Constants from "../../src/Constants";
 
 describe("The Fighter Repository", () => {
 
@@ -29,7 +20,7 @@ describe("The Fighter Repository", () => {
         let myFighter = new Fighter();
         myFighter.name = "Aelith Blanchetts";
 
-        await Model.db('nsfw_fighters').where({name: myFighter.name, season: 1}).del();
+        await Model.db(Constants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
 
         await FighterRepository.persist(myFighter);
         let resultTrue = await FighterRepository.exists(myFighter.name);
@@ -39,7 +30,7 @@ describe("The Fighter Repository", () => {
         let resultFalse = await FighterRepository.exists(myFighter.name);
         expect(resultFalse).toBe(false);
 
-        await Model.db('nsfw_fighters').where({name: myFighter.name, season: 1}).del();
+        await Model.db(Constants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
 
         done();
     });

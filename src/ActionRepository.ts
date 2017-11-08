@@ -1,6 +1,8 @@
 import {Action, EmptyAction} from "./Action";
 import {Model} from "./Model";
 import {Utils} from "./Utils";
+import * as Constants from "./Constants";
+
 export class ActionRepository{
 
     public static async persist(action:Action):Promise<void>{
@@ -8,7 +10,7 @@ export class ActionRepository{
         {
             if(!await ActionRepository.exists(action.idAction)){
                 action.createdAt = new Date();
-                await Model.db('nsfw_actions').insert(
+                await Model.db(Constants.SQL.actionTableName).insert(
                     {
                         idAction: action.idAction,
                         idFight: action.idFight,
@@ -34,11 +36,11 @@ export class ActionRepository{
                         fpHealToAtk: action.lpHealToAtk,
                         requiresRoll: action.requiresRoll,
                         createdAt: action.createdAt
-                    }).into("nsfw_actions");
+                    }).into(Constants.SQL.actionTableName);
             }
             else{
                 action.updatedAt = new Date();
-                await Model.db('nsfw_actions').where({idAction: action.idAction}).update(
+                await Model.db(Constants.SQL.actionTableName).where({idAction: action.idAction}).update(
                     {
                         idFight: action.idFight,
                         atTurn: action.atTurn,
@@ -63,7 +65,7 @@ export class ActionRepository{
                         fpHealToAtk: action.lpHealToAtk,
                         requiresRoll: action.requiresRoll,
                         updatedAt: action.updatedAt
-                    }).into("nsfw_actions");
+                    }).into(Constants.SQL.actionTableName);
             }
 
         }
@@ -77,7 +79,7 @@ export class ActionRepository{
 
         try
         {
-            let loadedData = await Model.db('nsfw_actions').where({idFight: idFight}).select();
+            let loadedData = await Model.db(Constants.SQL.actionTableName).where({idFight: idFight}).select();
 
             for(let data of loadedData){
                 let action = new EmptyAction();
@@ -97,7 +99,7 @@ export class ActionRepository{
         let loadedData = [];
         if(idAction){
             try{
-                loadedData = await Model.db('nsfw_actions').where({idAction: idAction}).select();
+                loadedData = await Model.db(Constants.SQL.actionTableName).where({idAction: idAction}).select();
             }
             catch(ex){
                 throw ex;
@@ -109,7 +111,7 @@ export class ActionRepository{
     public static async delete(actionId:string):Promise<void>{
         if(actionId){
             try{
-                await Model.db('nsfw_actions').where({idAction: actionId}).del();
+                await Model.db(Constants.SQL.actionTableName).where({idAction: actionId}).del();
             }
             catch(ex){
                 throw ex;

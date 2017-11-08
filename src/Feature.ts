@@ -72,6 +72,11 @@ export class Feature{
                     fight.message.addHint(`${attacker.getStylizedName()} has the ${Constants.Feature.BondageHandicap} feature!`);
                     fight.message.addHint(Constants.FeatureExplain.BondageHandicap);
                     break;
+                default:
+                    modifier = null;
+                    fight.message.addHint(`${attacker.getStylizedName()} has an unknown feature!`);
+                    fight.message.addHint("Something got wrong during the detection of the feature type.");
+                    break;
             }
             if (!this.permanent) {
                 this.uses--;
@@ -88,12 +93,8 @@ export class Feature{
             case FeatureType.SexyKickStart:
                 result = 5 * this.uses;
                 break;
-            case FeatureType.Sadist:
-            case FeatureType.RyonaEnthusiast:
-            case FeatureType.CumSlut:
-            case FeatureType.BondageBunny:
-            case FeatureType.BondageHandicap:
-                //Free features
+            default:
+                //All the other features are free
                 break;
         }
         return result;

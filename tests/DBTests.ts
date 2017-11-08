@@ -154,7 +154,6 @@ describe("The database(s)", () => {
             }while(x.power == randomId);
             x.power = randomId;
             FighterRepository.persist(x).then(updWorked => {
-                expect(updWorked).toBe(true);
                 done();
             }).catch(err => {
                 done.fail(err);

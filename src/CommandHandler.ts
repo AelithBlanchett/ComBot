@@ -28,8 +28,8 @@ export class CommandHandler implements ICommandHandler {
     blnAutofight:boolean = false;
     debugImpersonatedCharacter:string = "Tina Armstrong";
 
-    webserviceApp:any;
-    webserviceServer:any;
+    // webserviceApp:any;
+    // webserviceServer:any;
 
     constructor(fChatLib:IFChatLib, chan:string) {
         this.fChatLibInstance = fChatLib;
@@ -39,43 +39,43 @@ export class CommandHandler implements ICommandHandler {
         //this.fChatLibInstance.addPrivateMessageListener(privMsgEventHandler);
     }
 
-    initializeWeb(){
-        this.webserviceApp = express();
-        this.webserviceApp.use(bodyParser.urlencoded({ extended: true }));
-        this.webserviceApp.use(bodyParser.json());
-
-        this.webserviceApp.get('/command/:command/:parameters?', async (req, res) => {
-            let command = String(req.params.command.split(' ')[0]).replace('!', '').trim().toLowerCase();
-            let argument = "";
-            if(req.params.parameters){
-                argument = req.params.parameters.trim();
-            }
-            let charData:FChatResponse = {character: "Aelith Blanchette", channel: this.channel};
-            await this[command].apply(this, [argument, charData]);
-            res.send('OK');
-        });
-
-        this.webserviceApp.get('/currentfight', (req, res) => {
-            let jsonResponse =  CircularJSON.stringify(this.fight);
-            res.send(jsonResponse);
-        });
-
-        this.webserviceServer = this.webserviceApp.listen(8093, '127.0.0.1');
-    }
-
-    listenweb(args:string, data:FChatResponse) {
-        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
-            this.initializeWeb();
-        }
-    }
-
-    unlistenweb(args:string, data:FChatResponse) {
-        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
-            this.webserviceApp = null;
-            this.webserviceServer.close();
-            this.webserviceServer = null;
-        }
-    }
+    // initializeWeb(){
+    //     this.webserviceApp = express();
+    //     this.webserviceApp.use(bodyParser.urlencoded({ extended: true }));
+    //     this.webserviceApp.use(bodyParser.json());
+    //
+    //     this.webserviceApp.get('/command/:command/:parameters?', async (req, res) => {
+    //         let command = String(req.params.command.split(' ')[0]).replace('!', '').trim().toLowerCase();
+    //         let argument = "";
+    //         if(req.params.parameters){
+    //             argument = req.params.parameters.trim();
+    //         }
+    //         let charData:FChatResponse = {character: "Aelith Blanchette", channel: this.channel};
+    //         await this[command].apply(this, [argument, charData]);
+    //         res.send('OK');
+    //     });
+    //
+    //     this.webserviceApp.get('/currentfight', (req, res) => {
+    //         let jsonResponse =  CircularJSON.stringify(this.fight);
+    //         res.send(jsonResponse);
+    //     });
+    //
+    //     this.webserviceServer = this.webserviceApp.listen(8093, '127.0.0.1');
+    // }
+    //
+    // listenweb(args:string, data:FChatResponse) {
+    //     if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+    //         this.initializeWeb();
+    //     }
+    // }
+    //
+    // unlistenweb(args:string, data:FChatResponse) {
+    //     if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+    //         this.webserviceApp = null;
+    //         this.webserviceServer.close();
+    //         this.webserviceServer = null;
+    //     }
+    // }
 
 
     private wait(ms){
@@ -1010,30 +1010,30 @@ export class CommandHandler implements ICommandHandler {
 
 }
 
-class PrivateCommandHandler {
-    fChatLibInstance:IFChatLib;
-
-    constructor(fChatLib) {
-        this.fChatLibInstance = fChatLib;
-    }
-
-    clearfeatures = CommandHandler.prototype.clearfeatures;
-    debugmode = CommandHandler.prototype.debugmode;
-    setdicescore = CommandHandler.prototype.setdicescore;
-    resetdmg = CommandHandler.prototype.resetdmg;
-    exec = CommandHandler.prototype.exec;
-    runas = CommandHandler.prototype.runas;
-    getstats = CommandHandler.prototype.getstats;
-    hidemystats = CommandHandler.prototype.hidemystats;
-    howtostart = CommandHandler.prototype.howtostart;
-    stats = CommandHandler.prototype.stats;
-    register = CommandHandler.prototype.register;
-    //removestat = CommandHandler.prototype.removestat;
-    removefeature = CommandHandler.prototype.removefeature;
-    unhidemystats = CommandHandler.prototype.unhidemystats;
-    restat = CommandHandler.prototype.restat;
-    statsforprofile = CommandHandler.prototype.statsforprofile;
-}
+// class PrivateCommandHandler {
+//     fChatLibInstance:IFChatLib;
+//
+//     constructor(fChatLib) {
+//         this.fChatLibInstance = fChatLib;
+//     }
+//
+//     clearfeatures = CommandHandler.prototype.clearfeatures;
+//     debugmode = CommandHandler.prototype.debugmode;
+//     setdicescore = CommandHandler.prototype.setdicescore;
+//     resetdmg = CommandHandler.prototype.resetdmg;
+//     exec = CommandHandler.prototype.exec;
+//     runas = CommandHandler.prototype.runas;
+//     getstats = CommandHandler.prototype.getstats;
+//     hidemystats = CommandHandler.prototype.hidemystats;
+//     howtostart = CommandHandler.prototype.howtostart;
+//     stats = CommandHandler.prototype.stats;
+//     register = CommandHandler.prototype.register;
+//     //removestat = CommandHandler.prototype.removestat;
+//     removefeature = CommandHandler.prototype.removefeature;
+//     unhidemystats = CommandHandler.prototype.unhidemystats;
+//     restat = CommandHandler.prototype.restat;
+//     statsforprofile = CommandHandler.prototype.statsforprofile;
+// }
 
 // var privMsgEventHandler = function (data) {
 //

@@ -1,8 +1,8 @@
-import {Action} from "./Action";
 import {Model} from "./Model";
 import {Utils} from "./Utils";
 import {Modifier} from "./Modifier";
 import {EmptyModifier} from "./CustomModifiers";
+import * as Constants from "./Constants";
 
 export class ModifierRepository{
 
@@ -11,7 +11,7 @@ export class ModifierRepository{
         {
             if(!await ModifierRepository.exists(modifier.idModifier)){
                 modifier.createdAt = new Date();
-                await Model.db('nsfw_modifiers').insert(
+                await Model.db(Constants.SQL.modifiersTableName).insert(
                     {
                         idModifier: modifier.idModifier,
                         idFight: modifier.idFight,
@@ -31,11 +31,11 @@ export class ModifierRepository{
                         timeToTrigger: modifier.timeToTrigger,
                         idParentActions: modifier.idParentActions.join(";"),
                         createdAt: modifier.createdAt
-                    }).into("nsfw_modifiers");
+                    }).into(Constants.SQL.modifiersTableName);
             }
             else{
                 modifier.updatedAt = new Date();
-                await Model.db('nsfw_modifiers').where({idModifier: modifier.idModifier}).update(
+                await Model.db(Constants.SQL.modifiersTableName).where({idModifier: modifier.idModifier}).update(
                     {
                         idFight: modifier.idFight,
                         idReceiver: modifier.idReceiver,
@@ -54,7 +54,7 @@ export class ModifierRepository{
                         timeToTrigger: modifier.timeToTrigger,
                         idParentActions: JSON.stringify(modifier.idParentActions),
                         updatedAt: modifier.updatedAt
-                    }).into("nsfw_modifiers");
+                    }).into(Constants.SQL.modifiersTableName);
             }
 
         }
@@ -63,12 +63,12 @@ export class ModifierRepository{
         }
     }
 
-    public static async loadFromFight(idFight:string):Promise<Modifier[]>{
+    public static async loadFromFight(idFighter:string, idFight:string):Promise<Modifier[]>{
         let loadedModifiers:Modifier[] = [];
 
         try
         {
-            let loadedData = await Model.db('nsfw_modifiers').where({idFight: idFight}).and.whereNull('deletedAt').select();
+            let loadedData = await Model.db(Constants.SQL.modifiersTableName).where({idFight: idFight, idReceiver: idFighter}).and.whereNull('deletedAt').select();
 
             for(let data of loadedData){
                 let modifier = new EmptyModifier();
@@ -91,13 +91,13 @@ export class ModifierRepository{
     }
 
     public static async exists(idModifier:string):Promise<boolean>{
-        let loadedData = await Model.db('nsfw_modifiers').where({idModifier: idModifier}).and.whereNull('deletedAt').select();
+        let loadedData = await Model.db(Constants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').select();
         return (loadedData.length > 0);
     }
 
     public static async delete(idModifier:string):Promise<void>{
         try{
-            await Model.db('nsfw_modifiers').where({idModifier: idModifier}).and.whereNull('deletedAt').update({
+            await Model.db(Constants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').update({
                 deletedAt: new Date()
             });
         }
@@ -108,7 +108,7 @@ export class ModifierRepository{
 
     public static async deleteFromFight(idFight:string):Promise<void>{
         try{
-            await Model.db('nsfw_modifiers').where({idFight: idFight}).and.whereNull('deletedAt').update({
+            await Model.db(Constants.SQL.modifiersTableName).where({idFight: idFight}).and.whereNull('deletedAt').update({
                 deletedAt: new Date()
             });
         }

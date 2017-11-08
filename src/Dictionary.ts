@@ -20,7 +20,7 @@ export class Dictionary<T, U>{
 
     public add(key: T, value: U): void {
 
-        var addAction = (key: T, value: U): void => {
+        let addAction = (key: T, value: U): void => {
             if (this.containsKey(key)) {
                 throw new Error("An element with the same key already exists in the dictionary.");
             }
@@ -34,12 +34,12 @@ export class Dictionary<T, U>{
 
     public remove(key: T): boolean {
 
-        var removeAction = (key: T): boolean => {
+        let removeAction = (key: T): boolean => {
             if (!this.containsKey(key)) {
                 return false;
             }
 
-            var index = this._keys.indexOf(key);
+            let index = this._keys.indexOf(key);
             this._keys.splice(index, 1);
             this._values.splice(index, 1);
 
@@ -51,25 +51,22 @@ export class Dictionary<T, U>{
 
     public getValue(key: T): U {
 
-        var getValueAction = (key: T): U => {
+        let getValueAction = (key: T): U => {
             if (!this.containsKey(key)) {
                 return null;
             }
 
-            var index = this._keys.indexOf(key);
+            let index = this._keys.indexOf(key);
             return this._values[index];
-        }
+        };
 
         return <U>this.checkKeyAndPerformAction(getValueAction, key);
     }
 
     public containsKey(key: T): boolean {
 
-        var containsKeyAction = (key: T): boolean => {
-            if (this._keys.indexOf(key) === -1) {
-                return false;
-            }
-            return true;
+        let containsKeyAction = (key: T): boolean => {
+            return this._keys.indexOf(key) !== -1;
         };
 
         return <boolean>this.checkKeyAndPerformAction(containsKeyAction, key);
@@ -77,14 +74,14 @@ export class Dictionary<T, U>{
 
     public changeValueForKey(key: T, newValue: U): void {
 
-        var changeValueForKeyAction = (key: T, newValue: U): void => {
+        let changeValueForKeyAction = (key: T, newValue: U): void => {
             if (!this.containsKey(key)) {
                 throw new Error("In the dictionary there is no element with the given key.");
             }
 
-            var index = this._keys.indexOf(key);
+            let index = this._keys.indexOf(key);
             this._values[index] = newValue;
-        }
+        };
 
         this.checkKeyAndPerformAction(changeValueForKeyAction, key, newValue);
     }

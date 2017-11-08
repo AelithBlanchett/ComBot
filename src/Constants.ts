@@ -10,10 +10,18 @@ export class Globals {
 }
 
 export class SQL {
-    public static fightTableName: string = "nsfw_fights";
-    public static fightFightersTableName: string = "nsfw_fightfighters";
-    public static fightersTableName: string = "nsfw_fighters";
-    public static actionTableName: string = "nsfw_actions";
+    public static fightTableName: string = Globals.pluginName + "_fights";
+    public static fightFightersTableName: string = Globals.pluginName + "_fightfighters";
+    public static fightersFeaturesTableName: string = Globals.pluginName + "_fighters_features";
+    public static fightersAchievementsTableName: string = Globals.pluginName + "_fighters_achievements";
+    public static fightersTransactionsTableName: string = Globals.pluginName + "_fighters_transactions";
+    public static fightersTableName: string = Globals.pluginName + "_fighters";
+    public static fightersViewName: string = Globals.pluginName + "_v_fighters";
+    public static actionTableName: string = Globals.pluginName + "_actions";
+    public static activeFightersTableName: string = Globals.pluginName + "_activefighters";
+    public static constantsTableName: string = Globals.pluginName + "_constants";
+    public static modifiersTableName: string = Globals.pluginName + "_modifiers";
+    public static currentSeasonKeyName: string = "currentSeason";
 }
 
 export class Fighter {

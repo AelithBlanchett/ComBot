@@ -1,24 +1,18 @@
-import {Dice} from "./Dice";
 import {Action, ActionType} from "./Action";
 import {IFChatLib} from "./interfaces/IFChatLib";
 import {Utils} from "./Utils";
 import {Dictionary} from "./Dictionary";
 import * as Constants from "./Constants";
 import Team = Constants.Team;
-import BaseDamage = Constants.BaseDamage;
 import Tier = Constants.Tier;
 import FightType = Constants.FightType;
 import FightTier = Constants.FightTier;
 import TokensPerWin = Constants.TokensPerWin;
 import Trigger = Constants.Trigger;
-import {Modifier} from "./Modifier";
-import ModifierType = Constants.ModifierType;
 import {BondageModifier} from "./CustomModifiers";
 import TriggerMoment = Constants.TriggerMoment;
 import {Message} from "./Messaging";
-let CircularJSON = require('circular-json');
 import {ActiveFighter} from "./ActiveFighter";
-import {Fighter} from "./Fighter";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FightRepository} from "./FightRepository";
 import {FighterRepository} from "./FighterRepository";
@@ -774,8 +768,8 @@ export class Fight{
         let numberOfWinners = 0;
         let numberOfLosers = 0;
         let eloAverageOfLosers = 0;
-        let eloPointsChangeToWinners = 0;
-        let eloPointsChangeToLosers = 0;
+        let eloPointsChangeToWinners: number;
+        let eloPointsChangeToLosers: number;
         for (let fighter of this.fighters) {
             if (fighter.assignedTeam == this.winnerTeam) {
                 numberOfWinners++;
@@ -825,10 +819,10 @@ export class Fight{
     }
 
     reorderFightersByInitiative(arrFightersSortedByInitiative:Array<ActiveFighter>) {
-        var index = 0;
+        let index = 0;
         for (let fighter of arrFightersSortedByInitiative) {
             let indexToMoveInFront = this.getFighterIndex(fighter.name);
-            var temp = this.fighters[index];
+            let temp = this.fighters[index];
             this.fighters[index] = this.fighters[indexToMoveInFront];
             this.fighters[indexToMoveInFront] = temp;
             index++;
@@ -873,7 +867,7 @@ export class Fight{
 
     getFirstPlayerIDAliveInTeam(team:Team, afterIndex:number = 0):number {
         let fullTeam = this.getTeam(team);
-        var index = -1;
+        let index = -1;
         for (let i = afterIndex; i < fullTeam.length; i++) {
             if (fullTeam[i] != undefined && !fullTeam[i].isTechnicallyOut() && fullTeam[i].isInTheRing) {
                 index = i;
@@ -883,10 +877,9 @@ export class Fight{
     }
 
     shufflePlayers():void {
-        for (var i = 0; i < this.fighters.length - 1; i++) {
-            var j = i + Math.floor(Math.random() * (this.fighters.length - i));
-
-            var temp = this.fighters[j];
+        for (let i = 0; i < this.fighters.length - 1; i++) {
+            let j = i + Math.floor(Math.random() * (this.fighters.length - i));
+            let temp = this.fighters[j];
             this.fighters[j] = this.fighters[i];
             this.fighters[i] = temp;
         }
@@ -903,7 +896,6 @@ export class Fight{
     }
 
     getNumberOfPlayersInTeam(team:Team):number {
-        let count = 0;
         let fullTeamCount = this.getTeam(team);
         return fullTeamCount.length;
     }
@@ -920,8 +912,8 @@ export class Fight{
     
     getAllUsedTeams():Array<Team> {
         let usedTeams:Array<Team> = this.getAllOccupiedTeams();
-        
-        var teamIndex = 0;
+
+        let teamIndex = 0;
         while (usedTeams.length < this.requiredTeams) {
             let teamToAdd = Team[Team[teamIndex]];
             if (usedTeams.indexOf(teamToAdd) == -1) {
@@ -944,8 +936,8 @@ export class Fight{
 
     getTeamsIdList():Array<number> {
         let arrResult = [];
-        for (var enumMember in Team) {
-            var isValueProperty = parseInt(enumMember, 10) >= 0;
+        for (let enumMember in Team) {
+            let isValueProperty = parseInt(enumMember, 10) >= 0;
             if (isValueProperty) {
                 arrResult.push(enumMember);
             }
@@ -998,7 +990,7 @@ export class Fight{
         let teamToUse:Team = Team.Blue;
         let arrPlayersCount = new Dictionary<Team, number>();
         let usedTeams = this.getAllUsedTeams();
-        for (var teamId of usedTeams) {
+        for (let teamId of usedTeams) {
             arrPlayersCount.add(teamId as Team, this.getNumberOfPlayersInTeam(Team[Team[teamId]]));
         }
 

@@ -22,12 +22,10 @@ import {StrapToyModifier} from "./CustomModifiers";
 import {StrapToyLPDamagePerTurn} from "./Constants";
 import {Modifier} from "./Modifier";
 import {ActiveFighter} from "./ActiveFighter";
-import {Model} from "./Model";
 import {ActionRepository} from "./ActionRepository";
 import {FocusDamageOnMiss} from "./Constants";
 import {FocusHealOnHit} from "./Constants";
 import {FocusDamageOnHit} from "./Constants";
-import {FeatureType} from "./Constants";
 import {FailedHighRiskMultipliers} from "./Constants";
 import {MasturbateLpDamage} from "./Constants";
 import {SelfDebaseFpDamage} from "./Constants";
@@ -101,6 +99,7 @@ export class Action{
         this.createdAt = new Date();
     }
 
+    //The basis formula that's used for pretty much all the attacks in some way
     attackFormula(tier:Tier, actorAtk:number, targetDef:number, roll:number):number{
 
         let statDiff = 0;
@@ -121,6 +120,7 @@ export class Action{
         return this.diceScoreBaseDamage + this.diceScoreStatDifference + this.diceScoreBonusPoints;
     }
 
+    //That method determines the difficulty of a certain move.
     requiredDiceScore():number{
         let scoreRequired = 0;
 
@@ -181,6 +181,7 @@ export class Action{
         return scoreRequired;
     }
 
+    //Displays a hint for the player, describing how the difficulty was calculated. Goes hand in hand with the requiredDiceScore that uses it.
     addRequiredScore(score, value, reason):number{
         if(value != 0){
             this.difficultyExplanation = `${this.difficultyExplanation} ${reason}:${Utils.getSignedNumber(value)}`;

@@ -70,13 +70,7 @@ export class Modifier implements IModifier{
     }
 
     willTriggerForEvent(moment: TriggerMoment, event:Trigger):boolean{
-        let canPass = false;
-        if(event & this.event){
-            if(moment & this.timeToTrigger){
-                canPass = true;
-            }
-        }
-        return canPass;
+        return ((event & this.event) && (moment & this.timeToTrigger)) > 0;
     }
 
     remove():void{
@@ -121,7 +115,7 @@ export class Modifier implements IModifier{
 
     trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):void{
         if(this.willTriggerForEvent(moment, event)){
-            let messageAboutModifier = "";
+            let messageAboutModifier: string = "";
             this.uses--;
             messageAboutModifier = `${this.receiver.getStylizedName()} is affected by the ${this.name}, `;
             if(!objFightAction){
@@ -254,7 +248,6 @@ export class Modifier implements IModifier{
             }
 
             this.fight.message.addSpecial(messageAboutModifier);
-            //this.fight.message.send();
         }
     }
 }

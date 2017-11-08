@@ -1,11 +1,10 @@
-import {Fight} from "../../src/Fight";
 import {Model} from "../../src/Model";
-import {FightRepository} from "../../src/FightRepository";
-import {BondageModifier, EmptyModifier} from "../../src/CustomModifiers";
+import {EmptyModifier} from "../../src/CustomModifiers";
 import {ModifierRepository} from "../../src/ModifierRepository";
 import {ModifierType} from "../../src/Constants";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
+import * as Constants from "../../src/Constants";
 
 describe("The Fight Repository", () => {
 
@@ -27,7 +26,7 @@ describe("The Fight Repository", () => {
         let resultFalse = await ModifierRepository.exists(myModifier.idModifier);
         expect(resultFalse).toBe(false);
 
-        await Model.db('nsfw_modifiers').where({idModifier: myModifier.idModifier}).del();
+        await Model.db(Constants.SQL.modifiersTableName).where({idModifier: myModifier.idModifier}).del();
 
         done();
     });
@@ -44,9 +43,10 @@ describe("The Fight Repository", () => {
         let resultTrue = await ModifierRepository.exists(myModifier.idModifier);
         expect(resultTrue).toBe(true);
 
-        let modifier = await ModifierRepository.loadFromFight("1");
+        let modifiers = await ModifierRepository.loadFromFight("1", "1");
+        expect(modifiers[0].idModifier).toBe(myModifier.idModifier);
 
-        await Model.db('nsfw_modifiers').where({idModifier: myModifier.idModifier}).del();
+        await Model.db(Constants.SQL.modifiersTableName).where({idModifier: myModifier.idModifier}).del();
 
         done();
     });

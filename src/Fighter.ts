@@ -82,20 +82,6 @@ export class Fighter{
     updatedAt:Date;
     deletedAt:Date;
 
-    addAchievement(uniqueShortName:string){
-        let added = false;
-        let index = this.achievements.findIndex(x => x.getUniqueShortName() == uniqueShortName);
-        if(index == -1){
-            let allAchievements = AchievementManager.getAll();
-            let indexNewAchievement = allAchievements.findIndex(x => x.getUniqueShortName().toString() == uniqueShortName);
-            let achievement = allAchievements[indexNewAchievement];
-            achievement.createdAt = new Date();
-            this.achievements.push(achievement);
-            added = true;
-        }
-        return added;
-    }
-
     checkAchievements(activeFighter?:ActiveFighter, fight?:Fight){
         let strBase = `[color=yellow][b]Achievements unlocked for ${this.name}![/b][/color]\n`;
         let added = AchievementManager.checkAll(this, activeFighter, fight);
@@ -135,7 +121,7 @@ export class Fighter{
                 hp = hp * 1.33;
                 break;
             case FightLength.Long:
-                //Keep it as it is
+                hp = hp * 1.00;
                 break;
             case FightLength.Medium:
                 hp = hp * 0.66;
@@ -161,7 +147,7 @@ export class Fighter{
                 lust = lust * 1.33;
                 break;
             case FightLength.Long:
-                //Keep it as it is
+                lust = lust * 1.00;
                 break;
             case FightLength.Medium:
                 lust = lust * 0.66;

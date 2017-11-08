@@ -29,7 +29,7 @@ export class AchievementManager {
                 let amount:number = achievement.getReward();
                 fighter.giveTokens(amount);
                 FighterRepository.logTransaction(this.name, amount, TransactionType.AchievementReward, Constants.Globals.botName);
-                addedInfo.push(achievement.getDetailedDescription() + " Reward: "+ achievement.getReward() + " tokens.");
+                addedInfo.push(`${achievement.getDetailedDescription()}  Reward: ${achievement.getReward()} ${Constants.Globals.currencyName}`);
             }
         }
         return addedInfo;

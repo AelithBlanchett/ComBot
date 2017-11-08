@@ -18,7 +18,7 @@ export class Dice {
     }
 
     private refreshTmpMods() {
-        var tmpMods = this.tmpMods;
+        let tmpMods = this.tmpMods;
 
         tmpMods.forEach(function refresh(mod, i) {
             if (--mod.times === 0) { // eslint-disable-line no-param-reassign
@@ -30,7 +30,7 @@ export class Dice {
     // Public
     // ========================================================================
     roll(times) {
-        var result = 0;
+        let result: number;
         result = this.getResult(times);
         while(this.lastRolls.indexOf(result) != -1){
             result = this.getResult(times);
@@ -43,9 +43,9 @@ export class Dice {
     }
 
     getResult(times) {
-        var t = times || 1;
-        var res = [];
-        var i;
+        let t = times || 1;
+        let res = [];
+        let i;
 
         for (i = 0; i < t; i++) {
             res.push(Math.floor(
@@ -86,7 +86,7 @@ export class Dice {
     }
 
     getModsSum() {
-        var total = 0;
+        let total = 0;
         this.mods.forEach(function sum(mod) {
             total += mod;
         });
@@ -97,8 +97,8 @@ export class Dice {
     // Tmp Mods
     // ------------------------------------------------------------------------
     addTmpMod(val, t) {
-        var times = t || 1;
-        var mod = {val: val, times: times};
+        let times = t || 1;
+        let mod = {val: val, times: times};
 
         if (isNaN(mod.val) || isNaN(mod.times)) {
             throw new Error('Invalid mod.');
@@ -114,7 +114,7 @@ export class Dice {
     }
 
     getTmpModsSum() {
-        var total = 0;
+        let total = 0;
         this.tmpMods.forEach(function sum(mod) {
             total += mod.val;
         });
@@ -123,4 +123,3 @@ export class Dice {
     }
 
 }
-;
