@@ -393,6 +393,22 @@ export class Fight{
         return this.getTeamsStillInGame().length == 0;
     }
 
+    wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async sleep(fn, ...args) {
+        await this.wait(3000);
+        return fn(...args);
+    }
+
+    async waitUntilWaitingForAction():Promise<void>{
+        while((!this.hasStarted || !this.waitingForAction || this.currentTurn <= 0) && !this.hasEnded){
+            await this.wait(1);
+        }
+        return;
+    }
+
     //Fighting info displays
 
     outputStatus(){
