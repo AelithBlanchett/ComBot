@@ -1,9 +1,9 @@
 import {Fight} from "../src/FightSystem/Fight";
-import {CommandHandler} from "../src/CommandHandler";
+import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as Constants from "../src/FightSystem/Constants";
-import {Utils} from "../src/Utils/Utils";
+import {Utils} from "../src/Common/Utils";
 import {ActionType} from "../src/FightSystem/Action";
-import {StunModifier} from "../src/FightSystem/Modifiers/CustomModifiers";
+import {DummyModifier, StunModifier} from "../src/FightSystem/Modifiers/CustomModifiers";
 import {Feature} from "../src/FightSystem/Feature";
 import {FeatureType} from "../src/FightSystem/Constants";
 import {ModifierType} from "../src/FightSystem/Constants";
@@ -12,8 +12,10 @@ import {FighterRepository} from "../src/Repositories/FighterRepository";
 import {ActiveFighterRepository} from "../src/Repositories/ActiveFighterRepository";
 import {ActionRepository} from "../src/Repositories/ActionRepository";
 import {FightRepository} from "../src/Repositories/FightRepository";
-import {Dice} from "../src/Utils/Dice";
+import {Dice} from "../src/Common/Dice";
 import {Modifier} from "../src/FightSystem/Constants";
+import {ModifierRepository} from "../src/Repositories/ModifierRepository";
+import {BaseCommandHandler} from "../src/Common/BaseCommandHandler";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -84,14 +86,35 @@ function abstractDatabase() {
     FightRepository.load = async function () {
         return new Fight();
     };
+
+    ModifierRepository.persist = async function () {
+    };
+
+    ModifierRepository.loadFromFight = async function () {
+        return [];
+    };
+
+    ModifierRepository.delete = async function () {
+    };
+
+    ModifierRepository.exists = async function () {
+        return true;
+    };
+
+    ModifierRepository.deleteFromFight = async function () {
+    };
+
+    BaseCommandHandler.setUpCurrentSeasonValue = function () {
+        Constants.Globals.currentSeason = 1;
+    };
 }
 
 //Utilities
 
 function createFighter(name):ActiveFighter {
     let myFighter;
-    let intStatsToAssign:number = Math.floor(Constants.Globals.numberOfRequiredStatPoints / 6);
-    let statOverflow:number = Constants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * 6);
+    let intStatsToAssign:number = Math.floor(Constants.Globals.numberOfRequiredStatPoints / Constants.Globals.numberOfDifferentStats);
+    let statOverflow:number = Constants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * Constants.Globals.numberOfDifferentStats);
     if (Utils.findIndex(usedFighters, "name", name) == -1) {
         myFighter = getMock(ActiveFighter);
         let randomId = -1;
@@ -193,39 +216,40 @@ function refillHPLPFP(cmd, name) {
     cmd.fight.getFighterByName(name).focus = cmd.fight.getFighterByName(name).maxFocus();
 }
 
+let messageBuffer = [];
+abstractDatabase();
+fChatLibInstance = {
+    sendMessage: function (message:string, channel:string) {
+        messageBuffer.push("Sent MESSAGE " + message + " on channel " + channel);
+        if (debug) {
+            console.log("Sent MESSAGE " + message + " on channel " + channel);
+        }
+    },
+    throwError: function (s:string) {
+        messageBuffer.push("Sent ERROR " + s);
+        if (debug) {
+            console.log("Sent ERROR " + s);
+        }
+    },
+    sendPrivMessage: function (character:string, message:string) {
+        messageBuffer.push("Sent PRIVMESSAGE " + message + " to " + character);
+        if (debug) {
+            console.log("Sent PRIVMESSAGE " + message + " to " + character);
+        }
+    },
+    addPrivateMessageListener: function () {
 
-/// <reference path="../typings/jasmine/jasmine.d.ts">
-describe("The player(s)", () => {
+    },
+    isUserChatOP: function (username:string) {
+        return username == "Aelith Blanchette";
+    }
+};
 
-
+describe("Before the fight, the test suite should verify that", () => {
     beforeEach(function () {
-        abstractDatabase();
-        fChatLibInstance = {
-            sendMessage: function (message:string, channel:string) {
-                if (debug) {
-                    console.log("Sent MESSAGE " + message + " on channel " + channel);
-                }
-            },
-            throwError: function (s:string) {
-                if (debug) {
-                    console.log("Sent ERROR " + s);
-                }
-            },
-            sendPrivMessage: function (character:string, message:string) {
-                if (debug) {
-                    console.log("Sent PRIVMESSAGE " + message + " to " + character);
-                }
-            },
-            addPrivateMessageListener: function () {
-
-            },
-            isUserChatOP: function (username:string) {
-                return username == "Aelith Blanchette";
-            }
-        };
-
         usedIndexes = [];
         usedFighters = [];
+        messageBuffer = [];
 
         spyOn(fChatLibInstance, 'sendMessage').and.callThrough();
         spyOn(fChatLibInstance, 'throwError').and.callThrough();
@@ -239,31 +263,43 @@ describe("The player(s)", () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-
-   it("should create fighter named Yolo", function () { //1
-        let fighterYolo = createFighter("Yolo");
-        expect(fighterYolo.name).toBe("Yolo");
+    it("should create a fighter named Aelith", function () { //1
+        let fighter = createFighter("Aelith");
+        expect(fighter.name).toBe("Aelith");
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should be initialized 3-3-3-3-3-3 stats with two different names", async function () { //2
-        let fighterYolo = createFighter("Yolo");
-        let fighterLoyo = createFighter("Loyo");
-        expect(fighterYolo.name + fighterLoyo.name).toBe("YoloLoyo");
+    it("should two fighters can be initialized with two different names", async function () { //2
+        let fighter = createFighter("Aelith");
+        let secondFighter = createFighter("NotAelith");
+        expect(fighter.name + secondFighter.name).toBe("AelithNotAelith");
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should join the match", async function (done) { //3
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
-        await x.join("", data);
-        if (wasMessageSent("stepped into the ring for the")) {
-            done();
-        }
-        else {
-            done.fail(new Error("The player couldn't join the match"));
-        }
+    it("should create a fighter with all the stats adding up to the requirement", async function () { //2
+        let fighter = createFighter("Yolo");
+        expect(fighter.endurance + fighter.dexterity + fighter.sensuality + fighter.power + fighter.willpower + fighter.toughness).toBe(Constants.Globals.numberOfRequiredStatPoints);
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should have been checking if fighter exists", async function (done) { //4
+});
+
+describe("Before the fight", () => {
+    beforeEach(function () {
+        usedIndexes = [];
+        usedFighters = [];
+        messageBuffer = [];
+
+        spyOn(fChatLibInstance, 'sendMessage').and.callThrough();
+        spyOn(fChatLibInstance, 'throwError').and.callThrough();
+        spyOn(fChatLibInstance, 'sendPrivMessage').and.callThrough();
+        spyOn(ActiveFighterRepository, 'load').and.callThrough();
+        spyOn(ActiveFighterRepository, 'initialize').and.callThrough();
+        spyOn(FighterRepository, 'load').and.callThrough();
+
+        debug = false;
+
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    }, DEFAULT_TIMEOUT_UNIT_TEST);
+
+    it("should check if a joining fighter exists", async function (done) { //4
         let x = new CommandHandler(fChatLibInstance, "here");
         let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
         await x.join("", data);
@@ -271,7 +307,7 @@ describe("The player(s)", () => {
         done();
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should not be joining a match twice", async function (done) { //5
+    it("should not allow a player to join a match twice", async function (done) { //5
         let x = new CommandHandler(fChatLibInstance, "here");
         let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
         await x.join("", data);
@@ -284,32 +320,7 @@ describe("The player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should join the match and set as ready", async function (done) { //6
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
-        await x.ready("", data);
-        if (wasMessageSent("is now ready to get it on!")) {
-            done();
-        }
-        else {
-            done.fail(new Error("Did not put the player as ready"));
-        }
-    }, DEFAULT_TIMEOUT_UNIT_TEST);
-
-    it("should have already joined the ring and already set ready", async function (done) { //7
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
-        await x.ready("", data);
-        await x.ready("", data);
-        if (wasMessageSent("You are already ready.")) {
-            done();
-        }
-        else {
-            done.fail(new Error("Did not successfully check if the fighter was already ready"));
-        }
-    }, DEFAULT_TIMEOUT_UNIT_TEST);
-
-    it("should be ready to start with the default blue and red team", async function (done) { //8
+    it("should wait for everyone to start using the default blue and red team", async function (done) { //8
         let x = new CommandHandler(fChatLibInstance, "here");
         await x.join("", {character: "Aelith Blanchette", channel: "here"});
         await x.join("", {character: "TheTinaArmstrong", channel: "here"});
@@ -323,23 +334,62 @@ describe("The player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should do a move with enhanced code", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
-        await initiateMatchSettings1vs1(cmd);
-        await cmd.fight.waitUntilWaitingForAction();
-        cmd.fight.setCurrentPlayer("TheTinaArmstrong");
-        try{
-            await doAction(cmd, "riskylewd", "Light");
-            if (wasLustHit(cmd, "Aelith Blanchette")) {
-                done();
-            }
-            else {
-                done.fail(new Error("HPs were not drained despite the fact that the attack should have hit."));
-            }
+    it("should let a player join the match", async function (done) { //3
+        let x = new CommandHandler(fChatLibInstance, "here");
+        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        await x.join("", data);
+        if (wasMessageSent("stepped into the ring for the")) {
+            done();
         }
-        catch(err){
-            fChatLibInstance.throwError(err);
+        else {
+            done.fail(new Error("The player couldn't join the match"));
         }
+    }, DEFAULT_TIMEOUT_UNIT_TEST);
+
+    it("should let a player join the match and set themselves as ready", async function (done) { //6
+        let x = new CommandHandler(fChatLibInstance, "here");
+        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        await x.ready("", data);
+        if (wasMessageSent("is now ready to get it on!")) {
+            done();
+        }
+        else {
+            done.fail(new Error("Did not put the player as ready"));
+        }
+    }, DEFAULT_TIMEOUT_UNIT_TEST);
+
+    it("should not let a player that is already ready to do it again", async function (done) { //7
+        let x = new CommandHandler(fChatLibInstance, "here");
+        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        await x.ready("", data);
+        await x.ready("", data);
+        if (wasMessageSent("You are already ready.")) {
+            done();
+        }
+        else {
+            done.fail(new Error("Did not successfully check if the fighter was already ready"));
+        }
+    }, DEFAULT_TIMEOUT_UNIT_TEST);
+});
+
+/// <reference path="../typings/jasmine/jasmine.d.ts">
+describe("Before the fight, the player(s)", () => {
+
+    beforeEach(function () {
+        usedIndexes = [];
+        usedFighters = [];
+        messageBuffer = [];
+
+        spyOn(fChatLibInstance, 'sendMessage').and.callThrough();
+        spyOn(fChatLibInstance, 'throwError').and.callThrough();
+        spyOn(fChatLibInstance, 'sendPrivMessage').and.callThrough();
+        spyOn(ActiveFighterRepository, 'load').and.callThrough();
+        spyOn(ActiveFighterRepository, 'initialize').and.callThrough();
+        spyOn(FighterRepository, 'load').and.callThrough();
+
+        debug = false;
+
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should tag successfully with Aelith", async function (done) { // 9

@@ -1,9 +1,7 @@
 import {Utils} from "./Utils";
 import * as Constants from "../FightSystem/Constants";
 import Team = Constants.Team;
-import Tier = Constants.Tier;
 import Stats = Constants.Stats;
-import StatTier = Constants.StatTier;
 import {FightType} from "../FightSystem/Constants";
 import {FeatureType} from "../FightSystem/Constants";
 import {FightLength} from "../FightSystem/Constants";
@@ -19,7 +17,7 @@ export class Commands{
         if(indexOfTeam != -1){
             return Team[Team[indexOfTeam]];
         }
-        return Team.Unknown;
+        return -1;
     }
 
     public static addStat(args){
@@ -40,61 +38,58 @@ export class Commands{
             })(parseFloat(value))
     }
 
-    public static checkIfValidStats(strParameters:string, numberOfRequiredPoints:number):string {
+    public static checkIfValidStats(strParameters:string):string {
         let arrParam:Array<number> = [];
 
-        for(let nbr of strParameters.split(",")){
+        for(let nbr of strParameters.split(`,`)){
             arrParam.push(parseInt(nbr));
         }
 
-        if (arrParam.length != 6) {
-           return "The number of parameters was incorrect. Example: !register 60,30,30,30,30,50";
+        let exampleStats = ``;
+        let intStatsToAssign:number = Math.floor(Constants.Globals.numberOfRequiredStatPoints / Constants.Globals.numberOfDifferentStats);
+        let statOverflow:number = Constants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * Constants.Globals.numberOfDifferentStats);
+
+        for(let i = 0; i < Constants.Globals.numberOfDifferentStats - 1; i++){
+            exampleStats += intStatsToAssign.toString() + `,`;
+        }
+        exampleStats += (intStatsToAssign + statOverflow).toString();
+
+        if (arrParam.length != Constants.Globals.numberOfDifferentStats) {
+           return `The number of parameters was incorrect. Example: !register ${exampleStats}`;
         }
         else if (!arrParam.every(arg => Commands.isInt(arg))) {
-            return "All the parameters aren't integers. Example: !register 60,30,30,30,30,50";
+            return `All the parameters aren't integers. Example: !register ${exampleStats}`;
         }
         else {
             //register
-            let total = 0;
+            let total: number;
             total = arrParam.reduce(function (a, b) {
                 return a + b;
             }, 0);
-            if (total != numberOfRequiredPoints) {
-                return "The total of stat points you've spent isn't equal to "+numberOfRequiredPoints+". (" + total + "). Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
+
+            if (total != Constants.Globals.numberOfRequiredStatPoints) {
+                return `The total of stat points you've spent isn't equal to ${Constants.Globals.numberOfRequiredStatPoints}. (${total}). Example: !register ${exampleStats} (or !restat ${exampleStats} if you're already registered)`;
             }
-            else if (arrParam[0] > 100 || (arrParam[0] < 10)) {
-                return "The Power stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
+
+            for(let i = 0; i < Constants.Globals.numberOfDifferentStats; i++){
+                if (arrParam[i] > Constants.Globals.maxStatLimit || (arrParam[i] < Constants.Globals.minStatLimit)){
+                    return `The ${Constants.Stats[i]} stat must be higher than ${Constants.Globals.minStatLimit} and lower than ${Constants.Globals.maxStatLimit}. Example: !register ${exampleStats} (or !restat ${exampleStats} if you're already registered)`;
+                }
             }
-            else if (arrParam[1] > 100 || (arrParam[1] < 10)) {
-                return "The Sensuality stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
-            }
-            else if (arrParam[2] > 100 || (arrParam[2] < 10)) {
-                return "The Toughness stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
-            }
-            else if (arrParam[3] > 100 || (arrParam[3] < 10)) {
-                return "The Endurance stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
-            }
-            else if (arrParam[4] > 100 || (arrParam[4] < 10)) {
-                return "The Dexterity stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
-            }
-            else if (arrParam[5] > 100 || (arrParam[5] < 10)) {
-                return "The Willpower stat must be higher than 10 and lower than 100. Example: !register 60,30,30,30,30,50 (or !restat 60,30,30,30,30,50 if you're already registered)";
-            }
-            else {
-                return "";
-            }
+
+            //If it passed all the checks before, all's good
+            return ``;
         }
     }
 
     public static tipPlayer(args){
         let result = {player: null, amount: -1, message: null};
-        let splittedArgs = args.split(" ");
-        let player = "";
+        let splittedArgs = args.split(` `);
         let amount = 0;
 
         if(splittedArgs.length > 1){
-            if(isNaN(splittedArgs[0]) || splittedArgs[0] <= 0){
-                result.message = "The specified amount is invalid. It must be a number > 0.";
+            if(isNaN(splittedArgs[0]) || splittedArgs[0] <= Constants.Globals.tippingMinimum){
+                result.message = `The specified amount is invalid. It must be a number > ${Constants.Globals.tippingMinimum}.`;
                 return result;
             }
             else{
@@ -102,10 +97,10 @@ export class Commands{
             }
 
             splittedArgs.shift();
-            result.player = splittedArgs.join(" ");
+            result.player = splittedArgs.join(` `);
         }
         else{
-            result.message = "The parameter count is invalid.";
+            result.message = `The parameter count is invalid.`;
             return result;
         }
 
@@ -114,13 +109,12 @@ export class Commands{
 
     public static getFeatureType(args, onlyType:boolean = false){
         let result = {featureType: null, turns: -1, message: null};
-        let splittedArgs = args.split(" ");
+        let splittedArgs = args.split(` `);
         let typeToSearch = splittedArgs[0];
-        let turns = 0;
 
         if(splittedArgs.length > 1 && !onlyType){
-            if(isNaN(splittedArgs[1]) || splittedArgs[1] <= 0 || splittedArgs[1] > 10){
-                result.message = "The number of fights specified is invalid. It must be a number > 0 and <= 10";
+            if(isNaN(splittedArgs[1]) || splittedArgs[1] <= Constants.Globals.featuresMinMatchesDurationCount || splittedArgs[1] > Constants.Globals.featuresMaxMatchesDurationCount){
+                result.message = `The number of fights specified is invalid. It must be a number > ${Constants.Globals.featuresMinMatchesDurationCount} and <= ${Constants.Globals.featuresMaxMatchesDurationCount}`;
                 return result;
             }
             else{
@@ -140,11 +134,11 @@ export class Commands{
             result.featureType =  FeatureType[FeatureType[indexOfFeatType]];
         }
         else{
-            result.message = "This feature doesn't exist.";
+            result.message = `This feature doesn't exist.`;
         }
 
         if(result.featureType == FeatureType[FeatureType.SexyKickStart] || result.featureType == FeatureType[FeatureType.KickStart]){
-            result.message = "You did not specify a number of fights, and features requiring payment cannot be permanent.";
+            result.message = `You did not specify a number of fights, and features requiring payment cannot be permanent.`;
         }
 
         return result;
@@ -179,7 +173,7 @@ export class Commands{
             return -1;
         }
         else{
-            if(args > 10){
+            if(args > Constants.Globals.numberOfAvailableTeams){
                 return -1;
             }
         }

@@ -1,6 +1,6 @@
-import {Dice} from "../Utils/Dice";
+import {Dice} from "../Common/Dice";
 import {Fight, FightStatus} from "./Fight";
-import {Team} from "./Constants";
+import {FightLength, Team} from "./Constants";
 import {Action} from "./Action";
 import {Trigger} from "./Constants";
 import {TriggerMoment} from "./Constants";
@@ -8,12 +8,13 @@ import {FightType} from "./Constants";
 import * as Constants from "./Constants";
 import {ModifierType} from "./Constants";
 import {Tier} from "./Constants";
-import {Utils} from "../Utils/Utils";
+import {Utils} from "../Common/Utils";
 import {FeatureType} from "./Constants";
 import {Modifier} from "./Modifiers/Modifier";
-import {Fighter} from "./Fighter";
+import {NSFWFighter} from "./Fighter";
+import {AchievementManager} from "../Achievements/AchievementManager";
 
-export class ActiveFighter extends Fighter {
+export class ActiveFighter extends NSFWFighter {
 
     fight:Fight;
     idFight:string;
@@ -126,9 +127,137 @@ export class ActiveFighter extends Fighter {
         this.fightStatus = FightStatus.Idle;
     }
 
+    initialFocus():number{
+        return this.maxFocus();
+    }
+
+    maxFocus():number {
+        return 30 + this.focusResistance();
+    }
+
+    totalHp():number{
+        let hp = 130;
+        if (this.toughness > 10) {
+            hp += (this.toughness - 10);
+        }
+        switch (this.fightDuration()){
+            case FightLength.Epic:
+                hp = hp * 1.33;
+                break;
+            case FightLength.Long:
+                hp = hp * 1.00;
+                break;
+            case FightLength.Medium:
+                hp = hp * 0.66;
+                break;
+            case FightLength.Short:
+                hp = hp * 0.33;
+                break;
+        }
+        return hp;
+    }
+
+    hpPerHeart():number {
+        return Math.ceil(this.totalHp() / this.maxLives());
+    }
+
+    totalLust():number{
+        let lust = 130;
+        if (this.endurance > 10) {
+            lust += (this.endurance - 10);
+        }
+        switch (this.fightDuration()){
+            case FightLength.Epic:
+                lust = lust * 1.33;
+                break;
+            case FightLength.Long:
+                lust = lust * 1.00;
+                break;
+            case FightLength.Medium:
+                lust = lust * 0.66;
+                break;
+            case FightLength.Short:
+                lust = lust * 0.33;
+                break;
+        }
+        return lust;
+    }
+
+    lustPerOrgasm():number {
+        return Math.ceil(this.totalLust() / this.maxLives());
+    }
+
+    maxLives():number {
+        let maxLives = -1;
+        switch (this.fightDuration()){
+            case FightLength.Epic:
+                maxLives = 4;
+                break;
+            case FightLength.Long:
+                maxLives = 3;
+                break;
+            case FightLength.Medium:
+                maxLives = 2;
+                break;
+            case FightLength.Short:
+                maxLives = 1;
+                break;
+        }
+        return maxLives;
+    }
+
+    minFocus():number {
+        return 0;
+    }
+
+    focusResistance():number{
+        let resistance = 30;
+        if (this.willpower > 10) {
+            resistance += (this.willpower - 10);
+        }
+        return resistance;
+    }
+
+    maxBondageItemsOnSelf():number {
+        let maxBondageItemsOnSelf = -1;
+        switch (this.fightDuration()){
+            case FightLength.Epic:
+                maxBondageItemsOnSelf = 5;
+                break;
+            case FightLength.Long:
+                maxBondageItemsOnSelf = 4;
+                break;
+            case FightLength.Medium:
+                maxBondageItemsOnSelf = 3;
+                break;
+            case FightLength.Short:
+                maxBondageItemsOnSelf = 2;
+                break;
+        }
+        return maxBondageItemsOnSelf;
+    }
+
     assignFight(fight:Fight):void{
         this.fight = fight;
         this.idFight = fight.idFight;
+    }
+
+    getStatsInString():string{
+        return `${this.power},${this.sensuality},${this.toughness},${this.endurance},${this.dexterity},${this.willpower}`;
+    }
+
+    checkAchievements(activeFighter?:ActiveFighter, fight?:Fight){
+        let strBase = `[color=yellow][b]Achievements unlocked for ${this.name}![/b][/color]\n`;
+        let added = AchievementManager.checkAll(this, activeFighter, fight);
+
+        if(added.length > 0){
+            strBase += added.join("\n");
+        }
+        else{
+            strBase = "";
+        }
+
+        return strBase;
     }
 
     //fight is "mistakenly" set as optional to be compatible with the super.init
@@ -287,7 +416,7 @@ export class ActiveFighter extends Fighter {
             return this.fight.fightLength;
         }
         else{
-            return super.fightDuration();
+            return FightLength.Long;
         }
     }
 

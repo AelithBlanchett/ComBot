@@ -1,10 +1,43 @@
+import {Utils} from "../Common/Utils";
+
+export enum Team {
+    White = undefined,
+    Unknown = -1,
+    Blue = 0,
+    Red = 1,
+    Yellow = 2,
+    Orange = 3,
+    Pink = 4,
+    Purple = 5,
+    Green = 6,
+    Gray = 7,
+    Cyan = 8,
+    Brown = 9,
+}
+
+export enum Stats {
+    Power = 0,
+    Sensuality = 1,
+    Toughness = 2,
+    Endurance = 3,
+    Willpower = 4,
+    Dexterity = 5
+}
+
 export class Globals {
+    public static numberOfAvailableTeams:number = (Utils.getEnumList(Team).length - 2);
+    public static featuresMinMatchesDurationCount:number = 1;
+    public static featuresMaxMatchesDurationCount:number = 10;
+    public static tippingMinimum:number = 0;
     public static pluginName:string = "nsfw";
     public static currencyName:string = "tokens";
     public static currentSeason:number = 1;
     public static diceSides:number = 10;
     public static diceCount:number = 2;
+    public static numberOfDifferentStats:number = Utils.getEnumList(Stats).length;
     public static numberOfRequiredStatPoints:number = 230;
+    public static minStatLimit:number = 10;
+    public static maxStatLimit:number = 100;
     public static restatCostInTokens:number = 5;
     public static botName:string = "Miss_Spencer";
 }
@@ -22,11 +55,6 @@ export class SQL {
     public static constantsTableName: string = Globals.pluginName + "_constants";
     public static modifiersTableName: string = Globals.pluginName + "_modifiers";
     public static currentSeasonKeyName: string = "currentSeason";
-}
-
-export class Fighter {
-    public static minLevel: number = 1;
-    public static maxLevel: number = 6;
 }
 
 export namespace Fight {
@@ -144,6 +172,17 @@ export enum FeatureType {
     DomSubLover = 5,
     BondageBunny = 6,
     BondageHandicap = 7
+}
+
+export enum FeatureCostPerUse {
+    KickStart = 5,
+    SexyKickStart = 5,
+    Sadist = 0,
+    CumSlut = 0,
+    RyonaEnthusiast = 0,
+    DomSubLover = 0,
+    BondageBunny = 0,
+    BondageHandicap = 0
 }
 
 export class FeatureExplain {
@@ -277,30 +316,18 @@ export class Messages {
     static wrongMatchTypeForAction = "You can't %s in a %s match.";
 
     static commandError = "[color=red]An error happened: %s[/color]";
-}
 
-export enum Team {
-    White = undefined,
-    Unknown = -1,
-    Blue = 0,
-    Red = 1,
-    Yellow = 2,
-    Orange = 3,
-    Pink = 4,
-    Purple = 5,
-    Green = 6,
-    Gray = 7,
-    Cyan = 8,
-    Brown = 9,
-}
+    static statChangeSuccessful = "[color=green]You've successfully changed your stats![/color]";
+    static registerWelcomeMessage = "[color=green]You are now registered! Welcome! Don't forget to read the quickstart guide AND the two collapses under Core Mechanics on [user]Rendezvous Wrestling[/user]'s profile.[/color]";
 
-export enum Stats {
-    Power = 0,
-    Sensuality = 1,
-    Toughness = 2,
-    Endurance = 3,
-    Willpower = 4,
-    Dexterity = 5
+    static errorStatsPrivate = "[color=red]This wrestler's stats are private, or does not exist.[/color]";
+
+    static errorAlreadyReady = "[color=red]You are already ready.[/color]";
+    static errorFightAlreadyInProgress = "[color=red]There is already a fight in progress.[/color]";
+    static errorNotRegistered = "[color=red]You are not registered.[/color]";
+    static errorRecipientOrSenderNotFound = `[color=red]Either you or the receiver wasn't found in the fighter database.[/color]`;
+    static errorNotEnoughMoney = `[color=red]You don't have enough ${Globals.currencyName}.[/color]`;
+    static errorAlreadyRegistered = "[color=red]You are already registered.[/color]";
 }
 
 export enum Tier {
@@ -314,6 +341,12 @@ export enum FightTier {
     Bronze = 0,
     Silver = 1,
     Gold = 2
+}
+
+export enum FightTierWinRequirements {
+    Bronze = 0,
+    Silver = 10,
+    Gold = 30
 }
 
 export enum FightLength {
@@ -426,9 +459,8 @@ export enum FightType {
     LastManStanding = 2,
     SexFight = 3,
     Humiliation = 4,
-    // Tables = 5,
-    Bondage = 6,
-    Submission = 7
+    Bondage = 5,
+    Submission = 6
 }
 
 export const Arenas = [

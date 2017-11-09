@@ -1,11 +1,11 @@
 import {Action, ActionType} from "../../src/FightSystem/Action";
 import {ActionRepository} from "../../src/Repositories/ActionRepository";
-import {Utils} from "../../src/Utils/Utils";
+import {Utils} from "../../src/Common/Utils";
 import {ActiveFighter} from "../../src/FightSystem/ActiveFighter";
 import {ActiveFighterRepository} from "../../src/Repositories/ActiveFighterRepository";
 import {Team} from "../../src/FightSystem/Constants";
 import {FightStatus} from "../../src/FightSystem/Fight";
-import {Model} from "../../src/Utils/Model";
+import {Model} from "../../src/Common/Model";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 

@@ -17,7 +17,7 @@ import {DegradationModifier} from "./Modifiers/CustomModifiers";
 import {StunModifier} from "./Modifiers/CustomModifiers";
 import TriggerMoment = Constants.TriggerMoment;
 import {HighRiskMultipliers} from "./Constants";
-import {Utils} from "../Utils/Utils";
+import {Utils} from "../Common/Utils";
 import {StrapToyModifier} from "./Modifiers/CustomModifiers";
 import {StrapToyLPDamagePerTurn} from "./Constants";
 import {Modifier} from "./Modifiers/Modifier";

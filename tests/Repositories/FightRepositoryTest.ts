@@ -1,5 +1,5 @@
 import {Fight} from "../../src/FightSystem/Fight";
-import {Model} from "../../src/Utils/Model";
+import {Model} from "../../src/Common/Model";
 import {FightRepository} from "../../src/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();

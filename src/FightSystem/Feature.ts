@@ -1,45 +1,15 @@
-import {Utils} from "../Utils/Utils";
 import * as Constants from "./Constants";
 import {ItemPickupModifier, SextoyPickupModifier, BondageModifier} from "./Modifiers/CustomModifiers";
 import {Fight} from "./Fight";
 import {FeatureType} from "./Constants";
 import {ActiveFighter} from "./ActiveFighter";
-import {IModifier} from "./Modifiers/IModifier";
+import {BaseFeature} from "../Common/BaseFeature";
+import {Modifier} from "./Modifiers/Modifier";
 
-export class Feature{
+export class Feature extends BaseFeature{
 
-    id:string;
-    type:FeatureType;
-    uses: number;
-    permanent: boolean;
-    obtainedBy:string;
-    createdAt:Date;
-    updatedAt:Date;
-    deletedAt:Date;
-
-    constructor(fighterName:string, featureType:FeatureType, uses:number, id?:string) {
-        if(id){
-            this.id = id;
-        }
-        else{
-            this.id = Utils.generateUUID();
-        }
-
-        this.obtainedBy = fighterName;
-
-        this.type = featureType;
-
-        if(uses <= 0){
-            this.uses = 0;
-            this.permanent = true;
-        }
-        else{
-            this.uses = uses;
-        }
-    }
-
-    getModifier(fight:Fight, attacker?:ActiveFighter, defender?:ActiveFighter):IModifier {
-        let modifier:IModifier = null;
+    getModifier(fight:Fight, attacker?:ActiveFighter, defender?:ActiveFighter):Modifier {
+        let modifier:Modifier = null;
         if (!this.isExpired()) {
             switch (this.type) {
                 case FeatureType.KickStart:
@@ -85,29 +55,5 @@ export class Feature{
         }
         return modifier;
     }
-
-    getCost():number{
-        let result = 0;
-        switch (this.type){
-            case FeatureType.KickStart:
-            case FeatureType.SexyKickStart:
-                result = 5 * this.uses;
-                break;
-            default:
-                //All the other features are free
-                break;
-        }
-        return result;
-    }
-
-    isExpired():boolean{
-        if(!this.permanent){
-            if(this.uses <= 0){
-                return true;
-            }
-        }
-        return false;
-    }
-
 
 }

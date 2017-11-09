@@ -1,7 +1,7 @@
 import * as Constants from "../FightSystem/Constants";
 import Team = Constants.Team;
 import StatTier = Constants.StatTier;
-var vsprintf = require('sprintf-js').vsprintf;
+let vsprintf = require('sprintf-js').vsprintf;
 
 export class Utils {
     static minInArray(arr: Array<Number>) {
@@ -30,7 +30,7 @@ export class Utils {
     }
 
     static findIndex(array, attr, value) {
-        for(var i = 0; i < array.length; i += 1) {
+        for(let i = 0; i < array.length; i += 1) {
             if(array[i][attr] === value) {
                 return i;
             }
@@ -43,9 +43,9 @@ export class Utils {
     }
 
     static shuffleArray(array) {
-        for (var i = array.length - 1; i > 0; i--) {
-            var j = Math.floor(Math.random() * (i + 1));
-            var temp = array[i];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            let temp = array[i];
             array[i] = array[j];
             array[j] = temp;
         }
@@ -54,8 +54,8 @@ export class Utils {
 
     static getEnumList(myEnum):Array<string>{
         let arrResult = [];
-        for (var enumMember in myEnum) {
-            var isValueProperty = parseInt(enumMember, 10) >= 0;
+        for (let enumMember in myEnum) {
+            let isValueProperty = parseInt(enumMember, 10) >= 0;
             if (isValueProperty) {
                 arrResult.push(myEnum[enumMember]);
             }
@@ -68,7 +68,7 @@ export class Utils {
     }
 
     static getAllIndexes(arr, val) {
-        var indexes = [], i;
+        let indexes = [], i;
         for(i = 0; i < arr.length; i++)
             if (arr[i] === val)
                 indexes.push(i);

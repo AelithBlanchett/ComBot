@@ -1,11 +1,11 @@
-import {Model} from "../../src/Utils/Model";
-import {Fighter} from "../../src/FightSystem/Fighter";
+import {Model} from "../../src/Common/Model";
+import {NSFWFighter} from "../../src/FightSystem/Fighter";
 import {FighterRepository} from "../../src/Repositories/FighterRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 import * as Constants from "../../src/FightSystem/Constants";
 
-describe("The Fighter Repository", () => {
+describe("The NSFWFighter Repository", () => {
 
     beforeEach(async () =>{
         //await Model.db('nsfw_fighters').del();
@@ -15,9 +15,9 @@ describe("The Fighter Repository", () => {
         done();
     });
 
-    it("should do all tests around Fighter Aelith Blanchetts", async function (done) {
+    it("should do all tests around NSFWFighter Aelith Blanchetts", async function (done) {
 
-        let myFighter = new Fighter();
+        let myFighter = new NSFWFighter();
         myFighter.name = "Aelith Blanchetts";
 
         await Model.db(Constants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
@@ -36,7 +36,7 @@ describe("The Fighter Repository", () => {
     });
 
     // it("should say that action that was just inserted is in database.", async function (done) {
-    //     let myFighter = new Fighter();
+    //     let myFighter = new NSFWFighter();
     //     myFighter.name = "Aelith Blanchette";
     //
     //     await ActiveFighterRepository.persist(myFighter);

@@ -1,7 +1,6 @@
-import {ActiveFighter} from "../ActiveFighter";
-import {ModifierType, Tier, Trigger, TriggerMoment} from "../Constants";
-import {Action} from "../Action";
-import {Fight} from "../Fight";
+import {ActiveFighter} from "../FightSystem/ActiveFighter";
+import {ModifierType, Tier, Trigger, TriggerMoment} from "../FightSystem/Constants";
+import {Fight} from "../FightSystem/Fight";
 
 export interface IModifier{
     idModifier: string;
@@ -13,12 +12,6 @@ export interface IModifier{
     idApplier: string;
     receiver: ActiveFighter;
     idReceiver: string;
-    hpDamage: number;
-    lustDamage: number;
-    focusDamage: number;
-    hpHeal: number;
-    lustHeal: number;
-    focusHeal: number;
     areDamageMultipliers: boolean;
     diceRoll: number;
     escapeRoll: number;
@@ -38,4 +31,6 @@ export interface IModifier{
     trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):void;
     willTriggerForEvent(moment: TriggerMoment, event:Trigger):boolean;
     build(receiver:ActiveFighter, applier:ActiveFighter, fight:Fight):void;
+    applyModifierOnReceiver(moment: TriggerMoment, event:Trigger):void;
+    applyModifierOnAction(moment: TriggerMoment, event:Trigger, objFightAction:any):void;
 }

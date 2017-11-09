@@ -1,7 +1,7 @@
-import {Model} from "../Utils/Model";
-import {Fighter} from "../FightSystem/Fighter";
+import {Model} from "../Common/Model";
+import {NSFWFighter} from "../FightSystem/Fighter";
 import {Feature} from "../FightSystem/Feature";
-import {Utils} from "../Utils/Utils";
+import {Utils} from "../Common/Utils";
 import {IAchievement} from "../Achievements/IAchievement";
 import {AchievementManager} from "../Achievements/AchievementManager";
 import {TransactionType} from "../FightSystem/Constants";
@@ -9,7 +9,7 @@ import * as Constants from "../FightSystem/Constants";
 
 export class FighterRepository{
 
-    public static async persist(fighter:Fighter):Promise<void>{
+    public static async persist(fighter:NSFWFighter):Promise<void>{
         try
         {
             let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
@@ -57,7 +57,7 @@ export class FighterRepository{
         }
     }
 
-    public static async persistFeatures(fighter:Fighter):Promise<void>{
+    public static async persistFeatures(fighter:NSFWFighter):Promise<void>{
 
         let featuresIdToKeep = [];
         let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
@@ -106,7 +106,7 @@ export class FighterRepository{
         }
     }
 
-    public static async persistAchievements(fighter:Fighter):Promise<void>{
+    public static async persistAchievements(fighter:NSFWFighter):Promise<void>{
 
         for(let achievement of fighter.achievements){
             let loadedData = await Model.db(Constants.SQL.fightersAchievementsTableName).where({idFighter: fighter.name, idAchievement: achievement.getType()}).select();
@@ -146,8 +146,8 @@ export class FighterRepository{
         return (loadedData.length > 0);
     }
 
-    public static async load(name:string):Promise<Fighter>{
-        let loadedFighter:Fighter = new Fighter();
+    public static async load(name:string):Promise<NSFWFighter>{
+        let loadedFighter:NSFWFighter = new NSFWFighter();
 
         if(!await FighterRepository.exists(name)){
             return null;

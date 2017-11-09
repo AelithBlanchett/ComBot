@@ -1,25 +1,24 @@
 import {Action, ActionType} from "./Action";
-import {IFChatLib} from "../Utils/IFChatLib";
-import {Utils} from "../Utils/Utils";
-import {Dictionary} from "../Utils/Dictionary";
+import {IFChatLib} from "../Common/IFChatLib";
+import {Utils} from "../Common/Utils";
+import {Dictionary} from "../Common/Dictionary";
 import * as Constants from "./Constants";
 import Team = Constants.Team;
 import Tier = Constants.Tier;
-import FightType = Constants.FightType;
 import FightTier = Constants.FightTier;
 import TokensPerWin = Constants.TokensPerWin;
 import Trigger = Constants.Trigger;
 import {BondageModifier} from "./Modifiers/CustomModifiers";
 import TriggerMoment = Constants.TriggerMoment;
-import {Message} from "../Utils/Messaging";
+import {Message} from "../Common/Messaging";
 import {ActiveFighter} from "./ActiveFighter";
 import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
 import {FightRepository} from "../Repositories/FightRepository";
 import {FighterRepository} from "../Repositories/FighterRepository";
-import {FeatureType} from "./Constants";
+import {FeatureType, FightType} from "./Constants";
 import {TransactionType} from "./Constants";
 import {FightLength} from "./Constants";
-import {Commands} from "../Utils/Parser";
+import {Commands} from "../Common/Parser";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -44,7 +43,6 @@ export class Fight{
     fighters:ActiveFighter[] = [];
     channel:string;
     message:Message;
-    lastMessage:Message;
     fChatLibInstance:IFChatLib;
 
     debug:boolean = false;
@@ -105,39 +103,19 @@ export class Fight{
 
     setFightType(type:string){
         if(!this.hasStarted && !this.hasEnded){
-            switch(type.toLowerCase()){
-                case "classic":
-                case "rumble":
-                    this.fightType = FightType.Classic;
-                    this.message.addInfo(Constants.Messages.setFightTypeClassic);
+            let fightTypesList = Utils.getEnumList(FightType);
+            let foundAskedType = false;
+            for(let fightTypeId in fightTypesList){
+                if(type.toLowerCase() == FightType[fightTypeId].toLowerCase()){
+                    this.fightType = FightType[FightType[fightTypeId]];
+                    this.message.addInfo(Constants.Messages["setFightType"+ FightType[fightTypeId]]);
+                    foundAskedType = true;
                     break;
-                case "tag":
-                case "tagteam":
-                case "tag-team":
-                    this.fightType = FightType.Tag;
-                    this.message.addInfo(Constants.Messages.setFightTypeTag);
-                    break;
-                case "lastmanstanding":
-                    this.fightType = FightType.LastManStanding;
-                    this.message.addInfo(Constants.Messages.setFightTypeLMS);
-                    break;
-                case "sex-fight":
-                case "sexfight":
-                    this.fightType = FightType.SexFight;
-                    this.message.addInfo(Constants.Messages.setFightTypeSexFight);
-                    break;
-                case "humiliation":
-                    this.fightType = FightType.Humiliation;
-                    this.message.addInfo(Constants.Messages.setFightTypeHMatch);
-                    break;
-                case "bondage":
-                    this.fightType = FightType.Bondage;
-                    this.message.addInfo(Constants.Messages.setFightTypeBondageMatch);
-                    break;
-                default:
-                    this.fightType = FightType.Classic;
-                    this.message.addInfo(Constants.Messages.setFightTypeNotFound);
-                    break;
+                }
+            }
+            if(!foundAskedType){
+                this.fightType = FightType.Classic;
+                this.message.addInfo(Constants.Messages.setFightTypeNotFound);
             }
         }
         else{
@@ -174,13 +152,13 @@ export class Fight{
             if (!this.getFighterByName(fighterName)) { //find fighter by its name property instead of comparing objects, which doesn't work.
                 let activeFighter:ActiveFighter = await ActiveFighterRepository.initialize(fighterName);
                 if(activeFighter == null){
-                    throw new Error("This character isn't registered yet.");
+                    throw new Error(Constants.Messages.errorNotRegistered);
                 }
-                if(activeFighter.tokens < 10){
-                    throw new Error("You don't have enough tokens (It costs 10 tokens). Get to work and earn it!");
+                if(activeFighter.tokens < Constants.Fight.Globals.tokensCostToFight){
+                    throw new Error(`${Constants.Messages.errorNotEnoughMoney} (It costs ${Constants.Fight.Globals.tokensCostToFight} tokens). Get to work and earn it!`);
                 }
-                let statsInString = `${activeFighter.power},${activeFighter.sensuality},${activeFighter.toughness},${activeFighter.endurance},${activeFighter.dexterity},${activeFighter.willpower}`;
-                let areStatsValid = Commands.checkIfValidStats(statsInString, Constants.Globals.numberOfRequiredStatPoints);
+                let statsInString = activeFighter.getStatsInString();
+                let areStatsValid = Commands.checkIfValidStats(statsInString);
                 if(areStatsValid != ""){
                     throw new Error(areStatsValid);
                 }
@@ -233,8 +211,7 @@ export class Fight{
     }
 
     canStart() {
-        let canGo = (this.isEveryoneReady() && !this.hasStarted && this.getAllOccupiedTeams().length >= this.requiredTeams);
-        return canGo; //only start if everyone's ready and if the teams are balanced
+        return (this.isEveryoneReady() && !this.hasStarted && this.getAllOccupiedTeams().length >= this.requiredTeams); //only start if everyone's ready and if the teams are balanced
     }
 
 
@@ -393,18 +370,9 @@ export class Fight{
         return this.getTeamsStillInGame().length == 0;
     }
 
-    wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    async sleep(fn, ...args) {
-        await this.wait(3000);
-        return fn(...args);
-    }
-
     async waitUntilWaitingForAction():Promise<void>{
         while((!this.hasStarted || !this.waitingForAction || this.currentTurn <= 0) && !this.hasEnded){
-            await this.wait(1);
+            await new Promise(resolve => setTimeout(resolve, 1))
         }
         return;
     }
@@ -760,7 +728,7 @@ export class Fight{
         }
     }
 
-    pickFinisher(){
+    static pickFinisher(){
         return Constants.finishers[Math.floor(Math.random() * Constants.finishers.length)];
     }
 
@@ -776,7 +744,7 @@ export class Fight{
         }
         if(this.winnerTeam != Team.Unknown){
             this.message.addInfo(Utils.strFormat(Constants.Messages.endFightAnnounce, [Team[this.winnerTeam]]));
-            this.message.addHit("Finisher suggestion: " + this.pickFinisher());
+            this.message.addHit("Finisher suggestion: " + Fight.pickFinisher());
             this.message.send();
         }
 
@@ -831,7 +799,7 @@ export class Fight{
 
         this.message.send();
 
-        FightRepository.persist(this);
+        await FightRepository.persist(this);
     }
 
     reorderFightersByInitiative(arrFightersSortedByInitiative:Array<ActiveFighter>) {

@@ -1,10 +1,10 @@
-import {Fighter} from "../src/FightSystem/Fighter";
+import {NSFWFighter} from "../src/FightSystem/Fighter";
 import {Fight} from "../src/FightSystem/Fight";
-import {IFChatLib} from "../src/Utils/IFChatLib";
-import {CommandHandler} from "../src/CommandHandler";
+import {IFChatLib} from "../src/Common/IFChatLib";
+import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as Constants from "../src/FightSystem/Constants";
 import Tier = Constants.Tier;
-import {Utils} from "../src/Utils/Utils";
+import {Utils} from "../src/Common/Utils";
 import {Action, ActionType} from "../src/FightSystem/Action";
 import {ItemPickupModifier} from "../src/FightSystem/Modifiers/CustomModifiers";
 import {ModifierType} from "../src/FightSystem/Constants";
@@ -37,13 +37,13 @@ async function initiateMatchSettings2vs2TagForDb(cmdHandler) {
 describe("The database(s)", () => {
 
     async function resetData() {
-        let firstFighter = new Fighter();
+        let firstFighter = new NSFWFighter();
         firstFighter.name = "test1";
-        let secondFighter = new Fighter();
+        let secondFighter = new NSFWFighter();
         secondFighter.name = "test2";
-        let thirdFighter = new Fighter();
+        let thirdFighter = new NSFWFighter();
         thirdFighter.name = "test3";
-        let fourthFighter = new Fighter();
+        let fourthFighter = new NSFWFighter();
         fourthFighter.name = "test4";
 
         await FighterRepository.persist(firstFighter);
@@ -139,7 +139,7 @@ describe("The database(s)", () => {
                 done();
             }
             else{
-                done.fail(new Error("Fighter shouldn't have been found in the database."));
+                done.fail(new Error("NSFWFighter shouldn't have been found in the database."));
             }
         }).catch(err => {
             done.fail(err);
@@ -177,7 +177,7 @@ describe("The database(s)", () => {
     //},5000);
     //
     //it("should write a new fight in the database", function (done) {
-    //    Fighter.load("test2").then(x => {
+    //    NSFWFighter.load("test2").then(x => {
     //        let myFight = new Fight(fChatLibInstance, "here", "hello");
     //        Fight.saveState(myFight).then(idAction => {
     //            expect(idAction).toBeGreaterThan(0);

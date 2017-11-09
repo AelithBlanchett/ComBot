@@ -1,5 +1,5 @@
-import {Model} from "../Utils/Model";
-import {Utils} from "../Utils/Utils";
+import {Model} from "../Common/Model";
+import {Utils} from "../Common/Utils";
 import {Modifier} from "../FightSystem/Modifiers/Modifier";
 import {EmptyModifier} from "../FightSystem/Modifiers/CustomModifiers";
 import * as Constants from "../FightSystem/Constants";

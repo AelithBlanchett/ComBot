@@ -1,7 +1,7 @@
-import {Model} from "../Utils/Model";
+import {Model} from "../Common/Model";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {FighterRepository} from "./FighterRepository";
-import {Utils} from "../Utils/Utils";
+import {Utils} from "../Common/Utils";
 import {ModifierRepository} from "./ModifierRepository";
 import * as Constants from "../FightSystem/Constants";
 

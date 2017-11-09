@@ -1,2 +1,2 @@
-import {CommandHandler} from "./src/CommandHandler";
-export {CommandHandler}
+import {BaseCommandHandler} from "./src/Common/BaseCommandHandler";
+export {BaseCommandHandler}

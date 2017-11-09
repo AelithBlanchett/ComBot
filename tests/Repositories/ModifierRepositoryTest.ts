@@ -1,4 +1,4 @@
-import {Model} from "../../src/Utils/Model";
+import {Model} from "../../src/Common/Model";
 import {EmptyModifier} from "../../src/FightSystem/Modifiers/CustomModifiers";
 import {ModifierRepository} from "../../src/Repositories/ModifierRepository";
 import {ModifierType} from "../../src/FightSystem/Constants";

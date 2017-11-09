@@ -1,18 +1,12 @@
-import {Fighter} from "../src/FightSystem/Fighter";
+import {NSFWFighter} from "../src/FightSystem/Fighter";
 import {Fight} from "../src/FightSystem/Fight";
-import {IFChatLib} from "../src/Utils/IFChatLib";
-import {CommandHandler} from "../src/CommandHandler";
+import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as Constants from "../src/FightSystem/Constants";
 import Tier = Constants.Tier;
-import {Utils} from "../src/Utils/Utils";
+import {Utils} from "../src/Common/Utils";
 import {ActionType, Action} from "../src/FightSystem/Action";
-import {StunModifier} from "../src/FightSystem/Modifiers/CustomModifiers";
-import {EnumEx} from "../src/Utils/Utils";
+import {EnumEx} from "../src/Common/Utils";
 import Trigger = Constants.Trigger;
-import {Feature} from "../src/FightSystem/Feature";
-import {FeatureType} from "../src/FightSystem/Constants";
-import {ItemPickupModifier} from "../src/FightSystem/Modifiers/CustomModifiers";
-import {ModifierType} from "../src/FightSystem/Constants";
 var waitUntil = require('wait-until');
 var Jasmine = require('jasmine');
 var async = require('async');
@@ -22,7 +16,7 @@ import {FighterRepository} from "../src/Repositories/FighterRepository";
 import {ActiveFighterRepository} from "../src/Repositories/ActiveFighterRepository";
 import {ActionRepository} from "../src/Repositories/ActionRepository";
 import {FightRepository} from "../src/Repositories/FightRepository";
-import {Dice} from "../src/Utils/Dice";
+import {Dice} from "../src/Common/Dice";
 import {Team} from "../src/FightSystem/Constants";
 import {TierDifficulty} from "../src/FightSystem/Constants";
 import {BaseDamage} from "../src/FightSystem/Constants";
@@ -53,7 +47,7 @@ function getMock(mockedClass) {
 function abstractDatabase() {
 
     FighterRepository.load = async function (name) {
-        return new Promise<Fighter>(function (resolve, reject) {
+        return new Promise<NSFWFighter>(function (resolve, reject) {
             resolve(createFighter(name));
         });
     };
