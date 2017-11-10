@@ -1,11 +1,11 @@
-import {Fight} from "../FightSystem/Fight";
-import {Model} from "../Common/Model";
-import {Action} from "../FightSystem/Action";
+import {Fight} from "../Fight";
+import {Model} from "../../Common/Model";
+import {Action} from "../Action";
 import {ActionRepository} from "./ActionRepository";
-import {Utils} from "../Common/Utils";
+import {Utils} from "../../Common/Utils";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FighterRepository} from "./FighterRepository";
-import * as Constants from "../FightSystem/Constants";
+import * as Constants from "../Constants";
 import {ModifierRepository} from "./ModifierRepository";
 
 export class FightRepository{

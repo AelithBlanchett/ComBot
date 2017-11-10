@@ -1,5 +1,8 @@
 import {Utils} from "./Utils";
 import {FeatureCostPerUse, FeatureType} from "../FightSystem/Constants";
+import {Fight} from "../FightSystem/Fight";
+import {ActiveFighter} from "../FightSystem/ActiveFighter";
+import {Modifier} from "../FightSystem/Modifiers/Modifier";
 
 export class BaseFeature{
 

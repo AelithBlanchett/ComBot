@@ -3,18 +3,16 @@ import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as Constants from "../src/FightSystem/Constants";
 import {Utils} from "../src/Common/Utils";
 import {ActionType} from "../src/FightSystem/Action";
-import {DummyModifier, StunModifier} from "../src/FightSystem/Modifiers/CustomModifiers";
 import {Feature} from "../src/FightSystem/Feature";
 import {FeatureType} from "../src/FightSystem/Constants";
 import {ModifierType} from "../src/FightSystem/Constants";
 import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
-import {FighterRepository} from "../src/Repositories/FighterRepository";
-import {ActiveFighterRepository} from "../src/Repositories/ActiveFighterRepository";
-import {ActionRepository} from "../src/Repositories/ActionRepository";
-import {FightRepository} from "../src/Repositories/FightRepository";
+import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
+import {ActiveFighterRepository} from "../src/FightSystem/Repositories/ActiveFighterRepository";
+import {ActionRepository} from "../src/FightSystem/Repositories/ActionRepository";
+import {FightRepository} from "../src/FightSystem/Repositories/FightRepository";
 import {Dice} from "../src/Common/Dice";
-import {Modifier} from "../src/FightSystem/Constants";
-import {ModifierRepository} from "../src/Repositories/ModifierRepository";
+import {ModifierRepository} from "../src/FightSystem/Repositories/ModifierRepository";
 import {BaseCommandHandler} from "../src/Common/BaseCommandHandler";
 
 let Jasmine = require('jasmine');
@@ -183,7 +181,7 @@ function wasLustHit(cmd:CommandHandler, name:string) {
 }
 
 async function initiateMatchSettings2vs2Tag(cmdHandler) {
-    cmdHandler.fight.setFightType("tagteam");
+    cmdHandler.fight.setFightType("tag");
     await cmdHandler.join("Red", {character: "Aelith Blanchette", channel: "here"});
     await cmdHandler.join("Purple", {character: "Purple1", channel: "here"});
     await cmdHandler.join("Purple", {character: "Purple2", channel: "here"});
@@ -195,7 +193,7 @@ async function initiateMatchSettings2vs2Tag(cmdHandler) {
 }
 
 async function initiateMatchSettings1vs1(cmdHandler) {
-    cmdHandler.fight.setFightType("tagteam");
+    cmdHandler.fight.setFightType("tag");
     await cmdHandler.join("Red", {character: "Aelith Blanchette", channel: "here"});
     await cmdHandler.join("Blue", {character: "TheTinaArmstrong", channel: "here"});
     await cmdHandler.ready("Blue", {character: "TheTinaArmstrong", channel: "here"});
@@ -514,7 +512,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-        if (wasHealthHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == Constants.Modifier.SubHold) != -1) {
+        if (wasHealthHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.SubHold) != -1) {
             done();
         }
         else {
@@ -564,7 +562,7 @@ describe("Before the fight, the player(s)", () => {
         await doAction(cmd, "subhold", "Light");
         await doAction(cmd, "brawl", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasMessageSent(Constants.Modifier.SubHoldBrawlBonus)) {
+        if (wasMessageSent(Constants.ModifierType.SubHoldBrawlBonus)) {
             done();
         }
         else {
@@ -628,7 +626,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-            let indexOfSubHoldModifier = cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == Constants.Modifier.SubHold);
+            let indexOfSubHoldModifier = cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.SubHold);
             if (indexOfSubHoldModifier == -1) {
                 done.fail(new Error("Did not find the correct subhold modifier in the defender's list."));
             }
@@ -656,7 +654,7 @@ describe("Before the fight, the player(s)", () => {
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "sexhold", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasLustHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == Constants.Modifier.SexHold) != -1) {
+        if (wasLustHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.SexHold) != -1) {
             done();
         }
         else {
@@ -691,7 +689,7 @@ describe("Before the fight, the player(s)", () => {
         refillHPLPFP(cmd, "Aelith Blanchette");
         await doAction(cmd, "humhold", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == Constants.Modifier.HumHold) != -1) {
+        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.HumHold) != -1) {
             done();
         }
         else {
@@ -705,7 +703,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "humhold", "Light");
-        if (wasMessageSent(Modifier.DegradationMalus)) {
+        if (wasMessageSent(ModifierType.DegradationMalus)) {
             done();
         }
         else {
@@ -722,7 +720,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.nextTurn();
         await doAction(cmd, "brawl", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasMessageSent(Constants.Modifier.ItemPickupBonus)) {
+        if (wasMessageSent(Constants.ModifierType.ItemPickupBonus)) {
             done();
         }
         else {
@@ -768,6 +766,30 @@ describe("Before the fight, the player(s)", () => {
         }
         else {
             done.fail(new Error("Did not say that the receiver must abandon because of bondage."));
+        }
+    }, DEFAULT_TIMEOUT_UNIT_TEST);
+
+    it("shouldn't win the match without all the needed bondage attacks", async function (done) {
+        let cmd = new CommandHandler(fChatLibInstance, "here");
+        await initiateMatchSettings1vs1(cmd);
+        await cmd.fight.waitUntilWaitingForAction();
+        cmd.fight.setCurrentPlayer("TheTinaArmstrong");
+
+        for(let i = 0; i < cmd.fight.getFighterByName("Aelith Blanchette").maxBondageItemsOnSelf() - 1; i++){
+            cmd.fight.setCurrentPlayer("TheTinaArmstrong");
+            await doAction(cmd, "sexhold", "Light");
+            refillHPLPFP(cmd, "Aelith Blanchette");
+            await cmd.fight.waitUntilWaitingForAction();
+            cmd.fight.setCurrentPlayer("TheTinaArmstrong");
+            await doAction(cmd, "bondage", "Light");
+            refillHPLPFP(cmd, "Aelith Blanchette");
+        }
+
+        if (cmd.fight.getFighterByName("Aelith Blanchette").isCompletelyBound()) {
+            done.fail(new Error("Did say that the receiver must abandon because of bondage while it shouldn't have."));
+        }
+        else {
+            done();
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
@@ -839,7 +861,7 @@ describe("Before the fight, the player(s)", () => {
         await doAction(cmd, "stun", "Light");
         await cmd.fight.waitUntilWaitingForAction();
         if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.length > 0 &&
-            cmd.fight.getFighterByName("Aelith Blanchette").modifiers[0] instanceof StunModifier) {
+            cmd.fight.getFighterByName("Aelith Blanchette").modifiers[0].type == ModifierType.Stun) {
             done();
         }
         else {

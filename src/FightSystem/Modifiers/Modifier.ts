@@ -5,11 +5,12 @@ import ModifierType = Constants.ModifierType;
 import TriggerMoment = Constants.TriggerMoment;
 import {Tier} from "../Constants";
 import {ActiveFighter} from "../ActiveFighter";
-import {IModifier} from "../../Common/IModifier";
+import {IBaseModifier} from "../../Common/IBaseModifier";
 import {Fight} from "../Fight";
 import {BaseModifier} from "../../Common/BaseModifier";
+import {IModifier} from "./IModifier";
 
-export class Modifier extends BaseModifier{
+export class Modifier extends BaseModifier implements IModifier{
 
     hpDamage: number;
     lustDamage: number;

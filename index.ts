@@ -1,2 +1,2 @@
-import {BaseCommandHandler} from "./src/Common/BaseCommandHandler";
-export {BaseCommandHandler}
+import {CommandHandler} from "./src/FightSystem/CommandHandler";
+export {CommandHandler}

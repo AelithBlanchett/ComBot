@@ -8,17 +8,17 @@ import Tier = Constants.Tier;
 import FightTier = Constants.FightTier;
 import TokensPerWin = Constants.TokensPerWin;
 import Trigger = Constants.Trigger;
-import {BondageModifier} from "./Modifiers/CustomModifiers";
 import TriggerMoment = Constants.TriggerMoment;
 import {Message} from "../Common/Messaging";
 import {ActiveFighter} from "./ActiveFighter";
-import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
-import {FightRepository} from "../Repositories/FightRepository";
-import {FighterRepository} from "../Repositories/FighterRepository";
-import {FeatureType, FightType} from "./Constants";
+import {ActiveFighterRepository} from "./Repositories/ActiveFighterRepository";
+import {FightRepository} from "./Repositories/FightRepository";
+import {FighterRepository} from "./Repositories/FighterRepository";
+import {FeatureType, FightType, ModifierType} from "./Constants";
 import {TransactionType} from "./Constants";
 import {FightLength} from "./Constants";
 import {Commands} from "../Common/Parser";
+import {ModifierFactory} from "./Modifiers/ModifierFactory";
 let EloRating = require('elo-rating');
 
 export class Fight{
@@ -352,7 +352,7 @@ export class Fight{
             await this.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
         }
         else{
-            FightRepository.persist(this);
+            await FightRepository.persist(this);
             this.waitingForAction = true;
             this.outputStatus();
         }
@@ -678,7 +678,7 @@ export class Fight{
             if(!fighter.isTechnicallyOut()){
                 this.message.addHit(Utils.strFormat(Constants.Messages.forfeitItemApply, [fighter.getStylizedName(), fighter.maxBondageItemsOnSelf().toString()]));
                 for(let i = 0; i < fighter.maxBondageItemsOnSelf(); i++){
-                    fighter.modifiers.push(new BondageModifier(fighter));
+                    fighter.modifiers.push(ModifierFactory.getModifier(ModifierType.Bondage, this, fighter, null));
                 }
                 fighter.fightStatus = FightStatus.Forfeited;
                 this.message.addHit(Utils.strFormat(Constants.Messages.forfeitTooManyItems, [fighter.getStylizedName()]));

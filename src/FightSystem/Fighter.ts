@@ -8,6 +8,8 @@ export class NSFWFighter extends BaseFighter{
     endurance:number = 1;
     willpower:number = 1;
 
+    //They are used in the FighterRepository file.
+    //Date from the database is assigned to these variables thanks to the mergeFromTo function
     brawlAtksCount:number;
     sexstrikesCount:number;
     tagsCount:number;

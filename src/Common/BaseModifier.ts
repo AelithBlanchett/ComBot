@@ -1,19 +1,17 @@
 import * as Constants from "../FightSystem/Constants";
 import Trigger = Constants.Trigger;
-import ModifierType = Constants.ModifierType;
 import TriggerMoment = Constants.TriggerMoment;
-import {IModifier} from "./IModifier";
+import {IBaseModifier} from "./IBaseModifier";
 import {Tier} from "../FightSystem/Constants";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {Utils} from "./Utils";
 
-export abstract class BaseModifier implements IModifier{
+export abstract class BaseModifier implements IBaseModifier{
     idModifier: string;
     idFight:string;
-    name:string = "modifier";
     tier:Tier;
-    type:ModifierType;
+    type:Constants.ModifierType;
     idApplier:string;
     idReceiver:string;
 
@@ -33,7 +31,7 @@ export abstract class BaseModifier implements IModifier{
     updatedAt: Date;
     deletedAt: Date;
 
-    constructor(receiver:string, applier:string, tier:Tier, modType:ModifierType, diceRoll:number, escapeRoll:number, uses:number,
+    constructor(receiver:string, applier:string, tier:Tier, modType:Constants.ModifierType, diceRoll:number, escapeRoll:number, uses:number,
                 timeToTrigger:TriggerMoment, event:Trigger, parentActionIds:Array<string>, areMultipliers:boolean){
         this.idModifier = Utils.generateUUID();
         this.idReceiver = receiver;
@@ -47,7 +45,6 @@ export abstract class BaseModifier implements IModifier{
         this.timeToTrigger = timeToTrigger;
         this.idParentActions = parentActionIds;
         this.areDamageMultipliers = areMultipliers;
-        this.name = Constants.Modifier[ModifierType[modType]];
     }
 
     build(receiver:ActiveFighter, applier:ActiveFighter, fight:Fight){
@@ -58,11 +55,17 @@ export abstract class BaseModifier implements IModifier{
     }
 
     isOver():boolean{
-        return (this.uses <= 0 || this.receiver.isDead() || this.receiver.isSexuallyExhausted());
+        return (this.uses <= 0 || this.receiver.isDead());
     }
 
     willTriggerForEvent(moment: TriggerMoment, event:Trigger):boolean{
-        return ((event & this.event) && (moment & this.timeToTrigger)) > 0;
+        let canPass = false;
+        if(event & this.event){
+            if(moment & this.timeToTrigger){
+                canPass = true;
+            }
+        }
+        return canPass;
     }
 
     remove():void{
@@ -108,7 +111,7 @@ export abstract class BaseModifier implements IModifier{
     trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):void{
         if(this.willTriggerForEvent(moment, event)){
             this.uses--;
-            let messageAboutModifier:string = `${this.receiver.getStylizedName()} is affected by the ${this.name}, `;
+            let messageAboutModifier:string = `${this.receiver.getStylizedName()} is affected by the ${this.type}, `;
             if(!objFightAction){
                 messageAboutModifier += this.applyModifierOnReceiver(moment, event);
             }

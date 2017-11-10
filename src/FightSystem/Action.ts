@@ -6,23 +6,14 @@ import TierDifficulty = Constants.TierDifficulty;
 import Trigger = Constants.Trigger;
 import TokensPerWin = Constants.TokensPerWin;
 import FightTier = Constants.FightTier;
-import {BondageModifier} from "./Modifiers/CustomModifiers";
-import {HoldModifier} from "./Modifiers/CustomModifiers";
 import ModifierType = Constants.ModifierType;
-import {LustBonusSexHoldModifier} from "./Modifiers/CustomModifiers";
-import {BrawlBonusSubHoldModifier} from "./Modifiers/CustomModifiers";
-import {ItemPickupModifier} from "./Modifiers/CustomModifiers";
-import {SextoyPickupModifier} from "./Modifiers/CustomModifiers";
-import {DegradationModifier} from "./Modifiers/CustomModifiers";
-import {StunModifier} from "./Modifiers/CustomModifiers";
 import TriggerMoment = Constants.TriggerMoment;
 import {HighRiskMultipliers} from "./Constants";
 import {Utils} from "../Common/Utils";
-import {StrapToyModifier} from "./Modifiers/CustomModifiers";
 import {StrapToyLPDamagePerTurn} from "./Constants";
 import {Modifier} from "./Modifiers/Modifier";
 import {ActiveFighter} from "./ActiveFighter";
-import {ActionRepository} from "../Repositories/ActionRepository";
+import {ActionRepository} from "./Repositories/ActionRepository";
 import {FocusDamageOnMiss} from "./Constants";
 import {FocusHealOnHit} from "./Constants";
 import {FocusDamageOnHit} from "./Constants";
@@ -30,6 +21,7 @@ import {FailedHighRiskMultipliers} from "./Constants";
 import {MasturbateLpDamage} from "./Constants";
 import {SelfDebaseFpDamage} from "./Constants";
 import {StrapToyDiceRollPenalty} from "./Constants";
+import {ModifierFactory} from "./Modifiers/ModifierFactory";
 
 export class Action{
 
@@ -307,9 +299,9 @@ export class Action{
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let hpDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);
-            let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.SubHold, hpDamage, 0, 0);
-            let brawlBonusAttacker = new BrawlBonusSubHoldModifier(this.attacker, [holdModifier.idModifier]);
-            let brawlBonusDefender = new BrawlBonusSubHoldModifier(this.defender, [holdModifier.idModifier]);
+            let holdModifier = ModifierFactory.getModifier(ModifierType.SubHold, this.fight, this.defender, this.attacker, {tier: this.tier, hpDamage: hpDamage});
+            let brawlBonusAttacker = ModifierFactory.getModifier(ModifierType.SubHoldBrawlBonus, this.fight, this.attacker, null, {parentIds: [holdModifier.idModifier]});
+            let brawlBonusDefender = ModifierFactory.getModifier(ModifierType.SubHoldBrawlBonus, this.fight, this.defender, null, {parentIds: [holdModifier.idModifier]});
             this.modifiers.push(holdModifier);
             this.modifiers.push(brawlBonusAttacker);
             this.modifiers.push(brawlBonusDefender);
@@ -327,9 +319,9 @@ export class Action{
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let lustDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);
-            let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.SexHold, 0, lustDamage, 0);
-            let lustBonusAttacker = new LustBonusSexHoldModifier(this.attacker, [holdModifier.idModifier]);
-            let lustBonusDefender = new LustBonusSexHoldModifier(this.defender, [holdModifier.idModifier]);
+            let holdModifier = ModifierFactory.getModifier(ModifierType.SexHold, this.fight, this.defender, this.attacker, {tier: this.tier, lustDamage: lustDamage});
+            let lustBonusAttacker = ModifierFactory.getModifier(ModifierType.SexHoldLustBonus, this.fight, this.attacker, null, {parentIds: [holdModifier.idModifier]});
+            let lustBonusDefender = ModifierFactory.getModifier(ModifierType.SexHoldLustBonus, this.fight, this.defender, null, {parentIds: [holdModifier.idModifier]});
             this.modifiers.push(holdModifier);
             this.modifiers.push(lustBonusAttacker);
             this.modifiers.push(lustBonusDefender);
@@ -346,9 +338,9 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
             let focusDamage = Math.floor(FocusDamageOnHit[Tier[this.tier]]);
-            let holdModifier = new HoldModifier(this.defender, this.attacker, this.tier, ModifierType.HumHold, 0, 0, focusDamage);
+            let holdModifier = ModifierFactory.getModifier(ModifierType.HumHold, this.fight, this.defender, this.attacker, {tier: this.tier, focusDamage: focusDamage});
             this.modifiers.push(holdModifier);
-            let humiliationModifier = new DegradationModifier(this.defender, this.attacker, [holdModifier.idModifier]);
+            let humiliationModifier = ModifierFactory.getModifier(ModifierType.DegradationMalus, this.fight, this.defender, this.attacker, {parentIds: [holdModifier.idModifier]});
             this.modifiers.push(humiliationModifier);
         }
         return Trigger.HumiliationHold;
@@ -362,7 +354,7 @@ export class Action{
             this.missed = false;
             this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
             this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
-            let bdModifier = new BondageModifier(this.defender, this.attacker);
+            let bdModifier = ModifierFactory.getModifier(ModifierType.Bondage, this.fight, this.defender, this.attacker);
             this.modifiers.push(bdModifier);
         }
         else{
@@ -373,7 +365,7 @@ export class Action{
                 this.missed = false;
                 this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
                 this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
-                let bdModifier = new BondageModifier(this.defender, this.attacker);
+                let bdModifier = ModifierFactory.getModifier(ModifierType.Bondage, this.fight, this.defender, this.attacker);
                 this.modifiers.push(bdModifier);
             }
         }
@@ -445,7 +437,7 @@ export class Action{
         this.missed = false;
         this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Light]];
         this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Light]];
-        let itemPickupModifier = new ItemPickupModifier(this.attacker);
+        let itemPickupModifier = ModifierFactory.getModifier(ModifierType.ItemPickupBonus, this.fight, this.attacker, null);
         this.modifiers.push(itemPickupModifier);
         return Trigger.ItemPickup;
     }
@@ -457,7 +449,7 @@ export class Action{
         this.missed = false;
         this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Light]];
         this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Light]];
-        let itemPickupModifier = new SextoyPickupModifier(this.attacker);
+        let itemPickupModifier = ModifierFactory.getModifier(ModifierType.SextoyPickupBonus, this.fight, this.attacker, null);
         this.modifiers.push(itemPickupModifier);
         return Trigger.SextoyPickup;
     }
@@ -516,7 +508,7 @@ export class Action{
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfAttacksStunned = 2;
             this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);
-            let stunModifier = new StunModifier(this.defender, this.attacker, this.tier, -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned), nbOfAttacksStunned);
+            let stunModifier = ModifierFactory.getModifier(ModifierType.Stun, this.fight, this.defender, this.attacker, {tier: this.tier, diceRoll: -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned)});
             this.modifiers.push(stunModifier);
             this.fight.message.addHit("STUNNED!");
         }
@@ -576,7 +568,7 @@ export class Action{
             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
             let nbOfTurnsWearingToy = this.tier + 1;
             let lpDamage = StrapToyLPDamagePerTurn[Tier[this.tier]];
-            let strapToyModifier = new StrapToyModifier(this.defender, this.tier, nbOfTurnsWearingToy, lpDamage, this.fpDamageToDef, StrapToyDiceRollPenalty[Tier[this.tier]]);
+            let strapToyModifier = ModifierFactory.getModifier(ModifierType.StrapToy, this.fight, this.defender, null, {focusDamage: this.fpDamageToDef, lustDamage: lpDamage, tier: this.tier, diceRoll: StrapToyDiceRollPenalty[Tier[this.tier]], uses: nbOfTurnsWearingToy});
             this.modifiers.push(strapToyModifier);
             this.fight.message.addHit("The sextoy started vibrating!");
         }
@@ -761,14 +753,14 @@ export class Action{
 
         if(this.modifiers.length > 0){
             if (this.type == ActionType.SubHold || this.type == ActionType.SexHold || this.type == ActionType.HumHold) { //for any holds, do the stacking here
-                let indexOfNewHold = this.modifiers.findIndex(x => x.name == Constants.Modifier.SubHold || x.name == Constants.Modifier.SexHold || x.name == Constants.Modifier.HumHold);
-                let indexOfAlreadyExistantHoldForDefender = this.defender.modifiers.findIndex(x => x.name == Constants.Modifier.SubHold || x.name == Constants.Modifier.SexHold || x.name == Constants.Modifier.HumHold);
+                let indexOfNewHold = this.modifiers.findIndex(x => x.type == Constants.ModifierType.SubHold || x.type == Constants.ModifierType.SexHold || x.type == Constants.ModifierType.HumHold);
+                let indexOfAlreadyExistantHoldForDefender = this.defender.modifiers.findIndex(x => x.type == Constants.ModifierType.SubHold || x.type == Constants.ModifierType.SexHold || x.type == Constants.ModifierType.HumHold);
                 if(indexOfAlreadyExistantHoldForDefender != -1){
                     let idOfFormerHold = this.defender.modifiers[indexOfAlreadyExistantHoldForDefender].idModifier;
                     for(let mod of this.defender.modifiers){
                         //we updated the children and parent's damage and turns
                         if(mod.idModifier == idOfFormerHold){
-                            mod.name = this.modifiers[indexOfNewHold].name;
+                            mod.type = this.modifiers[indexOfNewHold].type;
                             mod.event = this.modifiers[indexOfNewHold].event;
                             mod.uses += this.modifiers[indexOfNewHold].uses;
                             mod.hpDamage += this.modifiers[indexOfNewHold].hpDamage;

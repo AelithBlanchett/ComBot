@@ -623,7 +623,7 @@ export class ActiveFighter extends NSFWFighter {
     bondageItemsOnSelf():number {
         let bondageModCount = 0;
         for (let mod of this.modifiers) {
-            if (mod.name == Constants.Modifier.Bondage) {
+            if (mod.type == Constants.ModifierType.Bondage) {
                 bondageModCount++;
             }
         }
@@ -745,8 +745,9 @@ export class ActiveFighter extends NSFWFighter {
     getListOfActiveModifiers():string{
         let strMods = "";
         for(let mod of this.modifiers){
-            strMods += mod.name + ", ";
+            strMods += mod.type + ", ";
         }
+        strMods = strMods.substring(0, strMods.length - 2);
         return strMods;
     }
 
@@ -761,7 +762,7 @@ export class ActiveFighter extends NSFWFighter {
         let modifiersLine = `  [color=cyan]affected by: ${this.getListOfActiveModifiers()}[/color] `;
         let targetLine = `  [color=red]target: ` + (this.target != undefined ? `${this.target.getStylizedName()}` : "None set yet! (!target charactername)") + `[/color]`;
 
-        return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${modifiersLine} ${targetLine}`;
+        return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${(this.getListOfActiveModifiers().length > 0 ? modifiersLine : "")} ${targetLine}`;
     }
 
     getStylizedName():string {

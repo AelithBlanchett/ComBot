@@ -1,11 +1,11 @@
-import {Model} from "../Common/Model";
-import {NSFWFighter} from "../FightSystem/Fighter";
-import {Feature} from "../FightSystem/Feature";
-import {Utils} from "../Common/Utils";
-import {IAchievement} from "../Achievements/IAchievement";
-import {AchievementManager} from "../Achievements/AchievementManager";
-import {TransactionType} from "../FightSystem/Constants";
-import * as Constants from "../FightSystem/Constants";
+import {Model} from "../../Common/Model";
+import {NSFWFighter} from "../Fighter";
+import {Feature} from "../Feature";
+import {Utils} from "../../Common/Utils";
+import {IAchievement} from "../../Achievements/IAchievement";
+import {AchievementManager} from "../../Achievements/AchievementManager";
+import {TransactionType} from "../Constants";
+import * as Constants from "../Constants";
 
 export class FighterRepository{
 

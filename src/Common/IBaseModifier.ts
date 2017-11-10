@@ -2,10 +2,9 @@ import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {ModifierType, Tier, Trigger, TriggerMoment} from "../FightSystem/Constants";
 import {Fight} from "../FightSystem/Fight";
 
-export interface IModifier{
+export interface IBaseModifier{
     idModifier: string;
     idFight: string;
-    name:string;
     tier:Tier;
     type:ModifierType;
     applier: ActiveFighter;

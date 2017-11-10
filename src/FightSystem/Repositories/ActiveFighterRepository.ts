@@ -1,9 +1,9 @@
-import {Model} from "../Common/Model";
-import {ActiveFighter} from "../FightSystem/ActiveFighter";
+import {Model} from "../../Common/Model";
+import {ActiveFighter} from "../ActiveFighter";
 import {FighterRepository} from "./FighterRepository";
-import {Utils} from "../Common/Utils";
+import {Utils} from "../../Common/Utils";
 import {ModifierRepository} from "./ModifierRepository";
-import * as Constants from "../FightSystem/Constants";
+import * as Constants from "../Constants";
 
 export class ActiveFighterRepository{
 

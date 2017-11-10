@@ -4,6 +4,7 @@ import {Utils} from "../Common/Utils";
 import * as Constants from "./Constants";
 
 export class CommandHandler extends BaseCommandHandler {
+
     bondage(args:string, data:FChatResponse) {
         try {
             this.fight.prepareAction(data.character, ActionType.Bondage, false, false, args);

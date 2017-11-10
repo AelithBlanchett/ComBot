@@ -63,6 +63,14 @@ export class Utils {
         return arrResult;
     }
 
+    static getStringEnumList(myEnum):Array<string>{
+        let arrResult = [];
+        for (let enumMember in myEnum) {
+            arrResult.push(enumMember);
+        }
+        return arrResult;
+    }
+
     static getRandomInt(min:number, max:number):number{ //continue
         return Math.floor((Math.random() * max) + min);
     }

@@ -1,10 +1,10 @@
 import * as Constants from "./Constants";
-import {ItemPickupModifier, SextoyPickupModifier, BondageModifier} from "./Modifiers/CustomModifiers";
 import {Fight} from "./Fight";
-import {FeatureType} from "./Constants";
+import {FeatureType, ModifierType} from "./Constants";
 import {ActiveFighter} from "./ActiveFighter";
 import {BaseFeature} from "../Common/BaseFeature";
 import {Modifier} from "./Modifiers/Modifier";
+import {ModifierFactory} from "./Modifiers/ModifierFactory";
 
 export class Feature extends BaseFeature{
 
@@ -13,12 +13,12 @@ export class Feature extends BaseFeature{
         if (!this.isExpired()) {
             switch (this.type) {
                 case FeatureType.KickStart:
-                    modifier = new ItemPickupModifier(attacker);
+                    modifier = ModifierFactory.getModifier(ModifierType.ItemPickupBonus, fight, attacker, null);
                     fight.message.addHint(`${attacker.getStylizedName()} has the ${Constants.Feature.KickStart} feature!`);
                     fight.message.addHint(Constants.FeatureExplain.KickStart);
                     break;
                 case FeatureType.SexyKickStart:
-                    modifier = new SextoyPickupModifier(attacker);
+                    modifier = ModifierFactory.getModifier(ModifierType.SextoyPickupBonus, fight, attacker, null);
                     fight.message.addHint(`${attacker.getStylizedName()} has the ${Constants.Feature.SexyKickStart} feature!`);
                     fight.message.addHint(Constants.FeatureExplain.SexyKickStart);
                     break;
@@ -38,7 +38,7 @@ export class Feature extends BaseFeature{
                     fight.message.addHint(Constants.FeatureExplain.RyonaEnthusiast);
                     break;
                 case FeatureType.BondageHandicap:
-                    modifier = new BondageModifier(attacker);
+                    modifier = ModifierFactory.getModifier(ModifierType.Bondage, fight, attacker, null);
                     fight.message.addHint(`${attacker.getStylizedName()} has the ${Constants.Feature.BondageHandicap} feature!`);
                     fight.message.addHint(Constants.FeatureExplain.BondageHandicap);
                     break;

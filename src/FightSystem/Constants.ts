@@ -1,4 +1,5 @@
 import {Utils} from "../Common/Utils";
+import * as fs from "fs";
 
 export enum Team {
     White = undefined,
@@ -24,7 +25,12 @@ export enum Stats {
     Dexterity = 5
 }
 
+
+
 export class Globals {
+    public static modifiersFileRaw:string = fs.readFileSync(__dirname + "/Modifiers/modifiers.json.js", "utf8");
+    public static modifiersFile = Globals.modifiersFileRaw.substr(0, Globals.modifiersFileRaw.indexOf(";"));
+    public static modifiersList:any = JSON.parse(Globals.modifiersFile);
     public static numberOfAvailableTeams:number = (Utils.getEnumList(Team).length - 2);
     public static featuresMinMatchesDurationCount:number = 1;
     public static featuresMaxMatchesDurationCount:number = 10;
@@ -123,34 +129,19 @@ export namespace Fight {
     }
 }
 
-export class Modifier {
-    static SubHoldBrawlBonus = "Accuracy++ on brawl (submission hold)";
-    static SubHold = "submission hold";
-    static SexHoldLustBonus = "Accuracy++ on tease (sexual hold)";
-    static SexHold = "sexual hold";
-    static Bondage = "bondage items";
-    static HumHold = "humiliation hold";
-    static DegradationMalus = "degradation malus";
-    static ItemPickupBonus = "HP Dmg++ (item pickup)";
-    static SextoyPickupBonus = "LP Dmg++ (sextoy pickup)";
-    static Stun = "stun";
-    static StrapToy = "strapped sex-toy"
-}
-
 export enum ModifierType {
-    SubHoldBrawlBonus = 0,
-    SubHold = 1,
-    SexHoldLustBonus = 2,
-    SexHold = 3,
-    Bondage = 4,
-    HumHold = 5,
-    DegradationMalus = 6,
-    ItemPickupBonus = 7,
-    SextoyPickupBonus = 8,
-    Stun = 9,
-    StrapToy = 10,
+    SubHoldBrawlBonus = "Accuracy++ on brawl (submission hold)",
+    SubHold = "submission hold",
+    SexHoldLustBonus = "Accuracy++ on tease (sexual hold)",
+    SexHold = "sexual hold",
+    Bondage = "bondage items",
+    HumHold = "humiliation hold",
+    DegradationMalus = "degradation malus",
+    ItemPickupBonus = "HP Dmg++ (item pickup)",
+    SextoyPickupBonus = "LP Dmg++ (sextoy pickup)",
+    Stun = "stun",
+    StrapToy = "strapped sex-toy"
 }
-
 
 export class Feature {
     static KickStart = "Kick Start";
@@ -269,7 +260,7 @@ export class Messages {
     static setFightTypeHMatch = "Fight type successfully set to Humiliation Match.";
     static setFightTypeSexFight = "Fight type successfully set to SexFight.";
     static setFightTypeBondageMatch = "Fight type successfully set to Bondage Match.";
-    static setFightTypeNotFound = "Type not found. Fight type resetted to Classic.";
+    static setFightTypeNotFound = "Type not found. Fight type reset to Classic.";
     static setFightTypeFail = "Can't change the fight type if the fight has already started or is already finished.";
 
     static startMatchAnnounce = "[color=green]Everyone's ready, let's start the match![/color] (Match ID: %s Keep it somewhere if you want to resume it later!)";

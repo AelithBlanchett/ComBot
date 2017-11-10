@@ -3,7 +3,7 @@ import {Fight} from "../FightSystem/Fight";
 import {IAchievement} from "./IAchievement";
 import {EnabledAchievements, AchievementType} from "./Achievements";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
-import {FighterRepository} from "../Repositories/FighterRepository";
+import {FighterRepository} from "../FightSystem/Repositories/FighterRepository";
 import * as Constants from "../FightSystem/Constants";
 import {TransactionType} from "../FightSystem/Constants";
 

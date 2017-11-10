@@ -1,8 +1,8 @@
-import {Model} from "../Common/Model";
-import {Utils} from "../Common/Utils";
-import {Modifier} from "../FightSystem/Modifiers/Modifier";
-import {EmptyModifier} from "../FightSystem/Modifiers/CustomModifiers";
-import * as Constants from "../FightSystem/Constants";
+import {Model} from "../../Common/Model";
+import {Utils} from "../../Common/Utils";
+import {Modifier} from "../Modifiers/Modifier";
+import {EmptyModifier} from "../Modifiers/CustomModifiers";
+import * as Constants from "../Constants";
 
 export class ModifierRepository{
 
@@ -17,7 +17,6 @@ export class ModifierRepository{
                         idFight: modifier.idFight,
                         idReceiver: modifier.idReceiver,
                         idApplier: modifier.idApplier,
-                        name: modifier.name,
                         tier: modifier.tier,
                         type: modifier.type,
                         focusDamage: modifier.focusDamage,
@@ -40,7 +39,6 @@ export class ModifierRepository{
                         idFight: modifier.idFight,
                         idReceiver: modifier.idReceiver,
                         idApplier: modifier.idApplier,
-                        name: modifier.name,
                         tier: modifier.tier,
                         type: modifier.type,
                         focusDamage: modifier.focusDamage,

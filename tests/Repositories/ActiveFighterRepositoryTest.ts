@@ -1,8 +1,8 @@
 import {Action, ActionType} from "../../src/FightSystem/Action";
-import {ActionRepository} from "../../src/Repositories/ActionRepository";
+import {ActionRepository} from "../../src/FightSystem/Repositories/ActionRepository";
 import {Utils} from "../../src/Common/Utils";
 import {ActiveFighter} from "../../src/FightSystem/ActiveFighter";
-import {ActiveFighterRepository} from "../../src/Repositories/ActiveFighterRepository";
+import {ActiveFighterRepository} from "../../src/FightSystem/Repositories/ActiveFighterRepository";
 import {Team} from "../../src/FightSystem/Constants";
 import {FightStatus} from "../../src/FightSystem/Fight";
 import {Model} from "../../src/Common/Model";

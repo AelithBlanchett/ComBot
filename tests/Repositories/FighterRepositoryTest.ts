@@ -1,6 +1,6 @@
 import {Model} from "../../src/Common/Model";
 import {NSFWFighter} from "../../src/FightSystem/Fighter";
-import {FighterRepository} from "../../src/Repositories/FighterRepository";
+import {FighterRepository} from "../../src/FightSystem/Repositories/FighterRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 import * as Constants from "../../src/FightSystem/Constants";

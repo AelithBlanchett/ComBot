@@ -1,6 +1,6 @@
 import {Model} from "../../src/Common/Model";
 import {EmptyModifier} from "../../src/FightSystem/Modifiers/CustomModifiers";
-import {ModifierRepository} from "../../src/Repositories/ModifierRepository";
+import {ModifierRepository} from "../../src/FightSystem/Repositories/ModifierRepository";
 import {ModifierType} from "../../src/FightSystem/Constants";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
