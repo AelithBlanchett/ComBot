@@ -1,4 +1,4 @@
-import {NSFWFighter} from "../FightSystem/Fighter";
+import {RWFighter} from "../FightSystem/RWFighter";
 import * as Parser from "./Parser";
 import {Fight} from "../FightSystem/Fight";
 import {IFChatLib} from "./IFChatLib";
@@ -162,7 +162,7 @@ export class BaseCommandHandler {
             return;
         }
 
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             try {
                 let cost = fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
@@ -190,7 +190,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendPrivMessage(`[color=red]${parserPassed}[/color]`, data.character);
             return;
         }
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             if(fighter.canPayAmount(Constants.Globals.restatCostInTokens)) {
                 try {
@@ -225,7 +225,7 @@ export class BaseCommandHandler {
     };
 
     async clearfeatures(args:string, data:FChatResponse) {
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
@@ -337,7 +337,7 @@ export class BaseCommandHandler {
             args = data.character;
         }
 
-        let fighter:NSFWFighter = await FighterRepository.load(args);
+        let fighter:RWFighter = await FighterRepository.load(args);
 
         if (fighter != undefined && (fighter.name == data.character || (fighter.name == data.character && !fighter.areStatsPrivate) || this.fChatLibInstance.isUserChatOP(data.character, data.channel))) {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), data.character);
@@ -348,7 +348,7 @@ export class BaseCommandHandler {
     };
 
     async hidemystats(args:string, data:FChatResponse) {
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
@@ -496,7 +496,7 @@ export class BaseCommandHandler {
             }
 
             try {
-                let newFighter = new NSFWFighter();
+                let newFighter = new RWFighter();
                 newFighter.name = data.character;
                 newFighter.restat(arrParam);
                 await FighterRepository.persist(newFighter);
@@ -614,7 +614,7 @@ export class BaseCommandHandler {
     };
 
     async stats(args:string, data:FChatResponse) {
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), fighter.name);
         }
@@ -624,7 +624,7 @@ export class BaseCommandHandler {
     };
 
     async statsforprofile(args:string, data:FChatResponse) {
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fChatLibInstance.sendPrivMessage(`[noparse]${fighter.outputStats()}[/noparse]`, fighter.name);
         }
@@ -640,7 +640,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendMessage(`[color=red]Fight Type not found. Types: ${fightTypes.join(", ")}. Example: !fighttype classic[/color]`, this.channel);
             return;
         }
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fight.setFightType(args);
         }
@@ -656,7 +656,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendMessage(`[color=red]Fight Length not found. Types: ${fightDurations.join(", ")}. Example: !fightlength Long[/color]`, this.channel);
             return;
         }
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fight.setFightLength(parsedFD);
         }
@@ -671,7 +671,7 @@ export class BaseCommandHandler {
             this.fight.setDiceLess(flag);
             return;
         }
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             let flag = (args.toLowerCase().indexOf("no") != -1);
             this.fight.setDiceLess(flag);
@@ -687,7 +687,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendMessage("[color=red]The number of teams involved must be a numeral higher than 1 and lower or equal than 10.[/color]", this.channel);
             return;
         }
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fight.setTeamsCount(parsedTeams);
         }
@@ -697,7 +697,7 @@ export class BaseCommandHandler {
     };
 
     async unhidemystats(args:string, data:FChatResponse) {
-        let fighter:NSFWFighter = await FighterRepository.load(data.character);
+        let fighter:RWFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             fighter.areStatsPrivate = false;
             try {

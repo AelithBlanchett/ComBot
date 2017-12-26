@@ -1,6 +1,6 @@
 import {BaseFighter} from "../Common/BaseFighter";
 
-export class NSFWFighter extends BaseFighter{
+export class RWFighter extends BaseFighter{
     dexterity:number = 1;
     power:number = 1;
     sensuality:number = 1;

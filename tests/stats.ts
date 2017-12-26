@@ -1,4 +1,4 @@
-import {NSFWFighter} from "../src/FightSystem/Fighter";
+import {RWFighter} from "../src/FightSystem/RWFighter";
 import {Fight} from "../src/FightSystem/Fight";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as Constants from "../src/FightSystem/Constants";
@@ -47,7 +47,7 @@ function getMock(mockedClass) {
 function abstractDatabase() {
 
     FighterRepository.load = async function (name) {
-        return new Promise<NSFWFighter>(function (resolve, reject) {
+        return new Promise<RWFighter>(function (resolve, reject) {
             resolve(createFighter(name));
         });
     };

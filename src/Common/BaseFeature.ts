@@ -1,21 +1,28 @@
 import {Utils} from "./Utils";
-import {FeatureCostPerUse, FeatureType} from "../FightSystem/Constants";
+import {
+    FeatureCostPerUse, FeatureEffect, FeatureType, ModifierType, Trigger,
+    TriggerMoment
+} from "../FightSystem/Constants";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {Modifier} from "../FightSystem/Modifiers/Modifier";
+import {Dictionary} from "./Dictionary";
 
-export class BaseFeature{
+export abstract class BaseFeature{
 
     id:string;
     type:FeatureType;
     uses: number;
     permanent: boolean;
-    obtainedBy:string;
+    event:Trigger;
+    timeToTrigger:TriggerMoment;
+    idReceiver:string;
+    receiver:ActiveFighter;
     createdAt:Date;
     updatedAt:Date;
     deletedAt:Date;
 
-    constructor(fighterName:string, featureType:FeatureType, uses:number, id?:string) {
+    constructor(featureType:FeatureType, id?:string) {
         if(id){
             this.id = id;
         }
@@ -23,21 +30,11 @@ export class BaseFeature{
             this.id = Utils.generateUUID();
         }
 
-        this.obtainedBy = fighterName;
-
         this.type = featureType;
-
-        if(uses <= 0){
-            this.uses = 0;
-            this.permanent = true;
-        }
-        else{
-            this.uses = uses;
-        }
     }
 
     getCost():number{
-        return FeatureCostPerUse[FeatureCostPerUse[this.type]];
+        return FeatureCostPerUse[FeatureCostPerUse[FeatureType[this.type]]];
     }
 
     isExpired():boolean{
@@ -49,5 +46,19 @@ export class BaseFeature{
         return false;
     }
 
+    trigger<OptionalParameterType>(moment: TriggerMoment, event:Trigger, parameters?:OptionalParameterType):string{
+        let triggeredFeatureMessage = this.applyFeature(moment, event, parameters);
+        let wasFeatureTriggered = (triggeredFeatureMessage.length > 0);
+
+        let messageAboutFeature:string = "";
+
+        if(wasFeatureTriggered){
+            messageAboutFeature = `${this.receiver.getStylizedName()} is affected by the ${this.type}, ${triggeredFeatureMessage}`;
+        }
+
+        return messageAboutFeature;
+    }
+
+    abstract applyFeature<OptionalParameterType>(moment: TriggerMoment, event:Trigger, parameters?:OptionalParameterType):string
 
 }

@@ -1,15 +1,16 @@
 import {Model} from "../../Common/Model";
-import {NSFWFighter} from "../Fighter";
-import {Feature} from "../Feature";
+import {RWFighter} from "../RWFighter";
 import {Utils} from "../../Common/Utils";
 import {IAchievement} from "../../Achievements/IAchievement";
 import {AchievementManager} from "../../Achievements/AchievementManager";
 import {TransactionType} from "../Constants";
 import * as Constants from "../Constants";
+import {BaseFeature} from "../../Common/BaseFeature";
+import {FeatureFactory} from "../../Common/FeatureFactory";
 
 export class FighterRepository{
 
-    public static async persist(fighter:NSFWFighter):Promise<void>{
+    public static async persist(fighter:RWFighter):Promise<void>{
         try
         {
             let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
@@ -57,7 +58,7 @@ export class FighterRepository{
         }
     }
 
-    public static async persistFeatures(fighter:NSFWFighter):Promise<void>{
+    public static async persistFeatures(fighter:RWFighter):Promise<void>{
 
         let featuresIdToKeep = [];
         let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
@@ -106,7 +107,7 @@ export class FighterRepository{
         }
     }
 
-    public static async persistAchievements(fighter:NSFWFighter):Promise<void>{
+    public static async persistAchievements(fighter:RWFighter):Promise<void>{
 
         for(let achievement of fighter.achievements){
             let loadedData = await Model.db(Constants.SQL.fightersAchievementsTableName).where({idFighter: fighter.name, idAchievement: achievement.getType()}).select();
@@ -146,8 +147,8 @@ export class FighterRepository{
         return (loadedData.length > 0);
     }
 
-    public static async load(name:string):Promise<NSFWFighter>{
-        let loadedFighter:NSFWFighter = new NSFWFighter();
+    public static async load(name:string):Promise<RWFighter>{
+        let loadedFighter:RWFighter = new RWFighter();
 
         if(!await FighterRepository.exists(name)){
             return null;
@@ -193,7 +194,7 @@ export class FighterRepository{
         return achievementsArray;
     }
 
-    static async loadAllFeatures(fighterName:string, season:number):Promise<Feature[]>{
+    static async loadAllFeatures(fighterName:string, season:number):Promise<BaseFeature[]>{
         let result;
 
         try{
@@ -203,9 +204,9 @@ export class FighterRepository{
             throw ex;
         }
 
-        let featuresArray:Feature[] = [];
+        let featuresArray:BaseFeature[] = [];
         for(let row of result){
-            featuresArray.push(new Feature(fighterName, row.type, row.uses, row.idFeature));
+            featuresArray.push(FeatureFactory.getFeature(row.type, row.uses, row.idFeature));
         }
         return featuresArray;
     }

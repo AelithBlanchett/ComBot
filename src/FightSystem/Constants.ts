@@ -31,6 +31,9 @@ export class Globals {
     public static modifiersFileRaw:string = fs.readFileSync(__dirname + "/Modifiers/modifiers.json.js", "utf8");
     public static modifiersFile = Globals.modifiersFileRaw.substr(0, Globals.modifiersFileRaw.indexOf(";"));
     public static modifiersList:any = JSON.parse(Globals.modifiersFile);
+    public static featuresFileRaw:string = fs.readFileSync(__dirname + "/Features/features.json.js", "utf8");
+    public static featuresFile = Globals.featuresFileRaw.substr(0, Globals.featuresFileRaw.indexOf(";"));
+    public static featuresList:any = JSON.parse(Globals.featuresFile);
     public static numberOfAvailableTeams:number = (Utils.getEnumList(Team).length - 2);
     public static featuresMinMatchesDurationCount:number = 1;
     public static featuresMaxMatchesDurationCount:number = 10;
@@ -140,7 +143,8 @@ export enum ModifierType {
     ItemPickupBonus = "HP Dmg++ (item pickup)",
     SextoyPickupBonus = "LP Dmg++ (sextoy pickup)",
     Stun = "stun",
-    StrapToy = "strapped sex-toy"
+    StrapToy = "strapped sex-toy",
+    DummyModifier = "unused modifier"
 }
 
 export class Feature {
@@ -155,14 +159,19 @@ export class Feature {
 }
 
 export enum FeatureType {
-    KickStart = 0,
-    SexyKickStart = 1,
-    Sadist = 2,
-    CumSlut = 3,
-    RyonaEnthusiast = 4,
-    DomSubLover = 5,
-    BondageBunny = 6,
-    BondageHandicap = 7
+    KickStart = "Kick Start feature",
+    SexyKickStart = "Sexy Kick Start feature",
+    Sadist = "Sadist feature",
+    CumSlut = "Cum Slut feature",
+    RyonaEnthusiast = "Ryona Enthusiast feature",
+    DomSubLover = "D/s Lover feature",
+    BondageBunny = "Bondage Bunny feature",
+    BondageHandicap = "Bondage Handicap feature"
+}
+
+export enum FeatureEffect {
+    CreateModifier = "creates a modifier",
+    DamageTweaker = "changes the action's damage"
 }
 
 export enum FeatureCostPerUse {
@@ -498,7 +507,8 @@ export enum TriggerMoment {
     Never = -1,
     Before = 1 << 0,
     After = 1 << 1,
-    Any = Before | After
+    Any = Before | After,
+    FeatureTrigger = 1 << 2
 }
 
 export enum Trigger {

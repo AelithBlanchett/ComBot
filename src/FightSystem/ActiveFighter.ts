@@ -11,10 +11,10 @@ import {Tier} from "./Constants";
 import {Utils} from "../Common/Utils";
 import {FeatureType} from "./Constants";
 import {Modifier} from "./Modifiers/Modifier";
-import {NSFWFighter} from "./Fighter";
+import {RWFighter} from "./RWFighter";
 import {AchievementManager} from "../Achievements/AchievementManager";
 
-export class ActiveFighter extends NSFWFighter {
+export class ActiveFighter extends RWFighter {
 
     fight:Fight;
     idFight:string;
@@ -398,10 +398,28 @@ export class ActiveFighter extends NSFWFighter {
         this.orgasmsHealLastRound = 0;
     }
 
-    triggerMods(moment:TriggerMoment, event:Trigger, objFightAction?:any) {
+    triggerMods(moment:TriggerMoment, event:Trigger, objFightAction?:any):boolean {
+        let atLeastOneModWasActivated:boolean = false;
         for (let mod of this.modifiers) {
-            mod.trigger(moment, event, objFightAction);
+            let message = mod.trigger(moment, event, objFightAction);
+            if(message.length > 0){
+                this.fight.message.addSpecial(message);
+                atLeastOneModWasActivated = true;
+            }
         }
+        return atLeastOneModWasActivated;
+    }
+
+    triggerFeatures<OptionalParameterType>(moment: TriggerMoment, event:Trigger, parameters?:OptionalParameterType):boolean{
+        let atLeastOneFeatureWasActivated:boolean = false;
+        for (let feat of this.features) {
+            let message = feat.trigger(moment, event, parameters);
+            if(message.length > 0){
+                this.fight.message.addSpecial(message);
+                atLeastOneFeatureWasActivated = true;
+            }
+        }
+        return atLeastOneFeatureWasActivated;
     }
 
     removeMod(idMod:string) { //removes a mod, and also its children. If a children has two parent Ids, then it doesn't remove the mod.

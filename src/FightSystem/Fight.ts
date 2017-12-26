@@ -21,6 +21,7 @@ import {Commands} from "../Common/Parser";
 import {ModifierFactory} from "./Modifiers/ModifierFactory";
 let EloRating = require('elo-rating');
 
+//TODO: Try to separate this from the base game
 export class Fight{
 
     idFight:string;
@@ -261,17 +262,7 @@ export class Fight{
             let fightCost:number = Constants.Fight.Globals.tokensCostToFight;
             this.fighters[i].removeTokens(fightCost);
             await FighterRepository.logTransaction(this.fighters[i].name, -fightCost, TransactionType.FightStart);
-
-            for (let feature of this.fighters[i].features) {
-                let modToAdd = feature.getModifier(this, this.fighters[i]);
-                if (modToAdd) {
-                    this.fighters[i].modifiers.push(modToAdd);
-                }
-                if (feature.isExpired()) {
-                    this.fighters[i].removeFeature(feature.type);
-                    this.message.addHint("This feature has expired.");
-                }
-            }
+            this.fighters[i].triggerFeatures(TriggerMoment.After, Trigger.InitiationRoll);
         }
 
 

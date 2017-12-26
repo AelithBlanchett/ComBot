@@ -1,4 +1,4 @@
-import {NSFWFighter} from "../FightSystem/Fighter";
+import {RWFighter} from "../FightSystem/RWFighter";
 import {Fight} from "../FightSystem/Fight";
 import {IAchievement} from "./IAchievement";
 import {EnabledAchievements, AchievementType} from "./Achievements";
@@ -17,7 +17,7 @@ export class AchievementManager {
         return AchievementManager.getAll().find(x => x.getType() == type);
     }
 
-    static checkAll(fighter:NSFWFighter, activeFighter:ActiveFighter, fight?:Fight):string[]{
+    static checkAll(fighter:RWFighter, activeFighter:ActiveFighter, fight?:Fight):string[]{
         let addedInfo = [];
         let achievements = AchievementManager.getAll();
 

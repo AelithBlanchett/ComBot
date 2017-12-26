@@ -1,9 +1,10 @@
 import {IAchievement} from "../Achievements/IAchievement";
-import {Feature} from "../FightSystem/Feature";
+import {BaseFeature} from "./BaseFeature";
 import {FeatureType, FightTier, FightTierWinRequirements, Stats, Team} from "../FightSystem/Constants";
 import {AchievementManager} from "../Achievements/AchievementManager";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
+import {FeatureFactory} from "./FeatureFactory";
 
 export abstract class BaseFighter{
 
@@ -46,7 +47,7 @@ export abstract class BaseFighter{
     forfeits:number;
     quits:number;
 
-    features:Feature[] = [];
+    features:BaseFeature[] = [];
     achievements:IAchievement[] = [];
     createdAt:Date;
     updatedAt:Date;
@@ -102,9 +103,9 @@ export abstract class BaseFighter{
         }
     }
 
-    addFeature(type:FeatureType, turns:number):number{
-        let feature = new Feature(this.name, type, turns);
-        let amountToRemove:number = feature.getCost();
+    addFeature(type:FeatureType, matches:number):number{
+        let feature:any = FeatureFactory.getFeature(type, matches);
+        let amountToRemove:number = feature.getCost() * matches;
 
         if(this.tokens - amountToRemove >= 0){
             let index = this.features.findIndex(x => x.type == type);

@@ -1,4 +1,4 @@
-import {NSFWFighter} from "../src/FightSystem/Fighter";
+import {RWFighter} from "../src/FightSystem/RWFighter";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as Constants from "../src/FightSystem/Constants";
 import {Utils} from "../src/Common/Utils";
@@ -28,13 +28,13 @@ async function initiateMatchSettings2vs2TagForDb(cmdHandler) {
 describe("The database(s)", () => {
 
     async function resetData() {
-        let firstFighter = new NSFWFighter();
+        let firstFighter = new RWFighter();
         firstFighter.name = "test1";
-        let secondFighter = new NSFWFighter();
+        let secondFighter = new RWFighter();
         secondFighter.name = "test2";
-        let thirdFighter = new NSFWFighter();
+        let thirdFighter = new RWFighter();
         thirdFighter.name = "test3";
-        let fourthFighter = new NSFWFighter();
+        let fourthFighter = new RWFighter();
         fourthFighter.name = "test4";
 
         await FighterRepository.persist(firstFighter);
@@ -130,7 +130,7 @@ describe("The database(s)", () => {
                 done();
             }
             else{
-                done.fail(new Error("NSFWFighter shouldn't have been found in the database."));
+                done.fail(new Error("RWFighter shouldn't have been found in the database."));
             }
         }).catch(err => {
             done.fail(err);
@@ -168,7 +168,7 @@ describe("The database(s)", () => {
     //},5000);
     //
     //it("should write a new fight in the database", function (done) {
-    //    NSFWFighter.load("test2").then(x => {
+    //    RWFighter.load("test2").then(x => {
     //        let myFight = new Fight(fChatLibInstance, "here", "hello");
     //        Fight.saveState(myFight).then(idAction => {
     //            expect(idAction).toBeGreaterThan(0);

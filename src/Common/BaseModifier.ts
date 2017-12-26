@@ -58,16 +58,6 @@ export abstract class BaseModifier implements IBaseModifier{
         return (this.uses <= 0 || this.receiver.isDead());
     }
 
-    willTriggerForEvent(moment: TriggerMoment, event:Trigger):boolean{
-        let canPass = false;
-        if(event & this.event){
-            if(moment & this.timeToTrigger){
-                canPass = true;
-            }
-        }
-        return canPass;
-    }
-
     remove():void{
         let indexModReceiver = this.receiver.modifiers.findIndex(x => x.idModifier == this.idModifier);
         if (indexModReceiver != -1) {
@@ -108,10 +98,12 @@ export abstract class BaseModifier implements IBaseModifier{
 
     }
 
-    trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):void{
-        if(this.willTriggerForEvent(moment, event)){
+    trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):string{
+        let messageAboutModifier:string = "";
+
+        if(Utils.willTriggerForEvent(this.timeToTrigger, moment, this.event, event)){
             this.uses--;
-            let messageAboutModifier:string = `${this.receiver.getStylizedName()} is affected by the ${this.type}, `;
+            messageAboutModifier = `${this.receiver.getStylizedName()} is affected by the ${this.type}, `;
             if(!objFightAction){
                 messageAboutModifier += this.applyModifierOnReceiver(moment, event);
             }
@@ -131,13 +123,11 @@ export abstract class BaseModifier implements IBaseModifier{
 
             this.fight.message.addSpecial(messageAboutModifier);
         }
+
+        return messageAboutModifier;
     }
 
-    applyModifierOnReceiver(moment: TriggerMoment, event:Trigger){
+    applyModifierOnReceiver(moment: TriggerMoment, event:Trigger){}
+    applyModifierOnAction(moment: TriggerMoment, event:Trigger, objFightAction:any){}
 
-    }
-
-    applyModifierOnAction(moment: TriggerMoment, event:Trigger, objFightAction:any){
-
-    }
 }

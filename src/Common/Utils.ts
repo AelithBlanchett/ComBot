@@ -1,6 +1,7 @@
 import * as Constants from "../FightSystem/Constants";
 import Team = Constants.Team;
 import StatTier = Constants.StatTier;
+import {Trigger, TriggerMoment} from "../FightSystem/Constants";
 let vsprintf = require('sprintf-js').vsprintf;
 
 export class Utils {
@@ -69,6 +70,16 @@ export class Utils {
             arrResult.push(enumMember);
         }
         return arrResult;
+    }
+
+    static willTriggerForEvent(checkedMoment: TriggerMoment, searchedMoment:TriggerMoment, checkedEvent:Trigger, searchedEvent:Trigger):boolean{
+        let canPass = false;
+        if(checkedEvent & searchedEvent){
+            if(checkedMoment & searchedMoment){
+                canPass = true;
+            }
+        }
+        return canPass;
     }
 
     static getRandomInt(min:number, max:number):number{ //continue

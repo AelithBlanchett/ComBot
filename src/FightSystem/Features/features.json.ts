@@ -1,0 +1,9 @@
+[
+    {
+        "name":"BondageBunny",
+        "myCustomParameterThatIsEqualToOne":1
+    },
+    {
+        "name":"Dummy"
+    }
+]

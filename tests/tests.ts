@@ -3,7 +3,6 @@ import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as Constants from "../src/FightSystem/Constants";
 import {Utils} from "../src/Common/Utils";
 import {ActionType} from "../src/FightSystem/Action";
-import {Feature} from "../src/FightSystem/Feature";
 import {FeatureType} from "../src/FightSystem/Constants";
 import {ModifierType} from "../src/FightSystem/Constants";
 import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
@@ -14,6 +13,7 @@ import {FightRepository} from "../src/FightSystem/Repositories/FightRepository";
 import {Dice} from "../src/Common/Dice";
 import {ModifierRepository} from "../src/FightSystem/Repositories/ModifierRepository";
 import {BaseCommandHandler} from "../src/Common/BaseCommandHandler";
+import {FeatureFactory} from "../src/Common/FeatureFactory";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -836,9 +836,10 @@ describe("Before the fight, the player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should grant the itemPickupModifier bonus for the KickStart feature", async function (done) {
+    //TODO: Implement this feature
+    xit("should grant the itemPickupModifier bonus for the KickStart feature", async function (done) {
         let cmd = new CommandHandler(fChatLibInstance, "here");
-        createFighter("TheTinaArmstrong").features.push(new Feature("TheTinaArmstrong", FeatureType.KickStart, 1));
+        createFighter("TheTinaArmstrong").features.push(FeatureFactory.getFeature(FeatureType.KickStart, 1));
         await initiateMatchSettings1vs1(cmd);
 
         await cmd.fight.waitUntilWaitingForAction();

@@ -1,10 +1,10 @@
 import {Model} from "../../src/Common/Model";
-import {EmptyModifier} from "../../src/FightSystem/Modifiers/CustomModifiers";
 import {ModifierRepository} from "../../src/FightSystem/Repositories/ModifierRepository";
 import {ModifierType} from "../../src/FightSystem/Constants";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 import * as Constants from "../../src/FightSystem/Constants";
+import {ModifierFactory} from "../../src/FightSystem/Modifiers/ModifierFactory";
 
 describe("The Fight Repository", () => {
 
@@ -14,7 +14,7 @@ describe("The Fight Repository", () => {
 
     it("should try everything around modifier", async function (done) {
 
-        let myModifier = new EmptyModifier();
+        let myModifier = ModifierFactory.getModifier(ModifierType.DummyModifier, null, null);
         myModifier.idReceiver = "1";
         myModifier.idFight = "1";
 
@@ -33,7 +33,7 @@ describe("The Fight Repository", () => {
 
     it("should load a modifier modifier", async function (done) {
 
-        let myModifier = new EmptyModifier();
+        let myModifier = ModifierFactory.getModifier(ModifierType.DummyModifier, null, null);
         myModifier.idReceiver = "1";
         myModifier.type = ModifierType.Bondage;
         myModifier.idParentActions = ['1'];

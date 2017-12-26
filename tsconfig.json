@@ -9,8 +9,10 @@
     "types": [
       "node",
       "jasmine",
-      "mysql"
+      "mysql",
+      "reflect-metadata"
     ],
+    "lib": ["es6", "dom"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },

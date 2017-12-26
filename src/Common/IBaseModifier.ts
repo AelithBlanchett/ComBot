@@ -28,7 +28,6 @@ export interface IBaseModifier{
     isOver():boolean;
     remove():void;
     trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):void;
-    willTriggerForEvent(moment: TriggerMoment, event:Trigger):boolean;
     build(receiver:ActiveFighter, applier:ActiveFighter, fight:Fight):void;
     applyModifierOnReceiver(moment: TriggerMoment, event:Trigger):void;
     applyModifierOnAction(moment: TriggerMoment, event:Trigger, objFightAction:any):void;

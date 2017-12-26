@@ -1,8 +1,8 @@
 import {Model} from "../../Common/Model";
 import {Utils} from "../../Common/Utils";
 import {Modifier} from "../Modifiers/Modifier";
-import {EmptyModifier} from "../Modifiers/CustomModifiers";
 import * as Constants from "../Constants";
+import {ModifierFactory} from "../Modifiers/ModifierFactory";
 
 export class ModifierRepository{
 
@@ -69,7 +69,7 @@ export class ModifierRepository{
             let loadedData = await Model.db(Constants.SQL.modifiersTableName).where({idFight: idFight, idReceiver: idFighter}).and.whereNull('deletedAt').select();
 
             for(let data of loadedData){
-                let modifier = new EmptyModifier();
+                let modifier = ModifierFactory.getModifier(Constants.ModifierType.DummyModifier, null, null);
                 Utils.mergeFromTo(data, modifier);
                 modifier.idParentActions = [];
                 if(data.idParentActions != null){
