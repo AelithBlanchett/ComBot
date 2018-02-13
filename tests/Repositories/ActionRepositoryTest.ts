@@ -15,7 +15,7 @@ describe("The Action Repository", () => {
 
         let myAction = new EmptyAction();
         myAction.id = Utils.generateUUID();
-        myAction.fight = new BaseFight();
+        //myAction.fight = new BaseFight();
         myAction.idAttacker = "1";
         myAction.atTurn = 1;
         myAction.tier = 0;

@@ -3,8 +3,7 @@ import * as Constants from "../Common/Constants";
 import {ActiveFighter} from "./ActiveFighter";
 import {ActiveFighterRepository} from "./Repositories/ActiveFighterRepository";
 import {FightRepository} from "./Repositories/FightRepository";
-import {FighterRepository} from "./Repositories/FighterRepository";
-import {FeatureType, FightType, ModifierType} from "../Common/Constants";
+import {ModifierType} from "../Common/Constants";
 import {ModifierFactory} from "./Modifiers/ModifierFactory";
 import {BaseFight} from "../Common/BaseFight";
 
@@ -15,7 +14,7 @@ export class Fight extends BaseFight<ActiveFighter>{
     }
 
     async loadFighter(idFighter: string):Promise<ActiveFighter> {
-        return await FighterRepository.loadActiveFighter(idFighter);
+        return await ActiveFighterRepository.initialize(idFighter);
     }
 
     punishPlayerOnForfeit(fighter: ActiveFighter) {

@@ -1,7 +1,3 @@
-import * as Constants from "./Constants";
-import Team = Constants.Team;
-import StatTier = Constants.StatTier;
-import {Trigger, TriggerMoment} from "./Constants";
 let vsprintf = require('sprintf-js').vsprintf;
 
 export class Utils {
@@ -72,30 +68,6 @@ export class Utils {
         return arrResult;
     }
 
-    static willTriggerForEvent(checkedMoment: TriggerMoment, searchedMoment:TriggerMoment, checkedEvent:string, searchedEvent:string):boolean{
-        let canPass = false;
-
-        let checkedEventNumber:number = parseInt(checkedEvent);
-        let searchedEventNumber:number = parseInt(searchedEvent);
-        let isNumber = (!isNaN(checkedEventNumber) && !isNaN(searchedEventNumber));
-
-        if(isNumber){
-            if(checkedEventNumber & searchedEventNumber){
-                if(checkedMoment & searchedMoment){
-                    canPass = true;
-                }
-            }
-        }
-        else {
-            if (checkedEvent == searchedEvent) {
-                if (checkedMoment == searchedMoment) {
-                    canPass = true;
-                }
-            }
-        }
-        return canPass;
-    }
-
     static getRandomInt(min:number, max:number):number{ //continue
         return Math.floor((Math.random() * max) + min);
     }
@@ -122,20 +94,6 @@ export class Utils {
             return myEnum[myEnum[indexOfChild]];
         }
         return -1;
-    }
-
-    static getStatTier(arg:number){
-        let tier = -1;
-        if(arg <= 2){
-            tier = StatTier.Bronze;
-        }
-        else if(arg <= 4){
-            tier = StatTier.Silver;
-        }
-        else if(arg <= 6){
-            tier = StatTier.Gold;
-        }
-        return tier;
     }
 
     static generateUUID():string {

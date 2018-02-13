@@ -39,32 +39,32 @@ export class Modifier extends BaseModifier implements IModifier{
     applyModifierOnReceiver(moment: TriggerMoment, event:string){
         let messageAboutModifier = "";
         if(this.hpDamage > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPDamage.toString(), event))
+            let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPDamage.toString(), event))
             messageAboutModifier += ` losing ${this.hpDamage} HP,`;
             this.receiver.hitHP(this.hpDamage, flagTriggerMods);
         }
         if(this.lustDamage > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustDamage.toString(), event));
+            let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustDamage.toString(), event));
             messageAboutModifier += ` losing ${this.lustDamage} LP,`;
             this.receiver.hitLP(this.lustDamage, flagTriggerMods);
         }
         if(this.focusDamage > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.FocusDamage.toString(), event));
+            let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.FocusDamage.toString(), event));
             messageAboutModifier += ` losing ${this.focusDamage} FP,`;
             this.receiver.hitFP(this.focusDamage, flagTriggerMods);
         }
         if(this.hpHeal > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPHealing.toString(), event));
+            let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPHealing.toString(), event));
             messageAboutModifier += ` gaining ${this.hpHeal} HP,`;
             this.receiver.healHP(this.hpHeal, flagTriggerMods);
         }
         if(this.lustHeal > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustHealing.toString(), event));
+            let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustHealing.toString(), event));
             messageAboutModifier += ` gaining ${this.lustHeal} LP,`;
             this.receiver.healLP(this.lustHeal, flagTriggerMods);
         }
         if(this.focusHeal > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.FocusHealing.toString(), event));
+            let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.FocusHealing.toString(), event));
             messageAboutModifier += ` gaining ${this.focusHeal} FP,`;
             this.receiver.healFP(this.focusHeal, flagTriggerMods);
         }
@@ -90,7 +90,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their attack's HP damage by ${this.hpDamage},`;
             }
             else{
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPDamage.toString(), event));
+                let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPDamage.toString(), event));
                 messageAboutModifier += ` losing ${this.hpDamage} HP,`;
                 this.receiver.hitHP(this.hpDamage, flagTriggerMods);
             }
@@ -101,7 +101,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their attack's LP damage by ${this.lustDamage},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustDamage.toString(), event));
+                let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustDamage.toString(), event));
                 messageAboutModifier += ` losing ${this.lustDamage} LP,`;
                 this.receiver.hitLP(this.lustDamage, flagTriggerMods);
             }
@@ -112,7 +112,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their attack's FP damage by ${this.focusDamage},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustDamage.toString(), event));
+                let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustDamage.toString(), event));
                 messageAboutModifier += ` losing ${this.focusDamage} LP,`;
                 this.receiver.hitFP(this.focusDamage, flagTriggerMods);
             }
@@ -123,7 +123,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their action's HP healing by ${this.hpHeal},`;
             }
             else{
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPHealing.toString(), event));
+                let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.HPHealing.toString(), event));
                 messageAboutModifier += ` gaining ${this.hpHeal} HP,`;
                 this.receiver.healHP(this.hpHeal, flagTriggerMods);
             }
@@ -134,7 +134,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their action's LP healing by ${this.lustHeal},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustHealing.toString(), event));
+                let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.LustHealing.toString(), event));
                 messageAboutModifier += ` gaining ${this.lustHeal} LP,`;
                 this.receiver.healLP(this.lustHeal, flagTriggerMods);
             }
@@ -145,7 +145,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their action's FP healing by ${this.focusHeal},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.FocusHealing.toString(), event));
+                let flagTriggerMods = !(BaseModifier.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Constants.Trigger.FocusHealing.toString(), event));
                 messageAboutModifier += ` gaining ${this.focusHeal} LP,`;
                 this.receiver.healFP(this.focusHeal, flagTriggerMods);
             }

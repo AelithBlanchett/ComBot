@@ -100,10 +100,34 @@ export abstract class BaseModifier implements IBaseModifier{
 
     }
 
+    static willTriggerForEvent(checkedMoment: TriggerMoment, searchedMoment:TriggerMoment, checkedEvent:string, searchedEvent:string):boolean{
+        let canPass = false;
+
+        let checkedEventNumber:number = parseInt(checkedEvent);
+        let searchedEventNumber:number = parseInt(searchedEvent);
+        let isNumber = (!isNaN(checkedEventNumber) && !isNaN(searchedEventNumber));
+
+        if(isNumber){
+            if(checkedEventNumber & searchedEventNumber){
+                if(checkedMoment & searchedMoment){
+                    canPass = true;
+                }
+            }
+        }
+        else {
+            if (checkedEvent == searchedEvent) {
+                if (checkedMoment == searchedMoment) {
+                    canPass = true;
+                }
+            }
+        }
+        return canPass;
+    }
+
     trigger(moment: TriggerMoment, event:string, objFightAction?:any):string{
         let messageAboutModifier:string = "";
 
-        if(Utils.willTriggerForEvent(this.timeToTrigger, moment, this.event, event)){
+        if(BaseModifier.willTriggerForEvent(this.timeToTrigger, moment, this.event, event)){
             this.uses--;
             messageAboutModifier = `${this.receiver.getStylizedName()} is affected by the ${this.type}, `;
             if(!objFightAction){

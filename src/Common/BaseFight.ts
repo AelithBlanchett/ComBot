@@ -49,6 +49,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
     public constructor() {
         this.idFight = Utils.generateUUID();
+        this.fighters = [];
         this.stage = this.pickStage();
         this.fightType = FightType.Classic;
         this.pastActions = [];
