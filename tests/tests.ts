@@ -1,10 +1,9 @@
 import {Fight} from "../src/FightSystem/Fight";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
-import * as Constants from "../src/FightSystem/Constants";
+import * as Constants from "../src/Common/Constants";
 import {Utils} from "../src/Common/Utils";
-import {ActionType} from "../src/FightSystem/Action";
-import {FeatureType} from "../src/FightSystem/Constants";
-import {ModifierType} from "../src/FightSystem/Constants";
+import {FeatureType} from "../src/Common/Constants";
+import {ModifierType} from "../src/Common/Constants";
 import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
 import {ActiveFighterRepository} from "../src/FightSystem/Repositories/ActiveFighterRepository";
@@ -14,6 +13,7 @@ import {Dice} from "../src/Common/Dice";
 import {ModifierRepository} from "../src/FightSystem/Repositories/ModifierRepository";
 import {BaseCommandHandler} from "../src/Common/BaseCommandHandler";
 import {FeatureFactory} from "../src/Common/FeatureFactory";
+import {ActionType} from "../src/FightSystem/RWAction";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -54,7 +54,7 @@ function abstractDatabase() {
     };
 
     ActionRepository.persist = async function (action) {
-        action.idAction = Utils.generateUUID();
+        action.id = Utils.generateUUID();
     };
 
     FightRepository.persist = async function () {
@@ -411,7 +411,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         let fighterNameBefore = cmd.fight.currentPlayer.name;
         cmd.fight.assignRandomTargetToFighter(cmd.fight.currentPlayer);
-        cmd.fight.setCurrentPlayer(cmd.fight.currentTarget.name);
+        cmd.fight.setCurrentPlayer(cmd.fight.currentTarget[0].name);
         if (cmd.fight.currentPlayer.name != fighterNameBefore) {
             done();
         }
@@ -534,7 +534,7 @@ describe("Before the fight, the player(s)", () => {
             done();
         }
         else {
-            done.fail(new Error("Did not correctly expire the sexhold modifiers."));
+            done.fail(new Error("Did not correctly expire the sexhold appliedModifiers."));
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
@@ -671,7 +671,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.nextTurn();
         await doAction(cmd, "humhold", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.pastActions[cmd.fight.pastActions.length - 1].type == ActionType.HumHold) {
+        if (cmd.fight.pastActions[cmd.fight.pastActions.length - 1].name == ActionType.HumHold) {
             done();
         }
         else {
@@ -836,8 +836,7 @@ describe("Before the fight, the player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    //TODO: Implement this feature
-    xit("should grant the itemPickupModifier bonus for the KickStart feature", async function (done) {
+    it("should grant the itemPickupModifier bonus for the KickStart feature", async function (done) {
         let cmd = new CommandHandler(fChatLibInstance, "here");
         createFighter("TheTinaArmstrong").features.push(FeatureFactory.getFeature(FeatureType.KickStart, 1));
         await initiateMatchSettings1vs1(cmd);
@@ -850,7 +849,7 @@ describe("Before the fight, the player(s)", () => {
             done();
         }
         else {
-            done.fail(new Error("Didn't do the stun"));
+            done.fail(new Error("Didn't create the itemPickup modifier"));
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 

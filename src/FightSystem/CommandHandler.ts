@@ -1,7 +1,7 @@
 import {BaseCommandHandler} from "../Common/BaseCommandHandler";
-import {ActionType} from "./Action";
 import {Utils} from "../Common/Utils";
-import * as Constants from "./Constants";
+import * as Constants from "../Common/Constants";
+import {ActionType} from "./RWAction";
 
 export class CommandHandler extends BaseCommandHandler {
 

@@ -1,43 +1,65 @@
-import {Dice} from "../Common/Dice";
-import {Fight, FightStatus} from "./Fight";
-import {FightLength, Team} from "./Constants";
-import {Action} from "./Action";
-import {Trigger} from "./Constants";
-import {TriggerMoment} from "./Constants";
-import {FightType} from "./Constants";
-import * as Constants from "./Constants";
-import {ModifierType} from "./Constants";
-import {Tier} from "./Constants";
+import {FightLength, FocusDamageOnMiss, Tier, TransactionType} from "../Common/Constants";
+import {Trigger} from "../Common/Constants";
+import {TriggerMoment} from "../Common/Constants";
+import {FightType} from "../Common/Constants";
+import * as Constants from "../Common/Constants";
 import {Utils} from "../Common/Utils";
-import {FeatureType} from "./Constants";
+import {FeatureType} from "../Common/Constants";
+import {BaseActiveFighter} from "../Common/BaseActiveFighter";
+import {IRWFighter} from "./IRWFighter";
+import {Commands} from "../Common/Parser";
 import {Modifier} from "./Modifiers/Modifier";
-import {RWFighter} from "./RWFighter";
-import {AchievementManager} from "../Achievements/AchievementManager";
+import {Fight} from "./Fight";
 
-export class ActiveFighter extends RWFighter {
+export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
+    outputStats(): string {
+        throw new Error("Method not implemented.");
+    }
 
-    fight:Fight;
-    idFight:string;
-    season:number = Constants.Globals.currentSeason;
-    assignedTeam:Team = Team.Unknown;
-    target:ActiveFighter;
-    isReady:boolean = false;
+    save(): Promise<void> {
+        return undefined;
+    }
+
+    saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
+        return undefined;
+    }
+
+
     hp:number = 0;
     lust:number = 0;
     livesRemaining:number = 0;
     focus:number = 0;
-    lastDiceRoll:number;
-    isInTheRing:boolean = true;
-    canMoveFromOrOffRing:boolean = true;
-    lastTagTurn:number = 9999999;
-    wantsDraw:boolean = false;
     consecutiveTurnsWithoutFocus:number;
-    createdAt:Date;
-    updatedAt:Date;
-    modifiers:Modifier[];
-    actionsDone:Action[];
-    actionsInflicted:Action[];
-    fightStatus: FightStatus;
+
+    dexterity:number = 1;
+    power:number = 1;
+    sensuality:number = 1;
+    toughness:number = 1;
+    endurance:number = 1;
+    willpower:number = 1;
+
+    //Those are re-written from RWFighter.ts
+    //Can't extend two classes, so I had to write an interface, and implement it in both ActiveFighter and RWFighter
+    brawlAtksCount:number;
+    sexstrikesCount:number;
+    tagsCount:number;
+    restCount:number;
+    subholdCount:number;
+    sexholdCount:number;
+    bondageCount:number;
+    humholdCount:number;
+    itemPickups:number;
+    sextoyPickups:number;
+    degradationCount:number;
+    forcedWorshipCount:number;
+    highRiskCount:number;
+    penetrationCount:number;
+    stunCount:number;
+    escapeCount:number;
+    submitCount:number;
+    straptoyCount:number;
+    finishCount:number;
+    masturbateCount:number;
 
     startingPower:number;
     startingSensuality:number;
@@ -63,10 +85,13 @@ export class ActiveFighter extends RWFighter {
     heartsHealLastRound: number = 0;
     orgasmsHealLastRound: number = 0;
 
-
-    //Objects, do not need to store
-    pendingAction:Action = null;
-    dice:Dice;
+    //TODO: reimplement
+    //targets:ActiveFighter[];
+    // fight:Fight;
+    modifiers:Modifier[];
+    // actionsDone:Action[];
+    // actionsInflicted:Action[];
+    // pendingAction:Action = null;
 
     constructor(){
         super();
@@ -89,21 +114,6 @@ export class ActiveFighter extends RWFighter {
         this.livesRemaining = this.maxLives();
         this.focus = this.initialFocus();
 
-        this.assignedTeam = Team.Unknown;
-        this.target = null;
-        this.isReady = false;
-
-        this.lastDiceRoll = null;
-        this.isInTheRing = true;
-        this.canMoveFromOrOffRing = true;
-        this.lastTagTurn = 9999999;
-        this.wantsDraw = false;
-        this.consecutiveTurnsWithoutFocus = 0;
-        this.modifiers = [];
-        this.actionsDone = [];
-        this.actionsInflicted = [];
-        this.fightStatus = null;
-
         this.powerDelta = 0;
         this.sensualityDelta = 0;
         this.toughnessDelta = 0;
@@ -121,10 +131,6 @@ export class ActiveFighter extends RWFighter {
         this.orgasmsDamageLastRound = 0;
         this.heartsHealLastRound = 0;
         this.orgasmsHealLastRound = 0;
-
-        this.dice = new Dice(Constants.Globals.diceSides);
-        this.season = Constants.Globals.currentSeason;
-        this.fightStatus = FightStatus.Idle;
     }
 
     initialFocus():number{
@@ -237,31 +243,13 @@ export class ActiveFighter extends RWFighter {
         return maxBondageItemsOnSelf;
     }
 
-    assignFight(fight:Fight):void{
-        this.fight = fight;
-        this.idFight = fight.idFight;
-    }
-
     getStatsInString():string{
         return `${this.power},${this.sensuality},${this.toughness},${this.endurance},${this.dexterity},${this.willpower}`;
     }
 
-    checkAchievements(activeFighter?:ActiveFighter, fight?:Fight){
-        let strBase = `[color=yellow][b]Achievements unlocked for ${this.name}![/b][/color]\n`;
-        let added = AchievementManager.checkAll(this, activeFighter, fight);
-
-        if(added.length > 0){
-            strBase += added.join("\n");
-        }
-        else{
-            strBase = "";
-        }
-
-        return strBase;
-    }
-
     //fight is "mistakenly" set as optional to be compatible with the super.init
     initialize():void {
+        super.initialize();
         this.startingToughness = this.toughness;
         this.startingEndurance = this.endurance;
         this.startingWillpower = this.willpower;
@@ -280,17 +268,11 @@ export class ActiveFighter extends RWFighter {
         this.enduranceDelta = 0;
         this.dexterityDelta = 0;
         this.willpowerDelta = 0;
-
-        this.fightStatus = FightStatus.Initialized;
     }
 
-    get isInDebug():boolean{
-        if(this.fight != null){
-            return this.fight.debug;
-        }
-        else{
-            return false;
-        }
+    validateStats():string{
+        let statsInString = this.getStatsInString();
+        return Commands.checkIfValidStats(statsInString);
     }
 
     get currentPower():number{
@@ -365,26 +347,8 @@ export class ActiveFighter extends RWFighter {
         return str;
     }
 
-    //returns dice score
-    roll(times:number = 1, event:Trigger = Trigger.Roll):number {
-        this.triggerMods(TriggerMoment.Before, event);
-        let result = 0;
-        if (times == 1) {
-            result = this.dice.roll(Constants.Globals.diceCount);
-        }
-        else {
-            result = this.dice.roll(Constants.Globals.diceCount * times);
-        }
-
-        if(this.isInDebug && this.fight.forcedDiceRoll > 0){
-            result = this.fight.forcedDiceRoll;
-        }
-
-        this.triggerMods(TriggerMoment.After, event);
-        return result;
-    }
-
     nextRound(){
+        super.nextRound();
         this.hpDamageLastRound = 0;
         this.lpDamageLastRound = 0;
         this.fpDamageLastRound = 0;
@@ -398,53 +362,13 @@ export class ActiveFighter extends RWFighter {
         this.orgasmsHealLastRound = 0;
     }
 
-    triggerMods(moment:TriggerMoment, event:Trigger, objFightAction?:any):boolean {
-        let atLeastOneModWasActivated:boolean = false;
-        for (let mod of this.modifiers) {
-            let message = mod.trigger(moment, event, objFightAction);
-            if(message.length > 0){
-                this.fight.message.addSpecial(message);
-                atLeastOneModWasActivated = true;
-            }
-        }
-        return atLeastOneModWasActivated;
-    }
-
-    triggerFeatures<OptionalParameterType>(moment: TriggerMoment, event:Trigger, parameters?:OptionalParameterType):boolean{
-        let atLeastOneFeatureWasActivated:boolean = false;
-        for (let feat of this.features) {
-            let message = feat.trigger(moment, event, parameters);
-            if(message.length > 0){
-                this.fight.message.addSpecial(message);
-                atLeastOneFeatureWasActivated = true;
-            }
-        }
-        return atLeastOneFeatureWasActivated;
-    }
-
-    removeMod(idMod:string) { //removes a mod, and also its children. If a children has two parent Ids, then it doesn't remove the mod.
-        let index = this.modifiers.findIndex(x => x.idModifier == idMod);
-        if (index != -1) {
-            this.modifiers[index].remove();
-        }
-    }
-
-    fightDuration(){
-        if(this.fight != null && this.fight.fightLength != null){
-            return this.fight.fightLength;
-        }
-        else{
-            return FightLength.Long;
-        }
-    }
-
     healHP(hp:number, triggerMods:boolean = true) {
         hp = Math.floor(hp);
         if (hp < 1) {
             hp = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.HPHealing);
+            this.triggerMods(TriggerMoment.Before, Trigger.HPHealing.toString());
         }
         if (this.hp + hp > this.hpPerHeart()) {
             hp = this.hpPerHeart() - this.hp; //reduce the number if it overflows the bar
@@ -452,7 +376,7 @@ export class ActiveFighter extends RWFighter {
         this.hp += hp;
         this.hpHealLastRound += hp;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.HPHealing);
+            this.triggerMods(TriggerMoment.After, Trigger.HPHealing.toString());
         }
     }
 
@@ -462,7 +386,7 @@ export class ActiveFighter extends RWFighter {
             lust = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.LustHealing);
+            this.triggerMods(TriggerMoment.Before, Trigger.LustHealing.toString());
         }
         if (this.lust - lust < 0) {
             lust = this.lust; //reduce the number if it overflows the bar
@@ -470,7 +394,7 @@ export class ActiveFighter extends RWFighter {
         this.lust -= lust;
         this.lpHealLastRound += lust;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.LustHealing);
+            this.triggerMods(TriggerMoment.After, Trigger.LustHealing.toString());
         }
     }
 
@@ -480,7 +404,7 @@ export class ActiveFighter extends RWFighter {
             focus = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.FocusHealing);
+            this.triggerMods(TriggerMoment.Before, Trigger.FocusHealing.toString());
         }
         if (this.focus + focus > this.maxFocus()) {
             focus = this.maxFocus() - this.focus; //reduce the number if it overflows the bar
@@ -488,7 +412,7 @@ export class ActiveFighter extends RWFighter {
         this.focus += focus;
         this.fpHealLastRound += focus;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.FocusHealing);
+            this.triggerMods(TriggerMoment.After, Trigger.FocusHealing.toString());
         }
     }
 
@@ -498,12 +422,12 @@ export class ActiveFighter extends RWFighter {
             hp = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.HPDamage);
+            this.triggerMods(TriggerMoment.Before, Trigger.HPDamage.toString());
         }
         this.hp -= hp;
         this.hpDamageLastRound += hp;
         if (this.hp <= 0) {
-            this.triggerMods(TriggerMoment.Before, Trigger.HeartLoss);
+            this.triggerMods(TriggerMoment.Before, Trigger.HeartLoss.toString());
             this.hp = 0;
             //this.heartsRemaining--;
             this.livesRemaining--;
@@ -515,10 +439,10 @@ export class ActiveFighter extends RWFighter {
             else if (this.livesRemaining == 1) {
                 this.fight.message.addHit(`[b][color=red]Last life[/color][/b] for ${this.name}!`);
             }
-            this.triggerMods(TriggerMoment.After, Trigger.HeartLoss);
+            this.triggerMods(TriggerMoment.After, Trigger.HeartLoss.toString());
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.HPDamage);
+            this.triggerMods(TriggerMoment.After, Trigger.HPDamage.toString());
         }
     }
 
@@ -528,12 +452,12 @@ export class ActiveFighter extends RWFighter {
             lust = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.LustDamage);
+            this.triggerMods(TriggerMoment.Before, Trigger.LustDamage.toString());
         }
         this.lust += lust;
         this.lpDamageLastRound += lust;
         if (this.lust >= this.lustPerOrgasm()) {
-            this.triggerMods(TriggerMoment.Before, Trigger.Orgasm);
+            this.triggerMods(TriggerMoment.Before, Trigger.Orgasm.toString());
             this.lust = 0;
             //this.orgasmsRemaining--;
             this.livesRemaining--;
@@ -541,13 +465,13 @@ export class ActiveFighter extends RWFighter {
             this.fight.message.addHit(`[b][color=pink]Orgasm on the mat![/color][/b] ${this.name} has ${this.livesRemaining} lives left.`);
             this.lust = 0;
             if (triggerMods) {
-                this.triggerMods(TriggerMoment.After, Trigger.Orgasm);
+                this.triggerMods(TriggerMoment.After, Trigger.Orgasm.toString());
             }
             if (this.livesRemaining == 1) {
                 this.fight.message.addHit(`[b][color=red]Last life[/color][/b] for ${this.name}!`);
             }
         }
-        this.triggerMods(TriggerMoment.After, Trigger.LustDamage);
+        this.triggerMods(TriggerMoment.After, Trigger.LustDamage.toString());
     }
 
     hitFP(focusDamage:number, triggerMods:boolean = true) { //focusDamage CAN BE NEGATIVE to gain it
@@ -556,31 +480,13 @@ export class ActiveFighter extends RWFighter {
         }
         focusDamage = Math.floor(focusDamage);
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.FocusDamage);
+            this.triggerMods(TriggerMoment.Before, Trigger.FocusDamage.toString());
         }
         this.focus -= focusDamage;
         this.fpDamageLastRound += focusDamage;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.FocusDamage);
+            this.triggerMods(TriggerMoment.After, Trigger.FocusDamage.toString());
         }
-    }
-
-    triggerInsideRing() {
-        this.isInTheRing = true;
-    }
-
-    triggerOutsideRing() {
-        this.isInTheRing = false;
-    }
-
-    triggerPermanentInsideRing() {
-        this.isInTheRing = false;
-        this.canMoveFromOrOffRing = false;
-    }
-
-    triggerPermanentOutsideRing() {
-        this.triggerOutsideRing();
-        this.canMoveFromOrOffRing = false;
     }
 
     isDead(displayMessage:boolean = false):boolean {
@@ -648,127 +554,6 @@ export class ActiveFighter extends RWFighter {
         return bondageModCount;
     }
 
-    requestDraw() {
-        this.wantsDraw = true;
-        this.fightStatus = FightStatus.Draw;
-    }
-
-    unrequestDraw() {
-        this.wantsDraw = false;
-        this.fightStatus = FightStatus.Playing;
-    }
-
-    isRequestingDraw():boolean {
-        return this.wantsDraw;
-    }
-
-    getStunnedTier():Tier {
-        let stunTier = Tier.None;
-        for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.type == ModifierType.Stun) {
-                stunTier = mod.tier;
-            }
-        }
-        return stunTier;
-    }
-
-    isStunned():boolean {
-        return this.getStunnedTier() >= 0;
-    }
-
-    isApplyingHold():boolean {
-        let isApplyingHold = false;
-        for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                isApplyingHold = true;
-            }
-        }
-        return isApplyingHold;
-    }
-
-    isApplyingHoldOfTier():Tier {
-        let tier = Tier.None;
-        for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                tier = mod.tier;
-            }
-        }
-        return tier;
-    }
-
-    isInHold():boolean {
-        let isInHold = false;
-        for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                isInHold = true;
-            }
-        }
-        return isInHold;
-    }
-
-    isInSpecificHold(holdType:ModifierType):boolean {
-        let isInHold = false;
-        for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.type == holdType) {
-                isInHold = true;
-            }
-        }
-        return isInHold;
-    }
-
-    isInHoldAppliedBy(fighterName:string):boolean {
-        let isTrue = false;
-        for (let mod of this.modifiers) {
-            if (mod.idApplier == fighterName && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                isTrue = true;
-            }
-        }
-        return isTrue;
-    }
-
-    isInHoldOfTier():Tier {
-        let tier = Tier.None;
-        for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                tier = mod.tier;
-            }
-        }
-        return tier;
-    }
-
-    releaseHoldsApplied() {
-        for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                mod.receiver.releaseHoldsAppliedBy(mod.idApplier);
-            }
-        }
-    }
-
-    releaseHoldsAppliedBy(fighterName:string) {
-        for (let mod of this.modifiers) {
-            if (mod.idApplier == fighterName && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                this.removeMod(mod.idModifier);
-            }
-        }
-    }
-
-    escapeHolds() {
-        for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
-                this.removeMod(mod.idModifier);
-            }
-        }
-    }
-
-    getListOfActiveModifiers():string{
-        let strMods = "";
-        for(let mod of this.modifiers){
-            strMods += mod.type + ", ";
-        }
-        strMods = strMods.substring(0, strMods.length - 2);
-        return strMods;
-    }
-
     outputStatus() {
         let nameLine = `${this.getStylizedName()}:`;
         let hpLine = `  [color=yellow]hit points: ${this.hp}${((this.hpDamageLastRound > 0 || this.hpHealLastRound > 0) ? `${(((-this.hpDamageLastRound + this.hpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.hpDamageLastRound + this.hpHealLastRound)})[/color]` : "")}|${this.hpPerHeart()}[/color] `;
@@ -778,23 +563,13 @@ export class ActiveFighter extends RWFighter {
         let turnsFocusLine = `  [color=orange]turns ${this.hasFeature(FeatureType.DomSubLover) ? "being too submissive" : "without focus"}: ${this.consecutiveTurnsWithoutFocus}|${Constants.Fight.Action.Globals.maxTurnsWithoutFocus}[/color] `;
         let bondageLine = `  [color=purple]bondage items ${this.bondageItemsOnSelf()}|${Constants.Fight.Action.Globals.maxBondageItemsOnSelf}[/color] `;
         let modifiersLine = `  [color=cyan]affected by: ${this.getListOfActiveModifiers()}[/color] `;
-        let targetLine = `  [color=red]target: ` + (this.target != undefined ? `${this.target.getStylizedName()}` : "None set yet! (!target charactername)") + `[/color]`;
+        let targetLine = `  [color=red]target(s): ` + ((this.targets != null && this.targets.length > 0) ? `${this.targets.map(x => x.name).toString()}` : "None set yet! (!targets charactername)") + `[/color]`;
 
         return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${(this.getListOfActiveModifiers().length > 0 ? modifiersLine : "")} ${targetLine}`;
     }
 
-    getStylizedName():string {
-        let modifierBeginning = "";
-        let modifierEnding = "";
-        if (this.isTechnicallyOut()) {
-            modifierBeginning = `[s]`;
-            modifierEnding = `[/s]`;
-        }
-        else if (!this.isInTheRing) {
-            modifierBeginning = `[i]`;
-            modifierEnding = `[/i]`;
-        }
-        return `${modifierBeginning}[b][color=${Team[this.assignedTeam].toLowerCase()}]${this.name}[/color][/b]${modifierEnding}`;
+    penaltyOnAttackMissed(tier:Tier):void{
+        this.hitFP(FocusDamageOnMiss[Tier[tier]]);
     }
 
 }

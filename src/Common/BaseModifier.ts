@@ -1,11 +1,13 @@
-import * as Constants from "../FightSystem/Constants";
+import * as Constants from "./Constants";
 import Trigger = Constants.Trigger;
 import TriggerMoment = Constants.TriggerMoment;
 import {IBaseModifier} from "./IBaseModifier";
-import {Tier} from "../FightSystem/Constants";
+import {Tier} from "./Constants";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {Utils} from "./Utils";
+import {BaseFight} from "./BaseFight";
+import {BaseActiveFighter} from "./BaseActiveFighter";
 
 export abstract class BaseModifier implements IBaseModifier{
     idModifier: string;
@@ -19,20 +21,20 @@ export abstract class BaseModifier implements IBaseModifier{
     diceRoll: number;
     escapeRoll: number;
     uses: number;
-    event:Trigger;
+    event:string;
     timeToTrigger:TriggerMoment;
     idParentActions:Array<string>;
 
-    fight:Fight;
-    applier:ActiveFighter;
-    receiver:ActiveFighter;
+    fight:BaseFight;
+    applier:BaseActiveFighter;
+    receiver:BaseActiveFighter;
 
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
 
     constructor(receiver:string, applier:string, tier:Tier, modType:Constants.ModifierType, diceRoll:number, escapeRoll:number, uses:number,
-                timeToTrigger:TriggerMoment, event:Trigger, parentActionIds:Array<string>, areMultipliers:boolean){
+                timeToTrigger:TriggerMoment, event:string, parentActionIds:Array<string>, areMultipliers:boolean){
         this.idModifier = Utils.generateUUID();
         this.idReceiver = receiver;
         this.idApplier = applier;
@@ -47,7 +49,7 @@ export abstract class BaseModifier implements IBaseModifier{
         this.areDamageMultipliers = areMultipliers;
     }
 
-    build(receiver:ActiveFighter, applier:ActiveFighter, fight:Fight){
+    build(receiver:BaseActiveFighter, applier:BaseActiveFighter, fight:BaseFight){
         this.receiver = receiver;
         this.applier = applier;
         this.fight = fight;
@@ -55,7 +57,7 @@ export abstract class BaseModifier implements IBaseModifier{
     }
 
     isOver():boolean{
-        return (this.uses <= 0 || this.receiver.isDead());
+        return (this.uses <= 0); //note: removed "|| this.receiver.isTechnicallyOut()" in latest patch. may break things.
     }
 
     remove():void{
@@ -98,7 +100,7 @@ export abstract class BaseModifier implements IBaseModifier{
 
     }
 
-    trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):string{
+    trigger(moment: TriggerMoment, event:string, objFightAction?:any):string{
         let messageAboutModifier:string = "";
 
         if(Utils.willTriggerForEvent(this.timeToTrigger, moment, this.event, event)){
@@ -127,7 +129,8 @@ export abstract class BaseModifier implements IBaseModifier{
         return messageAboutModifier;
     }
 
-    applyModifierOnReceiver(moment: TriggerMoment, event:Trigger){}
-    applyModifierOnAction(moment: TriggerMoment, event:Trigger, objFightAction:any){}
+    abstract applyModifierOnReceiver(moment: TriggerMoment, event:string);
+    abstract applyModifierOnAction(moment: TriggerMoment, event:string, objFightAction:any);
+    abstract isAHold():boolean;
 
 }

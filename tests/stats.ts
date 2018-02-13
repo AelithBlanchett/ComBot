@@ -1,7 +1,7 @@
 import {RWFighter} from "../src/FightSystem/RWFighter";
 import {Fight} from "../src/FightSystem/Fight";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
-import * as Constants from "../src/FightSystem/Constants";
+import * as Constants from "../src/Common/Constants";
 import Tier = Constants.Tier;
 import {Utils} from "../src/Common/Utils";
 import {ActionType, Action} from "../src/FightSystem/Action";
@@ -17,9 +17,10 @@ import {ActiveFighterRepository} from "../src/FightSystem/Repositories/ActiveFig
 import {ActionRepository} from "../src/FightSystem/Repositories/ActionRepository";
 import {FightRepository} from "../src/FightSystem/Repositories/FightRepository";
 import {Dice} from "../src/Common/Dice";
-import {Team} from "../src/FightSystem/Constants";
-import {TierDifficulty} from "../src/FightSystem/Constants";
-import {BaseDamage} from "../src/FightSystem/Constants";
+import {Team} from "../src/Common/Constants";
+import {TierDifficulty} from "../src/Common/Constants";
+import {BaseDamage} from "../src/Common/Constants";
+import {IRWFighter} from "../src/FightSystem/IRWFighter";
 var jasmine = new Jasmine();
 var fChatLibInstance:any;
 var debug = false;
@@ -47,7 +48,7 @@ function getMock(mockedClass) {
 function abstractDatabase() {
 
     FighterRepository.load = async function (name) {
-        return new Promise<RWFighter>(function (resolve, reject) {
+        return new Promise<IRWFighter>(function (resolve, reject) {
             resolve(createFighter(name));
         });
     };
@@ -297,7 +298,7 @@ describe("The player(s)", () => {
                 HPdamagesDone.push(fight.fighters[0].pendingAction.hpDamageToDef);
                 LPdamagesDone.push(fight.fighters[0].pendingAction.lpDamageToDef);
                 FPdamagesDone.push(fight.fighters[0].pendingAction.fpDamageToDef);
-                await fight.fighters[0].pendingAction.commit(fight);
+                await fight.fighters[0].pendingAction.doAction(fight);
 
                 turnsCount++;
             }
@@ -321,7 +322,7 @@ describe("The player(s)", () => {
         // }
         //
         // while(firstFighter.totalHp() > 0)
-        //     let damagePerTier = attackFormula(tier, firstFighter.power, firstFighter.toughness, dieScore);
+        //     let damagePerTier = attackFormula(fightTier, firstFighter.power, firstFighter.toughness, dieScore);
         // damagesDone.push(damagePerTier);
         //
         // turnsCount++;
@@ -399,8 +400,8 @@ describe("The player(s)", () => {
         // attackList = [ActionType.SubHold];
         //
         // for(let atk of attackList){
-        //     for(let tier of tierList){
-        //         calculateFor(Tier[tier], atk, false, null);
+        //     for(let fightTier of tierList){
+        //         calculateFor(Tier[fightTier], atk, false, null);
         //     }
         // }
         //

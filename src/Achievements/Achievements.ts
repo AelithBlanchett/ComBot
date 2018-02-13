@@ -2,7 +2,10 @@ import {IAchievement} from "./IAchievement";
 import {RWFighter} from "../FightSystem/RWFighter";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {Fight} from "../FightSystem/Fight";
-import {FightTier} from "../FightSystem/Constants";
+import {FightTier} from "../Common/Constants";
+import {BaseFighter} from "../Common/BaseFighter";
+import {BaseActiveFighter} from "../Common/BaseActiveFighter";
+import {BaseFight} from "../Common/BaseFight";
 
 export class EnabledAchievements{ //Keep track of the enabled achievements here, instead of doing reflection
     static getAll():IAchievement[]{
@@ -23,9 +26,7 @@ export class EnabledAchievements{ //Keep track of the enabled achievements here,
             new LongFightAchievement(),
             new SeasonOneAchievement(),
             new DoubleKOAchievement(),
-            new CumFestAchievement(),
             new SomeSeriousLuckAchievement(),
-            new OneMoveTwoStonesAchievement()
         ];
     }
 }
@@ -33,7 +34,7 @@ export class EnabledAchievements{ //Keep track of the enabled achievements here,
 export class RookieAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight<BaseActiveFighter>): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.fightsCount >= 1);
@@ -61,7 +62,7 @@ export class RookieAchievement implements IAchievement{
 export class FiveFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.fightsCount >= 5);
@@ -89,7 +90,7 @@ export class FiveFightsAchievement implements IAchievement{
 export class TenFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.fightsCount >= 10);
@@ -117,7 +118,7 @@ export class TenFightsAchievement implements IAchievement{
 export class TwentyFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.fightsCount >= 20);
@@ -145,7 +146,7 @@ export class TwentyFightsAchievement implements IAchievement{
 export class FortyFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.fightsCount >= 40);
@@ -173,7 +174,7 @@ export class FortyFightsAchievement implements IAchievement{
 export class WinookieAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.wins >= 1);
@@ -201,7 +202,7 @@ export class WinookieAchievement implements IAchievement{
 export class WinFiveFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.wins >= 5);
@@ -229,7 +230,7 @@ export class WinFiveFightsAchievement implements IAchievement{
 export class WinTenFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.wins >= 10);
@@ -257,7 +258,7 @@ export class WinTenFightsAchievement implements IAchievement{
 export class WinTwentyFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.wins >= 20);
@@ -285,7 +286,7 @@ export class WinTwentyFightsAchievement implements IAchievement{
 export class WinThirtyFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.wins >= 30);
@@ -313,7 +314,7 @@ export class WinThirtyFightsAchievement implements IAchievement{
 export class WinFortyFightsAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
             flag = (fighter.wins >= 40);
@@ -341,10 +342,10 @@ export class WinFortyFightsAchievement implements IAchievement{
 export class ReachSilverAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.tier() >= FightTier.Silver);
+            flag = (fighter.fightTier() >= FightTier.Silver);
         }
         return flag;
     }
@@ -369,10 +370,10 @@ export class ReachSilverAchievement implements IAchievement{
 export class ReachGoldAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.tier() >= FightTier.Gold);
+            flag = (fighter.fightTier() >= FightTier.Gold);
         }
         return flag;
     }
@@ -397,7 +398,7 @@ export class ReachGoldAchievement implements IAchievement{
 export class LongFightAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.currentTurn >= 20);
@@ -425,7 +426,7 @@ export class LongFightAchievement implements IAchievement{
 export class SeasonOneAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.season == 1);
@@ -453,7 +454,7 @@ export class SeasonOneAchievement implements IAchievement{
 export class DoubleKOAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.isDraw() == true);
@@ -478,66 +479,10 @@ export class DoubleKOAchievement implements IAchievement{
     }
 }
 
-export class CumFestAchievement implements IAchievement{
-    createdAt: Date;
-
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
-        let flag = false;
-        if(fight != null){
-            flag = (fight.fighters.filter(x => x.orgasmsDamageLastRound == 1).length >= 2);
-        }
-        return flag;
-    }
-
-    getDetailedDescription(): string {
-        return "Have two players cum on the same round";
-    }
-
-    getReward(): number {
-        return 7.5;
-    }
-
-    getUniqueShortName(): string {
-        return "Cum Festival";
-    }
-
-    getType():AchievementType{
-        return AchievementType.CumFest;
-    }
-}
-
-export class OneMoveTwoStonesAchievement implements IAchievement{
-    createdAt: Date;
-
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
-        let flag = false;
-        if(fight != null){
-            flag = (fight.fighters.filter(x => x.heartsDamageLastRound == 1).length >= 2);
-        }
-        return flag;
-    }
-
-    getDetailedDescription(): string {
-        return "Have two players lose a heart on the same round";
-    }
-
-    getReward(): number {
-        return 7.5;
-    }
-
-    getUniqueShortName(): string {
-        return "One Move Two Stones";
-    }
-
-    getType():AchievementType{
-        return AchievementType.OneMoveTwoStones;
-    }
-}
-
 export class SomeSeriousLuckAchievement implements IAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: RWFighter, activeFighter?: ActiveFighter, fight?: Fight): boolean {
+    meetsRequirements(fighter: RWFighter, activeFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(activeFighter != null){
             flag = (activeFighter.lastDiceRoll >= 20 && activeFighter.lastDiceRoll <= 40);
@@ -579,7 +524,63 @@ export enum AchievementType {
     LongFight = 13,
     SeasonOne = 14,
     DoubleKO = 15,
-    CumFest = 16,
-    SomeSeriousLuck = 17,
-    OneMoveTwoStones = 18
+    SomeSeriousLuck = 17
 }
+
+//TODO: move this to specific achievements
+//To be moved
+// export class CumFestAchievement implements IAchievement{
+//     createdAt: Date;
+//
+//     meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+//         let flag = false;
+//         if(fight != null){
+//             flag = (fight.fighters.filter(x => x.orgasmsDamageLastRound == 1).length >= 2);
+//         }
+//         return flag;
+//     }
+//
+//     getDetailedDescription(): string {
+//         return "Have two players cum on the same round";
+//     }
+//
+//     getReward(): number {
+//         return 7.5;
+//     }
+//
+//     getUniqueShortName(): string {
+//         return "Cum Festival";
+//     }
+//
+//     getType():AchievementType{
+//         return AchievementType.CumFest;
+//     }
+// }
+//
+// export class OneMoveTwoStonesAchievement implements IAchievement{
+//     createdAt: Date;
+//
+//     meetsRequirements(fighter: RWFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+//         let flag = false;
+//         if(fight != null){
+//             flag = (fight.fighters.filter(x => x.heartsDamageLastRound == 1).length >= 2);
+//         }
+//         return flag;
+//     }
+//
+//     getDetailedDescription(): string {
+//         return "Have two players lose a heart on the same round";
+//     }
+//
+//     getReward(): number {
+//         return 7.5;
+//     }
+//
+//     getUniqueShortName(): string {
+//         return "One Move Two Stones";
+//     }
+//
+//     getType():AchievementType{
+//         return AchievementType.OneMoveTwoStones;
+//     }
+// }

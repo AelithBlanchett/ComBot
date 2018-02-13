@@ -5,18 +5,6 @@ export class Message implements IMessage {
     fChatLib:IFChatLib;
     channel:string;
     action:Array<string>;
-    HPDamageAtk:number;
-    LPDamageAtk:number;
-    FPDamageAtk:number;
-    HPHealAtk:number;
-    LPHealAtk:number;
-    FPHealAtk:number;
-    HPDamageDef:number;
-    LPDamageDef:number;
-    FPDamageDef:number;
-    HPHealDef:number;
-    LPHealDef:number;
-    FPHealDef:number;
     hit:Array<string>;
     status:Array<string>;
     hint:Array<string>;
@@ -34,18 +22,6 @@ export class Message implements IMessage {
 
     clear(){
         this.action = [];
-        this.HPDamageAtk = 0;
-        this.LPDamageAtk = 0;
-        this.FPDamageAtk = 0;
-        this.HPHealAtk = 0;
-        this.LPHealAtk = 0;
-        this.FPHealAtk = 0;
-        this.HPDamageDef = 0;
-        this.LPDamageDef = 0;
-        this.FPDamageDef = 0;
-        this.HPHealDef = 0;
-        this.LPHealDef = 0;
-        this.FPHealDef = 0;
         this.hit = [];
         this.status = [];
         this.hint = [];

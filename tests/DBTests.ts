@@ -1,6 +1,6 @@
 import {RWFighter} from "../src/FightSystem/RWFighter";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
-import * as Constants from "../src/FightSystem/Constants";
+import * as Constants from "../src/Common/Constants";
 import {Utils} from "../src/Common/Utils";
 import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
@@ -211,8 +211,8 @@ describe("The database(s)", () => {
     //     await ActionRepository.persist(action);
     // });
     //
-    // xit("should delete something", async function (done) {
-    //     await ActionRepository.delete("7a1ee8c5-58bd-41f5-a0db-7bd1a533f43c");
+    // xit("should remove something", async function (done) {
+    //     await ActionRepository.remove("7a1ee8c5-58bd-41f5-a0db-7bd1a533f43c");
     // }, 100000);
 });
 

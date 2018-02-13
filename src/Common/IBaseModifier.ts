@@ -1,21 +1,21 @@
-import {ActiveFighter} from "../FightSystem/ActiveFighter";
-import {ModifierType, Tier, Trigger, TriggerMoment} from "../FightSystem/Constants";
-import {Fight} from "../FightSystem/Fight";
+import {ModifierType, Tier, Trigger, TriggerMoment} from "./Constants";
+import {BaseActiveFighter} from "./BaseActiveFighter";
+import {BaseFight} from "./BaseFight";
 
 export interface IBaseModifier{
     idModifier: string;
     idFight: string;
     tier:Tier;
     type:ModifierType;
-    applier: ActiveFighter;
+    applier: BaseActiveFighter;
     idApplier: string;
-    receiver: ActiveFighter;
+    receiver: BaseActiveFighter;
     idReceiver: string;
     areDamageMultipliers: boolean;
     diceRoll: number;
     escapeRoll: number;
     uses: number;
-    event:Trigger;
+    event:string;
     timeToTrigger:TriggerMoment;
     idParentActions: Array<string>;
 
@@ -23,12 +23,12 @@ export interface IBaseModifier{
     updatedAt: Date;
     deletedAt: Date;
 
-    fight:Fight;
+    fight:BaseFight;
 
     isOver():boolean;
     remove():void;
-    trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):void;
-    build(receiver:ActiveFighter, applier:ActiveFighter, fight:Fight):void;
-    applyModifierOnReceiver(moment: TriggerMoment, event:Trigger):void;
-    applyModifierOnAction(moment: TriggerMoment, event:Trigger, objFightAction:any):void;
+    trigger(moment: TriggerMoment, event:string, objFightAction?:any):void;
+    build(receiver:BaseActiveFighter, applier:BaseActiveFighter, fight:BaseFight):void;
+    applyModifierOnReceiver(moment: TriggerMoment, event:string):void;
+    applyModifierOnAction(moment: TriggerMoment, event:string, objFightAction:any):void;
 }

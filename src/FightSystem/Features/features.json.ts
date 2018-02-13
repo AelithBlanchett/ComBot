@@ -4,6 +4,10 @@
         "myCustomParameterThatIsEqualToOne":1
     },
     {
+        "name":"KickStart",
+        "hpDamageMultiplier":1.5
+    },
+    {
         "name":"Dummy"
     }
 ]

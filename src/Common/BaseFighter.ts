@@ -1,6 +1,6 @@
 import {IAchievement} from "../Achievements/IAchievement";
 import {BaseFeature} from "./BaseFeature";
-import {FeatureType, FightTier, FightTierWinRequirements, Stats, Team} from "../FightSystem/Constants";
+import {FeatureType, FightTier, FightTierWinRequirements, Stats, Team, TransactionType} from "./Constants";
 import {AchievementManager} from "../Achievements/AchievementManager";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
@@ -111,7 +111,6 @@ export abstract class BaseFighter{
             let index = this.features.findIndex(x => x.type == type);
             if(index == -1){
                 this.features.push(feature);
-                this.removeTokens(amountToRemove);
                 return amountToRemove;
             }
             else{
@@ -131,23 +130,25 @@ export abstract class BaseFighter{
         return this.features.findIndex(x => x.type == featureType) != -1;
     }
 
-    giveTokens(amount:number):void{
+    async giveTokens(amount:number, transactionType:TransactionType, fromFighter:string = ""):Promise<void>{
         this.tokens += amount;
+        await this.saveTokenTransaction(this.name, amount, transactionType, fromFighter);
     }
 
-    removeTokens(amount:number):void{
+    async removeTokens(amount:number, transactionType:TransactionType, fromFighter:string = ""):Promise<void>{
         this.tokens -= amount;
         this.tokensSpent += amount;
         if(this.tokens < 0){
             this.tokens = 0;
         }
+        await this.saveTokenTransaction(this.name, amount, transactionType, fromFighter);
     }
 
     canPayAmount(amount):boolean{
         return (this.tokens - amount >= 0);
     }
 
-    tier():FightTier{
+    fightTier():FightTier{
         if(this.wins < FightTierWinRequirements.Silver){
             return FightTier.Bronze;
         }
@@ -161,4 +162,7 @@ export abstract class BaseFighter{
             return FightTier.Bronze;
         }
     }
+    abstract outputStats():string;
+    abstract async save():Promise<void>;
+    abstract async saveTokenTransaction(idFighter:string, amount:number, transactionType:TransactionType, fromFighter?:string):Promise<void>;
 }

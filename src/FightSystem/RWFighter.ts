@@ -1,6 +1,16 @@
 import {BaseFighter} from "../Common/BaseFighter";
+import {IRWFighter} from "./IRWFighter";
+import {TransactionType} from "../Common/Constants";
 
-export class RWFighter extends BaseFighter{
+export class RWFighter extends BaseFighter implements IRWFighter {
+    save(): Promise<void> {
+        return undefined;
+    }
+
+    saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
+        return undefined;
+    }
+
     dexterity:number = 1;
     power:number = 1;
     sensuality:number = 1;

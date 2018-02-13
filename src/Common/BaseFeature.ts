@@ -2,7 +2,7 @@ import {Utils} from "./Utils";
 import {
     FeatureCostPerUse, FeatureEffect, FeatureType, ModifierType, Trigger,
     TriggerMoment
-} from "../FightSystem/Constants";
+} from "./Constants";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {Modifier} from "../FightSystem/Modifiers/Modifier";
@@ -14,8 +14,6 @@ export abstract class BaseFeature{
     type:FeatureType;
     uses: number;
     permanent: boolean;
-    event:Trigger;
-    timeToTrigger:TriggerMoment;
     idReceiver:string;
     receiver:ActiveFighter;
     createdAt:Date;
@@ -31,6 +29,11 @@ export abstract class BaseFeature{
         }
 
         this.type = featureType;
+    }
+
+    build(receiver:ActiveFighter){
+        this.receiver = receiver;
+        this.idReceiver = receiver.name;
     }
 
     getCost():number{

@@ -3,14 +3,16 @@ import {RWFighter} from "../RWFighter";
 import {Utils} from "../../Common/Utils";
 import {IAchievement} from "../../Achievements/IAchievement";
 import {AchievementManager} from "../../Achievements/AchievementManager";
-import {TransactionType} from "../Constants";
-import * as Constants from "../Constants";
+import {TransactionType} from "../../Common/Constants";
+import * as Constants from "../../Common/Constants";
 import {BaseFeature} from "../../Common/BaseFeature";
 import {FeatureFactory} from "../../Common/FeatureFactory";
+import {IRWFighter} from "../IRWFighter";
+import {ActiveFighter} from "../ActiveFighter";
 
 export class FighterRepository{
 
-    public static async persist(fighter:RWFighter):Promise<void>{
+    public static async persist(fighter:IRWFighter):Promise<void>{
         try
         {
             let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
@@ -58,7 +60,7 @@ export class FighterRepository{
         }
     }
 
-    public static async persistFeatures(fighter:RWFighter):Promise<void>{
+    public static async persistFeatures(fighter:IRWFighter):Promise<void>{
 
         let featuresIdToKeep = [];
         let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
@@ -107,7 +109,7 @@ export class FighterRepository{
         }
     }
 
-    public static async persistAchievements(fighter:RWFighter):Promise<void>{
+    public static async persistAchievements(fighter:IRWFighter):Promise<void>{
 
         for(let achievement of fighter.achievements){
             let loadedData = await Model.db(Constants.SQL.fightersAchievementsTableName).where({idFighter: fighter.name, idAchievement: achievement.getType()}).select();
@@ -147,7 +149,7 @@ export class FighterRepository{
         return (loadedData.length > 0);
     }
 
-    public static async load(name:string):Promise<RWFighter>{
+    public static async load(name:string):Promise<IRWFighter>{
         let loadedFighter:RWFighter = new RWFighter();
 
         if(!await FighterRepository.exists(name)){
@@ -171,6 +173,13 @@ export class FighterRepository{
         }
 
         return loadedFighter;
+    }
+
+    public static async loadActiveFighter(name:string):Promise<ActiveFighter>{
+        let baseFighter = await FighterRepository.load(name);
+        let activeFighter = new ActiveFighter();
+        Utils.mergeFromTo(baseFighter, activeFighter);
+        return activeFighter;
     }
 
     static async loadAllAchievements(fighterName:string):Promise<IAchievement[]>{
@@ -217,7 +226,7 @@ export class FighterRepository{
         await Model.db(Constants.SQL.fightersTableName).where({season: currentSeason.value}).and.whereNull('deletedAt').andWhere('createdAt', '<', currentDate).increment('tokens', amount);
     }
 
-    public static async delete(name:string):Promise<void>{
+    public static async remove(name:string):Promise<void>{
         let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
         await Model.db(Constants.SQL.fightersTableName).where({name: name, season: currentSeason.value}).and.whereNull('deletedAt').update({
             deletedAt: new Date()

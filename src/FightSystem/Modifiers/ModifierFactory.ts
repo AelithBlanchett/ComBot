@@ -1,10 +1,11 @@
-import * as Constants from "../Constants";
+import * as Constants from "../../Common/Constants";
 import {Modifier} from "./Modifier";
-import {ActiveFighter} from "../ActiveFighter";
 import {IModifier} from "./IModifier";
-import {ModifierType, Tier} from "../Constants";
+import {ModifierType, Tier} from "../../Common/Constants";
 import {Utils} from "../../Common/Utils";
 import {Fight} from "../Fight";
+import {BaseFight} from "../../Common/BaseFight";
+import {BaseActiveFighter} from "../../Common/BaseActiveFighter";
 
 export class ModifierFactory{
 
@@ -67,7 +68,7 @@ export class ModifierFactory{
         return parameters;
     }
 
-    static getModifier(modifierName:ModifierType, fight:Fight, receiver:ActiveFighter, applier?:ActiveFighter, inputParameters?:any){
+    static getModifier(modifierName:ModifierType, fight:BaseFight, receiver:BaseActiveFighter, applier?:BaseActiveFighter, inputParameters?:any):Modifier{
         let modifier:Modifier = null;
         if(inputParameters == null){
             inputParameters = {};

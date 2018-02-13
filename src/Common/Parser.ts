@@ -1,10 +1,10 @@
 import {Utils} from "./Utils";
-import * as Constants from "../FightSystem/Constants";
+import * as Constants from "./Constants";
 import Team = Constants.Team;
 import Stats = Constants.Stats;
-import {FightType} from "../FightSystem/Constants";
-import {FeatureType} from "../FightSystem/Constants";
-import {FightLength} from "../FightSystem/Constants";
+import {FightType} from "./Constants";
+import {FeatureType} from "./Constants";
+import {FightLength} from "./Constants";
 
 export class Commands{
 

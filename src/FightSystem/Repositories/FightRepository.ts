@@ -1,12 +1,12 @@
 import {Fight} from "../Fight";
 import {Model} from "../../Common/Model";
-import {Action} from "../Action";
 import {ActionRepository} from "./ActionRepository";
 import {Utils} from "../../Common/Utils";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FighterRepository} from "./FighterRepository";
-import * as Constants from "../Constants";
+import * as Constants from "../../Common/Constants";
 import {ModifierRepository} from "./ModifierRepository";
+import {BaseRWAction} from "../RWAction";
 
 export class FightRepository{
 
@@ -121,8 +121,8 @@ export class FightRepository{
         return loadedFight;
     }
 
-    public static async loadActions(fight:Fight):Promise<Action[]>{
-        let loadedActions:Action[] = [];
+    public static async loadActions(fight:Fight):Promise<BaseRWAction[]>{
+        let loadedActions:BaseRWAction[] = [];
 
         if(!await FightRepository.exists(fight.idFight)){
             return null;
@@ -131,20 +131,7 @@ export class FightRepository{
         try
         {
             loadedActions = await ActionRepository.loadFromFight(fight.idFight);
-
-            for(let action of loadedActions){
-                let attackingFighterIndex = fight.fighters.findIndex(x => x.name == action.idAttacker);
-                let defendingFighterIndex = fight.fighters.findIndex(x => x.name == action.idDefender);
-
-                if(attackingFighterIndex != -1){
-                    fight.fighters[attackingFighterIndex].actionsDone.push(action);
-                }
-
-                if(defendingFighterIndex != -1){
-                    fight.fighters[defendingFighterIndex].actionsInflicted.push(action);
-                }
-            }
-
+            fight.pastActions = loadedActions;
         }
         catch(ex){
             throw ex;

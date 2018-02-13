@@ -1,7 +1,7 @@
 import {Model} from "../../Common/Model";
 import {Utils} from "../../Common/Utils";
 import {Modifier} from "../Modifiers/Modifier";
-import * as Constants from "../Constants";
+import * as Constants from "../../Common/Constants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 
 export class ModifierRepository{

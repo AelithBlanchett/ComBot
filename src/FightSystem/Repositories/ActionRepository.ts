@@ -1,81 +1,83 @@
-import {Action, EmptyAction} from "../Action";
 import {Model} from "../../Common/Model";
 import {Utils} from "../../Common/Utils";
-import * as Constants from "../Constants";
+import * as Constants from "../../Common/Constants";
+import {BaseRWAction, EmptyAction} from "../RWAction";
 
 export class ActionRepository{
 
-    public static async persist(action:Action):Promise<void>{
+    public static async persist(action:BaseRWAction):Promise<void>{
         try
         {
-            if(!await ActionRepository.exists(action.idAction)){
-                action.createdAt = new Date();
-                await Model.db(Constants.SQL.actionTableName).insert(
-                    {
-                        idAction: action.idAction,
-                        idFight: action.idFight,
-                        atTurn: action.atTurn,
-                        type: action.type,
-                        tier: action.tier,
-                        isHold: action.isHold,
-                        diceScore: action.diceScore,
-                        missed: action.missed,
-                        idAttacker: action.idAttacker,
-                        idDefender: action.idDefender,
-                        hpDamageToDef: action.hpDamageToDef,
-                        lpDamageToDef: action.fpDamageToDef,
-                        fpDamageToDef: action.lpDamageToDef,
-                        hpDamageToAtk: action.hpDamageToAtk,
-                        lpDamageToAtk: action.fpDamageToAtk,
-                        fpDamageToAtk: action.lpDamageToAtk,
-                        hpHealToDef: action.hpHealToDef,
-                        lpHealToDef: action.fpHealToDef,
-                        fpHealToDef: action.lpHealToDef,
-                        hpHealToAtk: action.hpHealToAtk,
-                        lpHealToAtk: action.fpHealToAtk,
-                        fpHealToAtk: action.lpHealToAtk,
-                        requiresRoll: action.requiresRoll,
-                        createdAt: action.createdAt
-                    }).into(Constants.SQL.actionTableName);
-            }
-            else{
-                action.updatedAt = new Date();
-                await Model.db(Constants.SQL.actionTableName).where({idAction: action.idAction}).update(
-                    {
-                        idFight: action.idFight,
-                        atTurn: action.atTurn,
-                        type: action.type,
-                        tier: action.tier,
-                        isHold: action.isHold,
-                        diceScore: action.diceScore,
-                        missed: action.missed,
-                        idAttacker: action.idAttacker,
-                        idDefender: action.idDefender,
-                        hpDamageToDef: action.hpDamageToDef,
-                        lpDamageToDef: action.fpDamageToDef,
-                        fpDamageToDef: action.lpDamageToDef,
-                        hpDamageToAtk: action.hpDamageToAtk,
-                        lpDamageToAtk: action.fpDamageToAtk,
-                        fpDamageToAtk: action.lpDamageToAtk,
-                        hpHealToDef: action.hpHealToDef,
-                        lpHealToDef: action.fpHealToDef,
-                        fpHealToDef: action.lpHealToDef,
-                        hpHealToAtk: action.hpHealToAtk,
-                        lpHealToAtk: action.fpHealToAtk,
-                        fpHealToAtk: action.lpHealToAtk,
-                        requiresRoll: action.requiresRoll,
-                        updatedAt: action.updatedAt
-                    }).into(Constants.SQL.actionTableName);
-            }
+            for(let i = 0; i < action.defenders.length; i++){
+                let baseParameter:any = {
+                    idFight: action.fight.idFight,
+                    atTurn: action.atTurn,
+                    type: action.name,
+                    tier: action.tier,
+                    isHold: action.isHold,
+                    diceScore: action.diceScore,
+                    missed: action.missed,
+                    idAttacker: action.attacker.name,
+                    idDefender: action.defenders[i].name,
+                    hpDamageToDef: action.hpDamageToDefs[i],
+                    lpDamageToDef: action.fpDamageToDefs[i],
+                    fpDamageToDef: action.lpDamageToDefs[i],
+                    hpDamageToAtk: action.hpDamageToAtk,
+                    lpDamageToAtk: action.fpDamageToAtk,
+                    fpDamageToAtk: action.lpDamageToAtk,
+                    hpHealToDef: action.hpHealToDefs[i],
+                    lpHealToDef: action.fpHealToDefs[i],
+                    fpHealToDef: action.lpHealToDefs[i],
+                    hpHealToAtk: action.hpHealToAtk,
+                    lpHealToAtk: action.fpHealToAtk,
+                    fpHealToAtk: action.lpHealToAtk,
+                    requiresRoll: action.requiresRoll};
 
+                if(!await ActionRepository.exists(action.id)){
+                    baseParameter.idAction = action.id;
+                    action.createdAt = new Date();
+                    baseParameter.createdAt = action.createdAt;
+                    await Model.db(Constants.SQL.actionTableName).insert(baseParameter).into(Constants.SQL.actionTableName);
+                }
+                else{
+                    action.updatedAt = new Date();
+                    baseParameter.updatedAt = action.updatedAt;
+                    await Model.db(Constants.SQL.actionTableName).where({idAction: action.id}).update(
+                        {
+                            idFight: action.fight.idFight,
+                            atTurn: action.atTurn,
+                            type: action.name,
+                            tier: action.tier,
+                            isHold: action.isHold,
+                            diceScore: action.diceScore,
+                            missed: action.missed,
+                            idAttacker: action.attacker.name,
+                            idDefender: action.defenders[i].name,
+                            hpDamageToDef: action.hpDamageToDefs[i],
+                            lpDamageToDef: action.fpDamageToDefs[i],
+                            fpDamageToDef: action.lpDamageToDefs[i],
+                            hpDamageToAtk: action.hpDamageToAtk,
+                            lpDamageToAtk: action.fpDamageToAtk,
+                            fpDamageToAtk: action.lpDamageToAtk,
+                            hpHealToDef: action.hpHealToDefs[i],
+                            lpHealToDef: action.fpHealToDefs[i],
+                            fpHealToDef: action.lpHealToDefs[i],
+                            hpHealToAtk: action.hpHealToAtk,
+                            lpHealToAtk: action.fpHealToAtk,
+                            fpHealToAtk: action.lpHealToAtk,
+                            requiresRoll: action.requiresRoll,
+                            updatedAt: action.updatedAt
+                        }).into(Constants.SQL.actionTableName);
+                }
+            }
         }
         catch(ex){
             throw ex;
         }
     }
 
-    public static async loadFromFight(idFight:string):Promise<Action[]>{
-        let loadedActions:Action[] = [];
+    public static async loadFromFight(idFight:string):Promise<BaseRWAction[]>{
+        let loadedActions:BaseRWAction[] = [];
 
         try
         {

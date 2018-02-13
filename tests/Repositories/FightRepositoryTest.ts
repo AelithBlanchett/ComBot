@@ -3,7 +3,7 @@ import {Model} from "../../src/Common/Model";
 import {FightRepository} from "../../src/FightSystem/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as Constants from "../../src/FightSystem/Constants";
+import * as Constants from "../../src/Common/Constants";
 
 describe("The Fight Repository", () => {
 

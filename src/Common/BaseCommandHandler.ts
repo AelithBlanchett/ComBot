@@ -2,20 +2,21 @@ import {RWFighter} from "../FightSystem/RWFighter";
 import * as Parser from "./Parser";
 import {Fight} from "../FightSystem/Fight";
 import {IFChatLib} from "./IFChatLib";
-import * as Constants from "../FightSystem/Constants";
+import * as Constants from "./Constants";
 import {Utils} from "./Utils";
-import {FightType} from "../FightSystem/Constants";
-import {FeatureType} from "../FightSystem/Constants";
+import {FightType} from "./Constants";
+import {FeatureType} from "./Constants";
 import {EnumEx} from "./Utils";
-import {ActionType} from "../FightSystem/Action";
-import {Team} from "../FightSystem/Constants";
+import {Team} from "./Constants";
 import {FighterRepository} from "../FightSystem/Repositories/FighterRepository";
 import {FightRepository} from "../FightSystem/Repositories/FightRepository";
-import {TransactionType} from "../FightSystem/Constants";
-import {FightLength} from "../FightSystem/Constants";
+import {TransactionType} from "./Constants";
+import {FightLength} from "./Constants";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import {Model} from "./Model";
+import {IRWFighter} from "../FightSystem/IRWFighter";
+import {BaseFighter} from "./BaseFighter";
 let CircularJSON = require('circular-json');
 
 export class BaseCommandHandler {
@@ -87,53 +88,55 @@ export class BaseCommandHandler {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async autoplay(args:string, data:FChatResponse) {
-        if (this.fChatLibInstance.isUserMaster(data.character, "")) {
-            this.blnAutofight = !this.blnAutofight;
-            if(this.blnAutofight == false){
-                return;
-            }
-            let availableCommands = Utils.getEnumList(ActionType);
-            let availableTiers = Utils.getEnumList(Constants.Tier);
-            availableTiers.shift();
-
-            let firstCharData:FChatResponse = {character: "MyFirstFighterThatDoesntExist", channel: data.channel};
-            let secondCharData:FChatResponse = {character: "MySecondFighterThatDoesntExist", channel: data.channel};
-
-
-
-            while(this.blnAutofight == true){
-                if (this.fight == undefined || this.fight.hasEnded) {
-                    this.fight = new Fight();
-                    this.fight.build(this.fChatLibInstance, this.channel);
-                }
-                if(!this.fight.hasStarted){
-                    await this.ready("", firstCharData);
-                    await this.wait(1000);
-                    await this.ready("", secondCharData);
-                    await this.wait(1000);
-                }
-
-                await this.wait(1000);
-
-                if(this.fight.currentPlayer.name == firstCharData.character){
-                    let randomCommand = availableCommands[Utils.getRandomInt(0, availableCommands.length)].toLowerCase();
-                    let randomTier = availableTiers[Utils.getRandomInt(0, availableTiers.length)].toLowerCase();
-                    await this[randomCommand].apply(this, [randomTier, firstCharData]);
-                }
-                else if(this.fight.currentPlayer.name == secondCharData.character)
-                {
-                    let randomCommandTina = availableCommands[Utils.getRandomInt(0, availableCommands.length)].toLowerCase();
-                    let randomTierTina = availableTiers[Utils.getRandomInt(0, availableTiers.length)].toLowerCase();
-                    await this[randomCommandTina].apply(this, [randomTierTina, secondCharData]);
-                }
-
-                if(!this.blnAutofight){
-                    break;
-                }
-            }
-        }
-    }
+    //TODO reimplement this somewhere else
+    // async autoplay(args:string, data:FChatResponse) {
+    //     if (this.fChatLibInstance.isUserMaster(data.character, "")) {
+    //         this.blnAutofight = !this.blnAutofight;
+    //         if(this.blnAutofight == false){
+    //             return;
+    //         }
+    //
+    //         let availableCommands = Utils.getEnumList(ActionType);
+    //         let availableTiers = Utils.getEnumList(Constants.Tier);
+    //         availableTiers.shift();
+    //
+    //         let firstCharData:FChatResponse = {character: "MyFirstFighterThatDoesntExist", channel: data.channel};
+    //         let secondCharData:FChatResponse = {character: "MySecondFighterThatDoesntExist", channel: data.channel};
+    //
+    //
+    //
+    //         while(this.blnAutofight == true){
+    //             if (this.fight == undefined || this.fight.hasEnded) {
+    //                 this.fight = new Fight();
+    //                 this.fight.build(this.fChatLibInstance, this.channel);
+    //             }
+    //             if(!this.fight.hasStarted){
+    //                 await this.ready("", firstCharData);
+    //                 await this.wait(1000);
+    //                 await this.ready("", secondCharData);
+    //                 await this.wait(1000);
+    //             }
+    //
+    //             await this.wait(1000);
+    //
+    //             if(this.fight.currentPlayer.name == firstCharData.character){
+    //                 let randomCommand = availableCommands[Utils.getRandomInt(0, availableCommands.length)].toLowerCase();
+    //                 let randomTier = availableTiers[Utils.getRandomInt(0, availableTiers.length)].toLowerCase();
+    //                 await this[randomCommand].apply(this, [randomTier, firstCharData]);
+    //             }
+    //             else if(this.fight.currentPlayer.name == secondCharData.character)
+    //             {
+    //                 let randomCommandTina = availableCommands[Utils.getRandomInt(0, availableCommands.length)].toLowerCase();
+    //                 let randomTierTina = availableTiers[Utils.getRandomInt(0, availableTiers.length)].toLowerCase();
+    //                 await this[randomCommandTina].apply(this, [randomTierTina, secondCharData]);
+    //             }
+    //
+    //             if(!this.blnAutofight){
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
 
     async impersonate(args:string, data:FChatResponse) {
         if (this.fChatLibInstance.isUserMaster(data.character, "")) {
@@ -162,12 +165,12 @@ export class BaseCommandHandler {
             return;
         }
 
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             try {
                 let cost = fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
-                await FighterRepository.logTransaction(fighter.name, -cost, TransactionType.Feature);
-                await FighterRepository.persist(fighter);
+                await fighter.removeTokens(cost, TransactionType.Feature);
+                await fighter.save();
                 this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully added the ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
             }
             catch (ex) {
@@ -190,7 +193,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendPrivMessage(`[color=red]${parserPassed}[/color]`, data.character);
             return;
         }
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             if(fighter.canPayAmount(Constants.Globals.restatCostInTokens)) {
                 try {
@@ -201,10 +204,9 @@ export class BaseCommandHandler {
                     }
 
                     let cost = Constants.Globals.restatCostInTokens;
-                    fighter.removeTokens(cost);
-                    await FighterRepository.logTransaction(fighter.name, -cost, TransactionType.Restat);
+                    await fighter.removeTokens(cost, TransactionType.Restat);
                     fighter.restat(arrParam);
-                    await FighterRepository.persist(fighter);
+                    await fighter.save();
                     this.fChatLibInstance.sendPrivMessage(Constants.Messages.statChangeSuccessful, fighter.name);
                 }
                 catch (ex) {
@@ -225,12 +227,12 @@ export class BaseCommandHandler {
     };
 
     async clearfeatures(args:string, data:FChatResponse) {
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
                 fighter.clearFeatures();
-                await FighterRepository.persist(fighter);
+                await fighter.save();
                 this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed all your features.[/color]`, fighter.name);
             }
             catch (ex) {
@@ -337,7 +339,7 @@ export class BaseCommandHandler {
             args = data.character;
         }
 
-        let fighter:RWFighter = await FighterRepository.load(args);
+        let fighter:BaseFighter = await FighterRepository.load(args);
 
         if (fighter != undefined && (fighter.name == data.character || (fighter.name == data.character && !fighter.areStatsPrivate) || this.fChatLibInstance.isUserChatOP(data.character, data.channel))) {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), data.character);
@@ -348,11 +350,11 @@ export class BaseCommandHandler {
     };
 
     async hidemystats(args:string, data:FChatResponse) {
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
-                await FighterRepository.persist(fighter);
+                await fighter.save();
                 this.fChatLibInstance.sendPrivMessage("[color=green]You stats are now private.[/color]", data.character);
             }
             catch (ex) {
@@ -522,8 +524,7 @@ export class BaseCommandHandler {
             try {
                 if (fighterReceiving != null) {
                     let amount:number = parsedArgs.amount;
-                    fighterReceiving.giveTokens(amount);
-                    await FighterRepository.logTransaction(fighterReceiving.name, amount, TransactionType.DonationFromAelith, data.character);
+                    fighterReceiving.giveTokens(amount, TransactionType.DonationFromAelith, data.character);
                     await FighterRepository.persist(fighterReceiving);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${amount} tokens.[/color]`, data.character);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${amount} tokens from ${data.character} ![/color]`, fighterReceiving.name);
@@ -563,10 +564,8 @@ export class BaseCommandHandler {
             if (fighterGiving != null && fighterReceiving != null) {
                 let amount:number = parsedArgs.amount;
                 if(fighterGiving.canPayAmount(amount)){
-                    fighterGiving.removeTokens(amount);
-                    fighterReceiving.giveTokens(amount);
-                    await FighterRepository.logTransaction(fighterGiving.name, -amount, TransactionType.Tip);
-                    await FighterRepository.logTransaction(fighterReceiving.name, amount, TransactionType.Tip, fighterGiving.name);
+                    fighterGiving.removeTokens(amount, TransactionType.Tip);
+                    fighterReceiving.giveTokens(amount, TransactionType.Tip, fighterGiving.name);
                     await FighterRepository.persist(fighterGiving);
                     await FighterRepository.persist(fighterReceiving);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${amount} tokens.[/color]`, data.character);
@@ -614,7 +613,7 @@ export class BaseCommandHandler {
     };
 
     async stats(args:string, data:FChatResponse) {
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), fighter.name);
         }
@@ -624,7 +623,7 @@ export class BaseCommandHandler {
     };
 
     async statsforprofile(args:string, data:FChatResponse) {
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fChatLibInstance.sendPrivMessage(`[noparse]${fighter.outputStats()}[/noparse]`, fighter.name);
         }
@@ -640,7 +639,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendMessage(`[color=red]Fight Type not found. Types: ${fightTypes.join(", ")}. Example: !fighttype classic[/color]`, this.channel);
             return;
         }
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fight.setFightType(args);
         }
@@ -656,7 +655,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendMessage(`[color=red]Fight Length not found. Types: ${fightDurations.join(", ")}. Example: !fightlength Long[/color]`, this.channel);
             return;
         }
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fight.setFightLength(parsedFD);
         }
@@ -671,7 +670,7 @@ export class BaseCommandHandler {
             this.fight.setDiceLess(flag);
             return;
         }
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             let flag = (args.toLowerCase().indexOf("no") != -1);
             this.fight.setDiceLess(flag);
@@ -687,7 +686,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendMessage("[color=red]The number of teams involved must be a numeral higher than 1 and lower or equal than 10.[/color]", this.channel);
             return;
         }
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             this.fight.setTeamsCount(parsedTeams);
         }
@@ -697,11 +696,11 @@ export class BaseCommandHandler {
     };
 
     async unhidemystats(args:string, data:FChatResponse) {
-        let fighter:RWFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != null) {
             fighter.areStatsPrivate = false;
             try {
-                await FighterRepository.persist(fighter);
+                await fighter.save();
                 this.fChatLibInstance.sendPrivMessage("[color=green]You stats are now public.[/color]", data.character);
             }
             catch (ex) {

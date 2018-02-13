@@ -1,7 +1,7 @@
-import * as Constants from "../FightSystem/Constants";
+import * as Constants from "./Constants";
 import Team = Constants.Team;
 import StatTier = Constants.StatTier;
-import {Trigger, TriggerMoment} from "../FightSystem/Constants";
+import {Trigger, TriggerMoment} from "./Constants";
 let vsprintf = require('sprintf-js').vsprintf;
 
 export class Utils {
@@ -72,11 +72,25 @@ export class Utils {
         return arrResult;
     }
 
-    static willTriggerForEvent(checkedMoment: TriggerMoment, searchedMoment:TriggerMoment, checkedEvent:Trigger, searchedEvent:Trigger):boolean{
+    static willTriggerForEvent(checkedMoment: TriggerMoment, searchedMoment:TriggerMoment, checkedEvent:string, searchedEvent:string):boolean{
         let canPass = false;
-        if(checkedEvent & searchedEvent){
-            if(checkedMoment & searchedMoment){
-                canPass = true;
+
+        let checkedEventNumber:number = parseInt(checkedEvent);
+        let searchedEventNumber:number = parseInt(searchedEvent);
+        let isNumber = (!isNaN(checkedEventNumber) && !isNaN(searchedEventNumber));
+
+        if(isNumber){
+            if(checkedEventNumber & searchedEventNumber){
+                if(checkedMoment & searchedMoment){
+                    canPass = true;
+                }
+            }
+        }
+        else {
+            if (checkedEvent == searchedEvent) {
+                if (checkedMoment == searchedMoment) {
+                    canPass = true;
+                }
             }
         }
         return canPass;

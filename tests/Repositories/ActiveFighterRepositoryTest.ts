@@ -3,9 +3,9 @@ import {ActionRepository} from "../../src/FightSystem/Repositories/ActionReposit
 import {Utils} from "../../src/Common/Utils";
 import {ActiveFighter} from "../../src/FightSystem/ActiveFighter";
 import {ActiveFighterRepository} from "../../src/FightSystem/Repositories/ActiveFighterRepository";
-import {Team} from "../../src/FightSystem/Constants";
-import {FightStatus} from "../../src/FightSystem/Fight";
+import {Team} from "../../src/Common/Constants";
 import {Model} from "../../src/Common/Model";
+import {FightStatus} from "../../src/Common/BaseFight";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 
@@ -19,7 +19,7 @@ describe("The Active Fighter Repository", () => {
         done();
     });
 
-    it("should delete Active Fighter Aelith", async function (done) {
+    it("should remove Active Fighter Aelith", async function (done) {
 
         let myFighter = new ActiveFighter();
         myFighter.initialize();

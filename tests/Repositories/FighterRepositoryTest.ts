@@ -3,7 +3,7 @@ import {RWFighter} from "../../src/FightSystem/RWFighter";
 import {FighterRepository} from "../../src/FightSystem/Repositories/FighterRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as Constants from "../../src/FightSystem/Constants";
+import * as Constants from "../../src/Common/Constants";
 
 describe("The RWFighter Repository", () => {
 
@@ -26,7 +26,7 @@ describe("The RWFighter Repository", () => {
         let resultTrue = await FighterRepository.exists(myFighter.name);
         expect(resultTrue).toBe(true);
 
-        await FighterRepository.delete(myFighter.name);
+        await FighterRepository.remove(myFighter.name);
         let resultFalse = await FighterRepository.exists(myFighter.name);
         expect(resultFalse).toBe(false);
 

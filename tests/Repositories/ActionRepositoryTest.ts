@@ -1,6 +1,7 @@
-import {Action, ActionType, EmptyAction} from "../../src/FightSystem/Action";
 import {ActionRepository} from "../../src/FightSystem/Repositories/ActionRepository";
 import {Utils} from "../../src/Common/Utils";
+import {ActionType, EmptyAction} from "../../src/FightSystem/RWAction";
+import {BaseFight} from "../../src/Common/BaseFight";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 
@@ -10,11 +11,11 @@ describe("The Action Repository", () => {
         done();
     });
 
-    it("should delete action aa", async function (done) {
+    it("should remove action aa", async function (done) {
 
         let myAction = new EmptyAction();
-        myAction.idAction = Utils.generateUUID();
-        myAction.idFight = 1;
+        myAction.id = Utils.generateUUID();
+        myAction.fight = new BaseFight();
         myAction.idAttacker = "1";
         myAction.atTurn = 1;
         myAction.tier = 0;

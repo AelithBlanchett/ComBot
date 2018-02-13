@@ -1,11 +1,10 @@
-import {RWFighter} from "../FightSystem/RWFighter";
-import {Fight} from "../FightSystem/Fight";
 import {IAchievement} from "./IAchievement";
 import {EnabledAchievements, AchievementType} from "./Achievements";
-import {ActiveFighter} from "../FightSystem/ActiveFighter";
-import {FighterRepository} from "../FightSystem/Repositories/FighterRepository";
-import * as Constants from "../FightSystem/Constants";
-import {TransactionType} from "../FightSystem/Constants";
+import * as Constants from "../Common/Constants";
+import {TransactionType} from "../Common/Constants";
+import {BaseFighter} from "../Common/BaseFighter";
+import {BaseActiveFighter} from "../Common/BaseActiveFighter";
+import {BaseFight} from "../Common/BaseFight";
 
 export class AchievementManager {
 
@@ -17,7 +16,7 @@ export class AchievementManager {
         return AchievementManager.getAll().find(x => x.getType() == type);
     }
 
-    static checkAll(fighter:RWFighter, activeFighter:ActiveFighter, fight?:Fight):string[]{
+    static checkAll(fighter:BaseFighter, activeFighter:BaseActiveFighter, fight?:BaseFight<BaseActiveFighter>):string[]{
         let addedInfo = [];
         let achievements = AchievementManager.getAll();
 
@@ -26,8 +25,7 @@ export class AchievementManager {
                 achievement.createdAt = new Date();
                 fighter.achievements.push(achievement);
                 let amount:number = achievement.getReward();
-                fighter.giveTokens(amount);
-                FighterRepository.logTransaction(this.name, amount, TransactionType.AchievementReward, Constants.Globals.botName);
+                fighter.giveTokens(amount, TransactionType.AchievementReward, Constants.Globals.botName);
                 addedInfo.push(`${achievement.getDetailedDescription()}  Reward: ${achievement.getReward()} ${Constants.Globals.currencyName}`);
             }
         }

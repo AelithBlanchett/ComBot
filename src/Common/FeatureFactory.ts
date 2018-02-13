@@ -1,8 +1,9 @@
-import {FeatureType} from "../FightSystem/Constants";
-import * as Constants from "../FightSystem/Constants"
+import {FeatureType} from "./Constants";
+import * as Constants from "./Constants"
 import {Utils} from "./Utils";
 import {BaseFeature} from "./BaseFeature";
 import {Feature} from "../FightSystem/Features/Features";
+import {ActiveFighter} from "../FightSystem/ActiveFighter";
 
 export class FeatureFactory{
 
