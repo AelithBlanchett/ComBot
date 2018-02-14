@@ -6,11 +6,13 @@ import {FightRepository} from "./Repositories/FightRepository";
 import {ModifierType} from "../Common/Constants";
 import {ModifierFactory} from "./Modifiers/ModifierFactory";
 import {BaseFight} from "../Common/BaseFight";
+import {RWActionFactory} from "./Actions/RWActionFactory";
 
 export class Fight extends BaseFight<ActiveFighter>{
 
     public constructor() {
         super();
+        this.actionFactory = new RWActionFactory();
     }
 
     async loadFighter(idFighter: string):Promise<ActiveFighter> {

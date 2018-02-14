@@ -6,7 +6,7 @@ import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FighterRepository} from "./FighterRepository";
 import * as Constants from "../../Common/Constants";
 import {ModifierRepository} from "./ModifierRepository";
-import {BaseRWAction} from "../RWAction";
+import {RWAction} from "../RWAction";
 
 export class FightRepository{
 
@@ -121,8 +121,8 @@ export class FightRepository{
         return loadedFight;
     }
 
-    public static async loadActions(fight:Fight):Promise<BaseRWAction[]>{
-        let loadedActions:BaseRWAction[] = [];
+    public static async loadActions(fight:Fight):Promise<RWAction[]>{
+        let loadedActions:RWAction[] = [];
 
         if(!await FightRepository.exists(fight.idFight)){
             return null;

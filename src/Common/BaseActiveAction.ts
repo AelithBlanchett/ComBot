@@ -26,8 +26,47 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
 
     appliedModifiers:BaseModifier[] = [];
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], name:string, tier: Tier, isHold: boolean, requiresRoll:boolean, isTurnSkippingAction:boolean, singleTarget:boolean, requiresBeingAlive:boolean, targetMustBeAlive:boolean, requiresBeingInRing:boolean, targetMustBeInRing:boolean, targetMustBeInRange:boolean, usableOnAllies:boolean, usableOnEnemies:boolean, explanation?:string){
-        super(name, tier, isHold, requiresRoll, isTurnSkippingAction, singleTarget, requiresBeingAlive, targetMustBeAlive, requiresBeingInRing, targetMustBeInRing, targetMustBeInRange, usableOnAllies, usableOnEnemies, explanation);
+    constructor(fight:Fight,
+                attacker:ActiveFighter,
+                defenders:ActiveFighter[],
+                name:string,
+                tier: Tier,
+                isHold: boolean,
+                requiresRoll:boolean,
+                isTurnSkippingAction:boolean,
+                singleTarget:boolean,
+                requiresBeingAlive:boolean,
+                requiresBeingDead:boolean,
+                requiresBeingInRing:boolean,
+                requiresBeingOffRing:boolean,
+                targetMustBeAlive:boolean,
+                targetMustBeDead:boolean,
+                targetMustBeInRing:boolean,
+                targetMustBeOffRing:boolean,
+                targetMustBeInRange:boolean,
+                targetMustBeOffRange:boolean,
+                usableOnAllies:boolean,
+                usableOnEnemies:boolean,
+                explanation?:string){
+        super(name,
+              tier,
+              isHold,
+              requiresRoll,
+              isTurnSkippingAction,
+              singleTarget,
+              requiresBeingAlive,
+              requiresBeingDead,
+              requiresBeingInRing,
+              requiresBeingOffRing,
+              targetMustBeAlive,
+              targetMustBeDead,
+              targetMustBeInRing,
+              targetMustBeOffRing,
+              targetMustBeInRange,
+              targetMustBeOffRange,
+              usableOnAllies,
+              usableOnEnemies,
+              explanation);
         this.fight = fight;
         this.attacker = attacker;
         this.defenders = defenders;
@@ -44,24 +83,22 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
     }
 
     execute():void{
-        if(this.checkRequirements()){
-            this.triggerBeforeEvent();
-            this.announceAction();
-            this.diceRequiredRoll = this.requiredDiceScore;
-            if(!this.requiresRoll || this.roll() >= this.diceRequiredRoll){
-                this.displayHitMessage();
-                this.onHit();
-                this.releaseHoldsIfNeeded();
-                if(!this.isTurnSkippingAction){
-                    this.onNonTurnSkippingAction();
-                }
-            }
-            else{
-                this.displayMissMessage();
-                this.onMiss();
-            }
-            this.triggerAfterEvent();
+        this.checkRequirements();
+        this.triggerBeforeEvent();
+        this.announceAction();
+        this.diceRequiredRoll = this.requiredDiceScore;
+        if(!this.requiresRoll || this.roll() >= this.diceRequiredRoll){
+            this.missed = false;
+            this.displayHitMessage();
+            this.onHit();
+            this.releaseHoldsIfNeeded();
         }
+        else{
+            this.missed = true;
+            this.displayMissMessage();
+            this.onMiss();
+        }
+        this.triggerAfterEvent();
     }
 
     roll():number{
@@ -91,7 +128,9 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         return scoreRequired;
     }
 
-    abstract specificRequiredDiceScore():number;
+    specificRequiredDiceScore():number{
+        return 0;
+    };
 
     addRequiredScoreWithExplanation(value:number, reason:string):number{
         if(value != 0){
@@ -119,34 +158,49 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         }
     }
 
-    checkRequirements():boolean{
-        if(!this.fight.waitingForAction){
-            throw new Error(Constants.Messages.canAttackNotWaitingForAction);
+    //TODO replace those with constants
+    checkRequirements():void{
+        if(this.singleTarget && this.defenders.length > 1){
+            throw new Error(Constants.Messages.cantAttackTooManyTargets);
         }
         if(this.requiresBeingAlive && this.attacker.isTechnicallyOut()){
             throw new Error(Constants.Messages.cantAttackPlayerIsOut);
         }
+        if(this.requiresBeingDead && !this.attacker.isTechnicallyOut()){
+            throw new Error("Action requires being dead.");
+        }
         if(this.requiresBeingInRing && !this.attacker.isInTheRing){
             throw new Error(Constants.Messages.cantAttackPlayerOutOfTheRing);
         }
-        if(!this.usableOnAllies && this.defenders.findIndex(x => x.assignedTeam != this.attacker.assignedTeam) != -1){
-            throw new Error(Constants.Messages.doActionTargetIsSameTeam);
+        if(this.requiresBeingOffRing && this.attacker.isInTheRing){
+            throw new Error("Actor must be off ring.");
         }
-        if(!this.usableOnEnemies && this.defenders.findIndex(x => x.assignedTeam == this.attacker.assignedTeam) != -1){
-            throw new Error(Constants.Messages.doActionTargetIsNotSameTeam);
+        if(this.targetMustBeAlive && this.defenders.findIndex(x => x.isTechnicallyOut() == true) != -1){
+            throw new Error(Constants.Messages.cantAttackTargetOutOfFight);
         }
-        if(this.singleTarget && this.defenders.length > 1){
-            throw new Error(Constants.Messages.cantAttackTooManyTargets);
-        }
-        if(this.targetMustBeAlive && this.defenders.findIndex(x => x.isTechnicallyOut() == false) != -1){
+        if(this.targetMustBeDead && this.defenders.findIndex(x => x.isTechnicallyOut() == false) != -1){
             throw new Error(Constants.Messages.cantAttackTargetOutOfFight);
         }
         if(this.targetMustBeInRing && this.defenders.findIndex(x => x.isInTheRing == false) != -1){
             throw new Error(Constants.Messages.cantAttackTargetIsOutOfTheRing);
         }
-
-
-        return true;
+        if(this.targetMustBeOffRing &&  this.defenders.findIndex(x => x.isInTheRing == true) != -1){
+            throw new Error("Target(s) must be off ring.");
+        }
+        if(this.targetMustBeInRange && !this.attacker.isInRange(this.defenders)){
+            throw new Error("Target(s) must be in range.");
+        }
+        if(this.targetMustBeOffRange && this.attacker.isInRange(this.defenders)){
+            throw new Error("Target(s) must be off range.");
+        }
+        if(!(this.usableOnAllies && this.usableOnEnemies)){
+            if(!this.usableOnAllies && this.defenders.findIndex(x => x.assignedTeam == this.attacker.assignedTeam) != -1){
+                throw new Error(Constants.Messages.doActionTargetIsSameTeam);
+            }
+            if(!this.usableOnEnemies && this.defenders.findIndex(x => x.assignedTeam != this.attacker.assignedTeam) != -1){
+                throw new Error(Constants.Messages.doActionTargetIsNotSameTeam);
+            }
+        }
     }
 
     announceAction():void{
@@ -163,12 +217,9 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         }
     }
     abstract onHit():void;
-    abstract onMiss():void;
 
-    onNonTurnSkippingAction(){
-        this.fight.message.addHint(Utils.strFormat(Constants.Messages.stillActorsTurn, [this.attacker.getStylizedName()]));
-        this.fight.message.send();
-        this.fight.waitingForAction = true;
+    onMiss():void{
+
     }
 
     displayHitMessage(){
@@ -200,19 +251,6 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
 
     abstract async save():Promise<void>;
 
-
-    // //TODO move this to tag attack
-    // let turnsSinceLastTag = (this.currentPlayer.lastTagTurn - this.currentTurn);
-    // let turnsToWait = (Constants.Fight.Action.Globals.turnsToWaitBetweenTwoTags * 2) - turnsSinceLastTag; // *2 because there are two fighters
-    // if(turnsToWait > 0){
-    //     throw new Error(`[b][color=red]You can't tag yet. Turns left: ${turnsToWait}[/color][/b]`);
-    // }
-    // if(!this.currentTarget.canMoveFromOrOffRing){
-    //     throw new Error(`[b][color=red]You can't tag with this character. They're permanently out.[/color][/b]`);
-    // }
-    // if(this.currentTarget.assignedTeam != this.currentPlayer.assignedTeam){
-    //     throw new Error(`[b][color=red]You can't tag with this character as they are not in your team.[/color][/b]`);
-    // }
     //
     //
     // //TODO move this to respective attacks

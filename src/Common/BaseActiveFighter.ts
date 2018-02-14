@@ -25,6 +25,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     canMoveFromOrOffRing:boolean = true;
     lastTagTurn:number = 9999999;
     wantsDraw:boolean = false;
+    distanceFromRingCenter:number;
     createdAt:Date;
     updatedAt:Date;
     modifiers:Modifier[];
@@ -42,6 +43,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         this.isInTheRing = true;
         this.canMoveFromOrOffRing = true;
         this.lastTagTurn = 9999999;
+        this.distanceFromRingCenter = 0;
         this.wantsDraw = false;
         this.modifiers = [];
         this.fightStatus = null;
@@ -301,6 +303,16 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
             modifierEnding = `[/i]`;
         }
         return `${modifierBeginning}[b][color=${Team[this.assignedTeam].toLowerCase()}]${this.name}[/color][/b]${modifierEnding}`;
+    }
+
+    isInRange(targets:BaseActiveFighter[]):boolean{
+        let result = true;
+        for(let target of targets){
+            if((target.distanceFromRingCenter - this.distanceFromRingCenter) > Constants.Fight.Globals.maximumDistanceToBeConsideredInRange){
+                result = false;
+            }
+        }
+        return result;
     }
 
     abstract outputStatus():string;

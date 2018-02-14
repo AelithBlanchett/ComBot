@@ -1,11 +1,11 @@
 import {Model} from "../../Common/Model";
 import {Utils} from "../../Common/Utils";
 import * as Constants from "../../Common/Constants";
-import {BaseRWAction, EmptyAction} from "../RWAction";
+import {RWAction, EmptyAction} from "../RWAction";
 
 export class ActionRepository{
 
-    public static async persist(action:BaseRWAction):Promise<void>{
+    public static async persist(action:RWAction):Promise<void>{
         try
         {
             for(let i = 0; i < action.defenders.length; i++){
@@ -76,8 +76,8 @@ export class ActionRepository{
         }
     }
 
-    public static async loadFromFight(idFight:string):Promise<BaseRWAction[]>{
-        let loadedActions:BaseRWAction[] = [];
+    public static async loadFromFight(idFight:string):Promise<RWAction[]>{
+        let loadedActions:RWAction[] = [];
 
         try
         {

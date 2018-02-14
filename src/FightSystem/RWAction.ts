@@ -7,7 +7,7 @@ import {BaseDamage} from "./Constants";
 import {ActionRepository} from "./Repositories/ActionRepository";
 import {Modifier} from "./Modifiers/Modifier";
 
-export abstract class BaseRWAction extends BaseActiveAction<Fight, ActiveFighter> {
+export abstract class RWAction extends BaseActiveAction<Fight, ActiveFighter> {
 
     hpDamageToDefs: number[] = [];
     lpDamageToDefs: number[] = [];
@@ -49,11 +49,11 @@ export abstract class BaseRWAction extends BaseActiveAction<Fight, ActiveFighter
     }
 
     onHit():void{
-        this.calculateOutcome();
+        this.prepare();
         this.applyDamage();
     }
 
-    abstract calculateOutcome():void;
+    abstract prepare():void;
 
     applyDamage():void{
         if (this.hpDamageToDefs.length > 0) {
@@ -188,22 +188,14 @@ export abstract class BaseRWAction extends BaseActiveAction<Fight, ActiveFighter
 
 }
 
-export class EmptyAction extends BaseRWAction {
+export class EmptyAction extends RWAction {
 
     constructor(){
-        super(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        super(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    calculateOutcome(): void {
-        throw new Error("Method not implemented.");
-    }
+    prepare(): void {
 
-    specificRequiredDiceScore(): number {
-        throw new Error("Method not implemented.");
-    }
-
-    onMiss(): void {
-        throw new Error("Method not implemented.");
     }
 }
 
@@ -232,21 +224,19 @@ export enum ActionType  {
     ReleaseHold = "ReleaseHold",
     SelfDebase = "SelfDebase"
 }
-//
-// type TypeAction = ActionType | ActionTypeAdvanced;
-//
-// export class ActionExplanation {
-//     static Tag = `[b][color=red]TAG![/color][/b] %s heads out of the ring!`;
-//     static Rest = `[b][color=red]%s rests for a bit![/color][/b]`;
-//     static Bondage = `[b][color=red]%s just tied up their opponent a little bit more![/color][/b]`;
-//     static ItemPickup = `[b][color=red]%s's picked up item looks like it could it hit hard![/color][/b]`;
-//     static SextoyPickup = `[b][color=red]%s is going to have a lot of fun with this sex-toy![/color][/b]`;
-//     static Escape = `[b][color=red]%s got away![/color][/b]`;
-//     static Submit = `[b][color=red]%s taps out! It's over, it's done![/color][/b]`;
-//     static Masturbate = `[b][color=red]%s really needed those strokes apparently![/color][/b]`;
-//     static Pass = `[b][color=red]%s passed their turn...[/color][/b]`;
-//     static SelfDebase = `[b][color=red]%s is sinking deeper...[/color][/b]`;
-// }
+
+export class ActionExplanation {
+    static Tag = `[b][color=red]TAG![/color][/b] %s heads out of the ring!`;
+    static Rest = `[b][color=red]%s rests for a bit![/color][/b]`;
+    static Bondage = `[b][color=red]%s just tied up their opponent a little bit more![/color][/b]`;
+    static ItemPickup = `[b][color=red]%s's picked up item looks like it could it hit hard![/color][/b]`;
+    static SextoyPickup = `[b][color=red]%s is going to have a lot of fun with this sex-toy![/color][/b]`;
+    static Escape = `[b][color=red]%s got away![/color][/b]`;
+    static Submit = `[b][color=red]%s taps out! It's over, it's done![/color][/b]`;
+    static Masturbate = `[b][color=red]%s really needed those strokes apparently![/color][/b]`;
+    static Pass = `[b][color=red]%s passed their turn...[/color][/b]`;
+    static SelfDebase = `[b][color=red]%s is sinking deeper...[/color][/b]`;
+}
 
 // export class BaseActionType {
 //     static Tag = 0;

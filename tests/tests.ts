@@ -390,7 +390,8 @@ describe("Before the fight, the player(s)", () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should tag successfully with Aelith", async function (done) { // 9
+    fit("should tag successfully with Aelith", async function (done) { // 9
+        debug = true;
         let cmd = new CommandHandler(fChatLibInstance, "here");
         await initiateMatchSettings2vs2Tag(cmd);
         await cmd.fight.waitUntilWaitingForAction();
@@ -403,7 +404,7 @@ describe("Before the fight, the player(s)", () => {
         else {
             done.fail(new Error("Did not tag with Aelith"));
         }
-    }, DEFAULT_TIMEOUT_UNIT_TEST);
+    }, DEFAULT_TIMEOUT_UNIT_TEST + 100000);
 
     it("should swap to TheTinaArmstrong", async function (done) {
         let cmd = new CommandHandler(fChatLibInstance, "here");

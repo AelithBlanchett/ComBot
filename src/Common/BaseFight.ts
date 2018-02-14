@@ -15,6 +15,7 @@ import {BaseFeatureParameter} from "./BaseFeatureParameter";
 import {BaseActiveFighter} from "./BaseActiveFighter";
 import {ActionType, TransactionType} from "./Constants";
 import {BaseActiveAction} from "./BaseActiveAction";
+import {IActionFactory} from "./IActionFactory";
 let EloRating = require('elo-rating');
 
 export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseActiveFighter>{
@@ -40,6 +41,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     channel:string;
     message:Message;
     fChatLibInstance:IFChatLib;
+    actionFactory:IActionFactory<BaseFight, BaseActiveFighter>;
 
     debug:boolean = false;
     forcedDiceRoll:number = 0;
@@ -383,6 +385,9 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
             if (this.fighters[index].assignedTeam == this.fighters[this.currentPlayerIndex].assignedTeam && this.fighters[index].isInTheRing == true && this.fightType == FightType.Tag) {
                 this.fighters[index].isInTheRing = false;
             }
+            if (this.fighters[index].assignedTeam != this.fighters[this.currentPlayerIndex].assignedTeam && this.fighters[this.currentPlayerIndex].isInTheRing == true && this.fightType == FightType.Tag) {
+                this.fighters.filter(x => x.isInTheRing && x.assignedTeam == this.fighters[this.currentPlayerIndex].assignedTeam && x.name != fighterName).forEach(x => x.isInTheRing = false);
+            }
             this.message.addInfo(Utils.strFormat(Constants.Messages.setCurrentPlayerOK, [temp.name, this.fighters[this.currentPlayerIndex].name]));
         }
         else{
@@ -391,7 +396,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     }
 
     //Fight helpers
-    get currentTeamName(){
+    get currentTeamName():string{
         return Team[this.currentTeam];
     }
 
@@ -446,9 +451,12 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
     async prepareAction(attacker:string, actionType:string, tierRequired:boolean, isCustomTargetInsteadOfTier:boolean, args:string) {
         let tier = Tier.None;
-        let customTarget:string = null;
         if (!this.isMatchInProgress()) {
             throw new Error("There isn't any fight going on.");
+        }
+
+        if(!this.waitingForAction){
+            throw new Error(Constants.Messages.canAttackNotWaitingForAction);
         }
 
         if (this.currentPlayer == null || attacker != this.currentPlayer.name) {
@@ -462,17 +470,21 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
             }
         }
         if (isCustomTargetInsteadOfTier) {
-            customTarget = args;
-            if (this.getFighterByName(args) == null) {
+            let customTarget:BaseActiveFighter = this.getFighterByName(args);
+            if (customTarget == null) {
                 throw new Error("The character to tag with is required and wasn't found.");
+            }
+            else{
+                this.currentPlayer.targets = [customTarget];
             }
         }
 
-        if (this.getFighterByName(attacker)) {
+        if (!this.getFighterByName(attacker)) {
             throw new Error("You aren't participating in this fight.");
         }
 
-        let action = await this.doAction(actionType, tier, customTarget);
+        this.waitingForAction = false;
+        let action = await this.doAction(actionType, this.currentPlayer, this.currentTarget, tier);
         this.displayDeathMessagesIfNeedBe([action.attacker, ...action.defenders]);
         if (action.isTurnSkippingAction && action.missed == false) {
             this.message.addHint(`[b]This is still your turn ${action.attacker.getStylizedName()}![/b]`);
@@ -485,6 +497,17 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         else {
             await this.onMatchEnding();
         }
+    }
+
+    //TODO implement new attacking scheme here
+    //
+    // needed to store them in case of turn-changing logic before  BUT IS THIS STILL TRUE?
+    async doAction(actionName:string, attacker:BaseActiveFighter, defenders:BaseActiveFighter[], tier:Tier):Promise<BaseActiveAction> {
+        let action:BaseActiveAction = this.actionFactory.getAction(actionName, this, attacker, defenders, tier);
+        action.execute();
+        await action.save();
+        this.pastActions.push(action);
+        return action;
     }
 
     displayDeathMessagesIfNeedBe(involvedActors:BaseActiveFighter[]){
@@ -505,16 +528,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         await this.endFight(tokensToGiveToWinners, tokensToGiveToLosers);
     }
 
-    async doAction(action:ActionType, tier:Tier, customTarget:string):Promise<BaseActiveAction> {
-        this.waitingForAction = false;
-        // let attacker = this.currentPlayer; // need to store them in case of turn-changing logic BUT IS THIS STILL TRUE?
-        // let defenders = this.currentTarget;
-        //TODO implement new attacking scheme here
-        let executedAction:BaseActiveAction;
-        await executedAction.save();
-        this.pastActions.push(executedAction);
-        return executedAction;
-    }
+
 
     isMatchInProgress():boolean{
         return (this.hasStarted && !this.hasEnded);

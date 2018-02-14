@@ -72,6 +72,8 @@ export namespace Fight {
         public static tokensPerLossMultiplier: number = 0.5; //needs to be < 1 of course
         public static tokensForWinnerByForfeitMultiplier: number = 0.5; //needs to be < 1 of course
         public static tokensCostToFight:number = 10;
+        //Range
+        public static maximumDistanceToBeConsideredInRange: number = 10;
     }
 
     export namespace Action {
@@ -82,6 +84,7 @@ export namespace Fight {
         }
 
         export class Globals{
+
             //Tag
             public static turnsToWaitBetweenTwoTags: number = 4;
             //Bondage
