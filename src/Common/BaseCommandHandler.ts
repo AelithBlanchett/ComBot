@@ -2,16 +2,15 @@ import {RWFighter} from "../FightSystem/RWFighter";
 import * as Parser from "./Parser";
 import {Fight} from "../FightSystem/Fight";
 import {IFChatLib} from "./IFChatLib";
-import * as Constants from "./Constants";
+import * as BaseConstants from "./BaseConstants";
 import {Utils} from "./Utils";
-import {FightType} from "./Constants";
-import {FeatureType} from "./Constants";
+import {FightType} from "./BaseConstants";
 import {EnumEx} from "./Utils";
-import {Team} from "./Constants";
+import {Team} from "./BaseConstants";
 import {FighterRepository} from "../FightSystem/Repositories/FighterRepository";
 import {FightRepository} from "../FightSystem/Repositories/FightRepository";
-import {TransactionType} from "./Constants";
-import {FightLength} from "./Constants";
+import {TransactionType} from "./BaseConstants";
+import {FightLength} from "./BaseConstants";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import {Model} from "./Model";
@@ -40,8 +39,8 @@ export class BaseCommandHandler {
     }
 
     static setUpCurrentSeasonValue(){
-        Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first().then((season) => {
-            Constants.Globals.currentSeason = season.value;
+        Model.db(BaseConstants.SQL.constantsTableName).where({key: BaseConstants.SQL.currentSeasonKeyName}).first().then((season) => {
+            BaseConstants.Globals.currentSeason = season.value;
         });
     }
 
@@ -97,7 +96,7 @@ export class BaseCommandHandler {
     //         }
     //
     //         let availableCommands = Utils.getEnumList(ActionType);
-    //         let availableTiers = Utils.getEnumList(Constants.Tier);
+    //         let availableTiers = Utils.getEnumList(BaseConstants.Tier);
     //         availableTiers.shift();
     //
     //         let firstCharData:FChatResponse = {character: "MyFirstFighterThatDoesntExist", channel: data.channel};
@@ -156,36 +155,37 @@ export class BaseCommandHandler {
         }
     }
 
-    async addfeature(args:string, data:FChatResponse) {
-        let parsedFeatureArgs = {message: null, featureType: null, turns: null};
-        parsedFeatureArgs = Parser.Commands.getFeatureType(args);
-        if (parsedFeatureArgs.message != null) {
-            this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedFeatureArgs.message + "\nExample: !addFeature KickStart  OR !addFeature KickStart 2  (with 2 being the number of fights you want)." +
-                "\n[/color]Available features: " + EnumEx.getNames(FeatureType).join(", "), data.character);
-            return;
-        }
+    //TODO FIX FEATURES
+    // async addfeature(args:string, data:FChatResponse) {
+    //     let parsedFeatureArgs = {message: null, featureType: null, turns: null};
+    //     parsedFeatureArgs = Parser.Commands.getFeatureType(args);
+    //     if (parsedFeatureArgs.message != null) {
+    //         this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedFeatureArgs.message + "\nExample: !addFeature featurename  OR !addFeature featurename 2  (with 2 being the number of fights you want)." , data.character);
+    //         return;
+    //     }
+    //
+    //     let fighter:BaseFighter = await FighterRepository.load(data.character);
+    //     if (fighter != undefined) {
+    //         try {
+    //             let cost = fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
+    //             await fighter.removeTokens(cost, TransactionType.Feature);
+    //             await fighter.save();
+    //             this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully added the ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
+    //         }
+    //         catch (ex) {
+    //             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), fighter.name);
+    //         }
+    //     }
+    //     else {
+    //         this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
+    //     }
+    // };
 
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
-        if (fighter != undefined) {
-            try {
-                let cost = fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
-                await fighter.removeTokens(cost, TransactionType.Feature);
-                await fighter.save();
-                this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully added the ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
-            }
-            catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), fighter.name);
-            }
-        }
-        else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
-        }
-    };
-
-    async getfeatureslist(args:string, data:FChatResponse) {
-        this.fChatLibInstance.sendPrivMessage("Usage: !addFeature myFeature OR !addFeature myFeature 2  (with 2 being the number of fights you want)." +
-            "\n[/color]Available features: " + EnumEx.getNames(FeatureType).join(", "), data.character);
-    };
+    //TODO FIX FEATURES
+    // async getfeatureslist(args:string, data:FChatResponse) {
+    //     this.fChatLibInstance.sendPrivMessage("Usage: !addFeature myFeature OR !addFeature myFeature 2  (with 2 being the number of fights you want)." +
+    //         "\n[/color]Available features: " + EnumEx.getNames(FeatureType).join(", "), data.character);
+    // };
 
     async restat(args:string, data:FChatResponse) {
         let parserPassed = Parser.Commands.checkIfValidStats(args);
@@ -195,7 +195,7 @@ export class BaseCommandHandler {
         }
         let fighter:BaseFighter = await FighterRepository.load(data.character);
         if (fighter != undefined) {
-            if(fighter.canPayAmount(Constants.Globals.restatCostInTokens)) {
+            if(fighter.canPayAmount(BaseConstants.Globals.restatCostInTokens)) {
                 try {
                     let arrParam:Array<number> = [];
 
@@ -203,26 +203,26 @@ export class BaseCommandHandler {
                         arrParam.push(parseInt(nbr));
                     }
 
-                    let cost = Constants.Globals.restatCostInTokens;
+                    let cost = BaseConstants.Globals.restatCostInTokens;
                     await fighter.removeTokens(cost, TransactionType.Restat);
                     fighter.restat(arrParam);
                     await fighter.save();
-                    this.fChatLibInstance.sendPrivMessage(Constants.Messages.statChangeSuccessful, fighter.name);
+                    this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.statChangeSuccessful, fighter.name);
                 }
                 catch (ex) {
-                    this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), fighter.name);
+                    this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), fighter.name);
                 }
 
             }
             else{
-                this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotEnoughMoney, data.character);
+                this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotEnoughMoney, data.character);
             }
 
 
 
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -236,11 +236,11 @@ export class BaseCommandHandler {
                 this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed all your features.[/color]`, fighter.name);
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -280,7 +280,7 @@ export class BaseCommandHandler {
                 this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s hp to ${splitted[1]}`, data.character);
             }
             catch(ex){
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
     }
@@ -293,7 +293,7 @@ export class BaseCommandHandler {
                 this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s lp to ${splitted[1]}`, data.character);
             }
             catch(ex){
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
     }
@@ -304,7 +304,7 @@ export class BaseCommandHandler {
                 eval(args);
             }
             catch(ex){
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
     }
@@ -345,7 +345,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), data.character);
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorStatsPrivate, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorStatsPrivate, data.character);
         }
     };
 
@@ -358,16 +358,16 @@ export class BaseCommandHandler {
                 this.fChatLibInstance.sendPrivMessage("[color=green]You stats are now private.[/color]", data.character);
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
     howtostart(args:string, data:FChatResponse) {
-        this.fChatLibInstance.sendPrivMessage(Constants.Messages.startupGuide, data.character);
+        this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.startupGuide, data.character);
     }
 
     async join(args:string, data:FChatResponse) {
@@ -404,7 +404,7 @@ export class BaseCommandHandler {
             }
         }
         else {
-            this.fChatLibInstance.sendMessage(Constants.Messages.errorNotRegistered, this.channel);
+            this.fChatLibInstance.sendMessage(BaseConstants.Messages.errorNotRegistered, this.channel);
         }
     };
 
@@ -427,11 +427,11 @@ export class BaseCommandHandler {
                 }
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.stack), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.stack), data.character);
             }
         }
         else {
-            this.fChatLibInstance.sendMessage(Constants.Messages.errorFightAlreadyInProgress, this.channel);
+            this.fChatLibInstance.sendMessage(BaseConstants.Messages.errorFightAlreadyInProgress, this.channel);
         }
     };
 
@@ -446,7 +446,7 @@ export class BaseCommandHandler {
                         this.fight.outputStatus();
                     }
                     else{
-                        this.fChatLibInstance.sendMessage("[color=red]No fight is associated with this id, or you don't have the rights to access it.[/color]", this.channel);
+                        this.fChatLibInstance.sendMessage("[color=red]No fight is associated with this idAction, or you don't have the rights to access it.[/color]", this.channel);
                     }
                 }
                 else {
@@ -454,17 +454,17 @@ export class BaseCommandHandler {
                 }
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.stack), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.stack), data.character);
             }
         }
         else {
-            this.fChatLibInstance.sendMessage(Constants.Messages.errorFightAlreadyInProgress, this.channel);
+            this.fChatLibInstance.sendMessage(BaseConstants.Messages.errorFightAlreadyInProgress, this.channel);
         }
     };
 
     async ready(args:string, data:FChatResponse) {
         if (this.fight.hasStarted) {
-            this.fChatLibInstance.sendMessage(Constants.Messages.errorFightAlreadyInProgress, this.channel);
+            this.fChatLibInstance.sendMessage(BaseConstants.Messages.errorFightAlreadyInProgress, this.channel);
             return false;
         }
         if (this.fight == undefined || this.fight.hasEnded) {
@@ -475,11 +475,11 @@ export class BaseCommandHandler {
         try{
             let result:boolean = await this.fight.setFighterReady(data.character);
             if (!result) { //else, the match starts!
-                this.fChatLibInstance.sendMessage(Constants.Messages.errorAlreadyReady, this.channel);
+                this.fChatLibInstance.sendMessage(BaseConstants.Messages.errorAlreadyReady, this.channel);
             }
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
         }
     };
 
@@ -502,14 +502,14 @@ export class BaseCommandHandler {
                 newFighter.name = data.character;
                 newFighter.restat(arrParam);
                 await FighterRepository.persist(newFighter);
-                this.fChatLibInstance.sendPrivMessage(Constants.Messages.registerWelcomeMessage, data.character);
+                this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.registerWelcomeMessage, data.character);
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorAlreadyRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorAlreadyRegistered, data.character);
         }
     };
 
@@ -530,11 +530,11 @@ export class BaseCommandHandler {
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${amount} tokens from ${data.character} ![/color]`, fighterReceiving.name);
                 }
                 else{
-                    this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorRecipientOrSenderNotFound, data.character);
+                    this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorRecipientOrSenderNotFound, data.character);
                 }
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
 
@@ -546,7 +546,7 @@ export class BaseCommandHandler {
                 await FighterRepository.GiveTokensToPlayersRegisteredBeforeNow(parseInt(args));
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
 
@@ -580,37 +580,38 @@ export class BaseCommandHandler {
                     }
                 }
                 else{
-                    this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotEnoughMoney, data.character);
+                    this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotEnoughMoney, data.character);
                 }
             }
             else{
-                this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorRecipientOrSenderNotFound, data.character);
+                this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorRecipientOrSenderNotFound, data.character);
             }
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
         }
     };
 
-    async removefeature(args:string, data:FChatResponse) {
-        let parsedFeatureArgs = Parser.Commands.getFeatureType(args);
-        if (parsedFeatureArgs.message != null) {
-            this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedFeatureArgs.message + "\nExample: !removeFeature KickStart" +
-                "\nAvailable features: " + EnumEx.getNames(FeatureType).join(", ") + "[/color]", data.character);
-            return;
-        }
-        let fighter = await FighterRepository.load(data.character);
-        try {
-            if (fighter != null) {
-                fighter.removeFeature(parsedFeatureArgs.featureType);
-                await FighterRepository.persist(fighter);
-                this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed your ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
-            }
-        }
-        catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
-        }
-    };
+    //TODO FIX FEATURES
+    // async removefeature(args:string, data:FChatResponse) {
+    //     let parsedFeatureArgs = Parser.Commands.getFeatureType(args);
+    //     if (parsedFeatureArgs.message != null) {
+    //         this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedFeatureArgs.message + "\nExample: !removeFeature KickStart" +
+    //             "\nAvailable features: " + EnumEx.getNames(FeatureType).join(", ") + "[/color]", data.character);
+    //         return;
+    //     }
+    //     let fighter = await FighterRepository.load(data.character);
+    //     try {
+    //         if (fighter != null) {
+    //             fighter.removeFeature(parsedFeatureArgs.featureType);
+    //             await FighterRepository.persist(fighter);
+    //             this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed your ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
+    //         }
+    //     }
+    //     catch (ex) {
+    //         this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
+    //     }
+    // };
 
     async stats(args:string, data:FChatResponse) {
         let fighter:BaseFighter = await FighterRepository.load(data.character);
@@ -618,7 +619,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), fighter.name);
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -628,7 +629,7 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendPrivMessage(`[noparse]${fighter.outputStats()}[/noparse]`, fighter.name);
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -644,7 +645,7 @@ export class BaseCommandHandler {
             this.fight.setFightType(args);
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -660,7 +661,7 @@ export class BaseCommandHandler {
             this.fight.setFightLength(parsedFD);
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -676,7 +677,7 @@ export class BaseCommandHandler {
             this.fight.setDiceLess(flag);
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -691,7 +692,7 @@ export class BaseCommandHandler {
             this.fight.setTeamsCount(parsedTeams);
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -704,11 +705,11 @@ export class BaseCommandHandler {
                 this.fChatLibInstance.sendPrivMessage("[color=green]You stats are now public.[/color]", data.character);
             }
             catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
             }
         }
         else {
-            this.fChatLibInstance.sendPrivMessage(Constants.Messages.errorNotRegistered, data.character);
+            this.fChatLibInstance.sendPrivMessage(BaseConstants.Messages.errorNotRegistered, data.character);
         }
     };
 
@@ -745,7 +746,7 @@ export class BaseCommandHandler {
             this.fight.forfeit(args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
         }
     };
 
@@ -759,7 +760,7 @@ export class BaseCommandHandler {
             this.fight.checkForDraw();
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
         }
     };
 
@@ -772,7 +773,7 @@ export class BaseCommandHandler {
             this.fight.unrequestDraw(data.character);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
         }
     };
 
@@ -787,7 +788,7 @@ export class BaseCommandHandler {
             }
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Constants.Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(BaseConstants.Messages.commandError, ex.message), data.character);
         }
     };
 

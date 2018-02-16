@@ -3,7 +3,7 @@ import {Model} from "../../src/Common/Model";
 import {FightRepository} from "../../src/FightSystem/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as Constants from "../../src/Common/Constants";
+import * as BaseConstants from "../../src/Common/BaseConstants";
 
 describe("The Fight Repository", () => {
 
@@ -23,7 +23,7 @@ describe("The Fight Repository", () => {
         let resultFalse = await FightRepository.exists(myFight.idFight);
         expect(resultFalse).toBe(false);
 
-        await Model.db(Constants.SQL.fightTableName).where({idFight: myFight.idFight}).del();
+        await Model.db(BaseConstants.SQL.fightTableName).where({idFight: myFight.idFight}).del();
 
         done();
     });

@@ -1,16 +1,17 @@
-import * as Constants from "../../Common/Constants";
+import * as BaseConstants from "../../Common/BaseConstants";
 import {Modifier} from "./Modifier";
 import {IModifier} from "./IModifier";
-import {ModifierType, Tier} from "../../Common/Constants";
+import {Tier} from "../../Common/BaseConstants";
 import {Utils} from "../../Common/Utils";
 import {Fight} from "../Fight";
 import {BaseFight} from "../../Common/BaseFight";
 import {BaseActiveFighter} from "../../Common/BaseActiveFighter";
+import {ModifierType} from "../RWConstants";
 
 export class ModifierFactory{
 
     static checkAndInitializeDefaultValues(indexOfSearchedModifier:number, modifierName:string, parameters:any){
-        if(Constants.ModifierType[modifierName] == null){
+        if(ModifierType[modifierName] == null){
             throw new Error("This modifier doesn't exist in the ModifierType list.");
         }
 
@@ -19,7 +20,7 @@ export class ModifierFactory{
         }
 
         //Merges the properties found in the json config file with our custom parameters object
-        Utils.mergeFromTo(Constants.Globals.modifiersList[indexOfSearchedModifier], parameters);
+        Utils.mergeFromTo(BaseConstants.Globals.modifiersList[indexOfSearchedModifier], parameters);
 
         parameters.type = ModifierType[modifierName];
         parameters.tier = parameters.tier || Tier.None;
@@ -35,34 +36,34 @@ export class ModifierFactory{
         let eventFound = false;
 
         if(parameters.sEvent != null){
-            let listOfEvents = Utils.getEnumList(Constants.Trigger);
+            let listOfEvents = Utils.getEnumList(BaseConstants.Trigger);
             for(let trigger in listOfEvents){
                 if(listOfEvents[trigger].toLowerCase() == parameters.sEvent.toLowerCase()){
-                    parameters.event = Constants.Trigger[listOfEvents[trigger]];
+                    parameters.event = BaseConstants.Trigger[listOfEvents[trigger]];
                     eventFound = true;
                 }
             }
         }
 
         if(!eventFound){
-            parameters.event = Constants.Trigger.None;
+            parameters.event = BaseConstants.Trigger.None;
         }
 
         //Convert textual timeToTrigger to its equivalent in the code
         let timeToTriggerFound = false;
 
         if(parameters.sTimeToTrigger != null){
-            let listOfEvents = Utils.getEnumList(Constants.TriggerMoment);
+            let listOfEvents = Utils.getEnumList(BaseConstants.TriggerMoment);
             for(let trigger in listOfEvents){
                 if(listOfEvents[trigger].toLowerCase() == parameters.sTimeToTrigger.toLowerCase()){
-                    parameters.timeToTrigger = Constants.TriggerMoment[listOfEvents[trigger]];
+                    parameters.timeToTrigger = BaseConstants.TriggerMoment[listOfEvents[trigger]];
                     timeToTriggerFound = true;
                 }
             }
         }
 
         if(!timeToTriggerFound){
-            parameters.timeToTrigger = Constants.TriggerMoment.Never;
+            parameters.timeToTrigger = BaseConstants.TriggerMoment.Never;
         }
 
         return parameters;
@@ -88,7 +89,7 @@ export class ModifierFactory{
             throw new Error("This modifier wasn't found in the ModifierType list.");
         }
 
-        let indexOfSearchedModifier = Constants.Globals.modifiersList.findIndex(x => x.name.toLowerCase() == realModifierName.toLowerCase());
+        let indexOfSearchedModifier = BaseConstants.Globals.modifiersList.findIndex(x => x.name.toLowerCase() == realModifierName.toLowerCase());
         if(indexOfSearchedModifier != -1){
             inputParameters = ModifierFactory.checkAndInitializeDefaultValues(indexOfSearchedModifier, realModifierName, inputParameters);
             modifier = new Modifier(receiver.name,

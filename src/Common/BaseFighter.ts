@@ -1,6 +1,6 @@
 import {IAchievement} from "../Achievements/IAchievement";
 import {BaseFeature} from "./BaseFeature";
-import {FeatureType, FightTier, FightTierWinRequirements, Stats, Team, TransactionType} from "./Constants";
+import {FightTier, FightTierWinRequirements, Stats, Team, TransactionType} from "./BaseConstants";
 import {AchievementManager} from "../Achievements/AchievementManager";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
@@ -80,7 +80,7 @@ export abstract class BaseFighter{
             else{
                 usesLeft = ` - permanent`;
             }
-            strResult.push(`${FeatureType[feature.type]}${usesLeft}`);
+            strResult.push(`${feature.type}${usesLeft}`);
         }
         return strResult.join(", ");
     }
@@ -93,7 +93,7 @@ export abstract class BaseFighter{
         return strResult.join(", ");
     }
 
-    removeFeature(type:FeatureType):void{
+    removeFeature(type:string):void{
         let index = this.features.findIndex(x => x.type == type);
         if(index != -1){
             this.features.splice(index, 1);
@@ -103,7 +103,7 @@ export abstract class BaseFighter{
         }
     }
 
-    addFeature(type:FeatureType, matches:number):number{
+    addFeature(type:string, matches:number):number{
         let feature:any = FeatureFactory.getFeature(type, matches);
         let amountToRemove:number = feature.getCost() * matches;
 
@@ -126,7 +126,7 @@ export abstract class BaseFighter{
         this.features = [];
     }
 
-    hasFeature(featureType:FeatureType):boolean{
+    hasFeature(featureType:string):boolean{
         return this.features.findIndex(x => x.type == featureType) != -1;
     }
 

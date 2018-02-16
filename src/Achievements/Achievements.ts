@@ -2,7 +2,7 @@ import {IAchievement} from "./IAchievement";
 import {RWFighter} from "../FightSystem/RWFighter";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {Fight} from "../FightSystem/Fight";
-import {FightTier} from "../Common/Constants";
+import {FightTier} from "../Common/BaseConstants";
 import {BaseFighter} from "../Common/BaseFighter";
 import {BaseActiveFighter} from "../Common/BaseActiveFighter";
 import {BaseFight} from "../Common/BaseFight";

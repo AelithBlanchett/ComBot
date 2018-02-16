@@ -135,69 +135,7 @@ export namespace Fight {
     }
 }
 
-export enum ModifierType {
-    SubHoldBrawlBonus = "Accuracy++ on brawl (submission hold)",
-    SubHold = "submission hold",
-    SexHoldLustBonus = "Accuracy++ on tease (sexual hold)",
-    SexHold = "sexual hold",
-    Bondage = "bondage items",
-    HumHold = "humiliation hold",
-    DegradationMalus = "degradation malus",
-    ItemPickupBonus = "HP Dmg++ (item pickup)",
-    SextoyPickupBonus = "LP Dmg++ (sextoy pickup)",
-    Stun = "stun",
-    StrapToy = "strapped sex-toy",
-    DummyModifier = "unused modifier"
-}
 
-export class Feature {
-    static KickStart = "Kick Start";
-    static SexyKickStart = "Sexy Kick Start";
-    static Sadist = "Sadist";
-    static CumSlut = "Cum Slut";
-    static RyonaEnthusiast = "Ryona Enthusiast";
-    static DomSubLover = "Dom Sub Lover";
-    static BondageBunny = "Bondage Bunny";
-    static BondageHandicap = "Bondage Handicap (1 item)";
-}
-
-export enum FeatureType {
-    KickStart = "Kick Start feature",
-    SexyKickStart = "Sexy Kick Start feature",
-    Sadist = "Sadist feature",
-    CumSlut = "Cum Slut feature",
-    RyonaEnthusiast = "Ryona Enthusiast feature",
-    DomSubLover = "D/s Lover feature",
-    BondageBunny = "Bondage Bunny feature",
-    BondageHandicap = "Bondage Handicap feature"
-}
-
-export enum FeatureEffect {
-    CreateModifier = "creates a modifier",
-    DamageTweaker = "changes the action's damage"
-}
-
-export enum FeatureCostPerUse {
-    KickStart = 5,
-    SexyKickStart = 5,
-    Sadist = 0,
-    CumSlut = 0,
-    RyonaEnthusiast = 0,
-    DomSubLover = 0,
-    BondageBunny = 0,
-    BondageHandicap = 0
-}
-
-export class FeatureExplain {
-    static KickStart = "They start with an offensive item in their hand, meaning to do more damage.";
-    static SexyKickStart = "They start with a sextoy in their hand, meaning to do more lust damage.";
-    static Sadist = "Dealing HP damage to the opponent will deal the same amount divided by two to the wearer's Lust.";
-    static CumSlut = "Increases all Lust damage done to the wearer by 3.";
-    static RyonaEnthusiast = "Taking HP damage also increases the wearer's Lust by the same amount divided by two.";
-    static DomSubLover = "Replaces focus by submissiveness. Purely visual.";
-    static BondageBunny = "They can be tied up without applying a hold.";
-    static BondageHandicap = "They start the fight already wearing one bondage item.";
-}
 
 export class Messages {
     static startupGuide = `Note: Any commands written down there are starting with a ! and must be typed without the "".
@@ -368,67 +306,13 @@ export enum FightLength {
     Epic = 3
 }
 
-export enum FailedHighRiskMultipliers {
-    Light = 0.6,
-    Medium = 0.5,
-    Heavy = 0.4
-}
-
-export enum HighRiskMultipliers {
-    Light = 1.3,
-    Medium = 1.5,
-    Heavy = 1.8
-}
-
-export enum MasturbateLpDamage {
-    Light = 5,
-    Medium = 10,
-    Heavy = 20
-}
-
-export enum SelfDebaseFpDamage {
-    Light = 8,
-    Medium = 16,
-    Heavy = 24
-}
-
 export enum StatTier {
     Bronze = 2,
     Silver = 4,
     Gold = 6
 }
 
-export enum FocusDamageOnMiss {
-    None = 1,
-    Light = 3,
-    Medium = 6,
-    Heavy = 10
-}
 
-export enum FocusHealOnHit {
-    None = 1,
-    Light = 6,
-    Medium = 12,
-    Heavy = 18
-}
-
-export enum FocusDamageOnHit {
-    Light = 5,
-    Medium = 10,
-    Heavy = 15
-}
-
-export enum StrapToyLPDamagePerTurn {
-    Light = 4,
-    Medium = 8,
-    Heavy = 12
-}
-
-export enum StrapToyDiceRollPenalty {
-    Light = 3,
-    Medium = 5,
-    Heavy = 7
-}
 
 export enum TierDifficulty {
     Light = 5,

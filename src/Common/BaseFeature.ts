@@ -1,26 +1,21 @@
 import {Utils} from "./Utils";
-import {
-    FeatureCostPerUse, FeatureEffect, FeatureType, ModifierType, Trigger,
-    TriggerMoment
-} from "./Constants";
-import {Fight} from "../FightSystem/Fight";
-import {ActiveFighter} from "../FightSystem/ActiveFighter";
-import {Modifier} from "../FightSystem/Modifiers/Modifier";
-import {Dictionary} from "./Dictionary";
+import {Trigger, TriggerMoment} from "./BaseConstants";
+import {BaseFighter} from "./BaseFighter";
+import {BaseActiveFighter} from "./BaseActiveFighter";
 
 export abstract class BaseFeature{
 
     id:string;
-    type:FeatureType;
+    type:string;
     uses: number;
     permanent: boolean;
     idReceiver:string;
-    receiver:ActiveFighter;
+    receiver:BaseActiveFighter;
     createdAt:Date;
     updatedAt:Date;
     deletedAt:Date;
 
-    constructor(featureType:FeatureType, id?:string) {
+    constructor(featureType:string, receiver:BaseActiveFighter, id?:string) {
         if(id){
             this.id = id;
         }
@@ -28,16 +23,9 @@ export abstract class BaseFeature{
             this.id = Utils.generateUUID();
         }
 
-        this.type = featureType;
-    }
-
-    build(receiver:ActiveFighter){
         this.receiver = receiver;
-        this.idReceiver = receiver.name;
-    }
 
-    getCost():number{
-        return FeatureCostPerUse[FeatureCostPerUse[FeatureType[this.type]]];
+        this.type = featureType;
     }
 
     isExpired():boolean{
@@ -61,6 +49,8 @@ export abstract class BaseFeature{
 
         return messageAboutFeature;
     }
+
+    abstract getCost():number;
 
     abstract applyFeature<OptionalParameterType>(moment: TriggerMoment, event:Trigger, parameters?:OptionalParameterType):string
 

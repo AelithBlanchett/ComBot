@@ -3,14 +3,14 @@ import {ActiveFighter} from "../ActiveFighter";
 import {FighterRepository} from "./FighterRepository";
 import {Utils} from "../../Common/Utils";
 import {ModifierRepository} from "./ModifierRepository";
-import * as Constants from "../../Common/Constants";
+import * as BaseConstants from "../../Common/BaseConstants";
 
 export class ActiveFighterRepository{
 
     public static async persist(fighter:ActiveFighter):Promise<void>{
         try
         {
-            let currentSeason = await Model.db(Constants.SQL.constantsTableName).where({key: Constants.SQL.currentSeasonKeyName}).first();
+            let currentSeason = await Model.db(BaseConstants.SQL.constantsTableName).where({key: BaseConstants.SQL.currentSeasonKeyName}).first();
 
             if(fighter.idFight == null){
                 return;
@@ -18,7 +18,7 @@ export class ActiveFighterRepository{
 
             if(!await ActiveFighterRepository.exists(fighter.name, fighter.idFight)){
                 fighter.createdAt = new Date();
-                await Model.db(Constants.SQL.activeFightersTableName).insert({
+                await Model.db(BaseConstants.SQL.activeFightersTableName).insert({
                     idFighter: fighter.name,
                     idFight: fighter.idFight,
                     season: currentSeason.value,
@@ -52,7 +52,7 @@ export class ActiveFighterRepository{
             }
             else{
                 fighter.updatedAt = new Date();
-                await Model.db(Constants.SQL.activeFightersTableName).where({idFighter: fighter.name, idFight: fighter.idFight}).update({
+                await Model.db(BaseConstants.SQL.activeFightersTableName).where({idFighter: fighter.name, idFight: fighter.idFight}).update({
                     assignedTeam: fighter.assignedTeam,
                     isReady: fighter.isReady,
                     hp: fighter.hp,
@@ -90,7 +90,7 @@ export class ActiveFighterRepository{
     }
 
     public static async exists(idFighter:string, idFight:string):Promise<boolean>{
-        let loadedData = await Model.db(Constants.SQL.activeFightersTableName).where({idFighter: idFighter, idFight: idFight}).select();
+        let loadedData = await Model.db(BaseConstants.SQL.activeFightersTableName).where({idFighter: idFighter, idFight: idFight}).select();
         return (loadedData.length > 0);
     }
 
@@ -120,7 +120,7 @@ export class ActiveFighterRepository{
         {
             loadedActiveFighter = await ActiveFighterRepository.initialize(idFighter);
 
-            let loadedData = await Model.db(Constants.SQL.activeFightersTableName).where({idFighter: idFighter, idFight: idFight}).select();
+            let loadedData = await Model.db(BaseConstants.SQL.activeFightersTableName).where({idFighter: idFighter, idFight: idFight}).select();
             let data = loadedData[0];
 
             Utils.mergeFromTo(data, loadedActiveFighter);
@@ -140,7 +140,7 @@ export class ActiveFighterRepository{
 
         try
         {
-            let loadedData = await Model.db(Constants.SQL.activeFightersTableName).where({idFight: idFight}).select();
+            let loadedData = await Model.db(BaseConstants.SQL.activeFightersTableName).where({idFight: idFight}).select();
 
             for(let data of loadedData){
                 let activeFighter = new ActiveFighter();
@@ -157,7 +157,7 @@ export class ActiveFighterRepository{
     }
 
     public static async delete(idFighter:string, idFight:string):Promise<void>{
-        await Model.db(Constants.SQL.activeFightersTableName).where({idFighter: idFighter, idFight: idFight}).del();
+        await Model.db(BaseConstants.SQL.activeFightersTableName).where({idFighter: idFighter, idFight: idFight}).del();
     }
 
 }

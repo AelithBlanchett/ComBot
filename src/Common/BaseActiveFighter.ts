@@ -1,11 +1,10 @@
 import {Dice} from "./Dice";
 import {BaseFight, FightStatus} from "./BaseFight";
-import {FightLength, Team} from "./Constants";
-import {Trigger} from "./Constants";
-import {TriggerMoment} from "./Constants";
-import * as Constants from "./Constants";
-import {ModifierType} from "./Constants";
-import {Tier} from "./Constants";
+import {FightLength, Team} from "./BaseConstants";
+import {Trigger} from "./BaseConstants";
+import {TriggerMoment} from "./BaseConstants";
+import * as BaseConstants from "./BaseConstants";
+import {Tier} from "./BaseConstants";
 import {AchievementManager} from "../Achievements/AchievementManager";
 import {BaseFighter} from "./BaseFighter";
 import {BaseModifier} from "./BaseModifier";
@@ -16,7 +15,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
 
     fight:BaseFight;
     idFight:string;
-    season:number = Constants.Globals.currentSeason;
+    season:number = BaseConstants.Globals.currentSeason;
     assignedTeam:Team = Team.Unknown;
     targets:BaseActiveFighter[];
     isReady:boolean = false;
@@ -48,8 +47,8 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         this.modifiers = [];
         this.fightStatus = null;
 
-        this.dice = new Dice(Constants.Globals.diceSides);
-        this.season = Constants.Globals.currentSeason;
+        this.dice = new Dice(BaseConstants.Globals.diceSides);
+        this.season = BaseConstants.Globals.currentSeason;
         this.fightStatus = FightStatus.Idle;
     }
 
@@ -93,10 +92,10 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         this.triggerMods(TriggerMoment.Before, event);
         let result = 0;
         if (times == 1) {
-            result = this.dice.roll(Constants.Globals.diceCount);
+            result = this.dice.roll(BaseConstants.Globals.diceCount);
         }
         else {
-            result = this.dice.roll(Constants.Globals.diceCount * times);
+            result = this.dice.roll(BaseConstants.Globals.diceCount * times);
         }
 
         if(this.isInDebug && this.fight.forcedDiceRoll > 0){
@@ -186,7 +185,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     getStunnedTier():Tier {
         let stunTier = Tier.None;
         for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.type == ModifierType.Stun) {
+            if (mod.idReceiver == this.name && mod.type == "Stun") {
                 stunTier = mod.tier;
             }
         }
@@ -200,7 +199,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isApplyingHold():boolean {
         let isApplyingHold = false;
         for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+            if (mod.idApplier == this.name && mod.isAHold()) {
                 isApplyingHold = true;
             }
         }
@@ -210,7 +209,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isApplyingHoldOfTier():Tier {
         let tier = Tier.None;
         for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && (mod.type == Constants.ModifierType.SubHold || mod.type == Constants.ModifierType.SexHold || mod.type == Constants.ModifierType.HumHold)) {
+            if (mod.idApplier == this.name && mod.isAHold()) {
                 tier = mod.tier;
             }
         }
@@ -228,7 +227,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     }
 
     //May have to move
-    isInSpecificHold(holdType:ModifierType):boolean {
+    isInSpecificHold(holdType:string):boolean {
         let isInHold = false;
         for (let mod of this.modifiers) {
             if (mod.idReceiver == this.name && mod.isAHold() && mod.type == holdType) {
@@ -308,7 +307,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isInRange(targets:BaseActiveFighter[]):boolean{
         let result = true;
         for(let target of targets){
-            if((target.distanceFromRingCenter - this.distanceFromRingCenter) > Constants.Fight.Globals.maximumDistanceToBeConsideredInRange){
+            if((target.distanceFromRingCenter - this.distanceFromRingCenter) > BaseConstants.Fight.Globals.maximumDistanceToBeConsideredInRange){
                 result = false;
             }
         }
@@ -316,7 +315,5 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     }
 
     abstract outputStatus():string;
-
-    abstract penaltyOnAttackMissed(tier:Tier):void;
 
 }

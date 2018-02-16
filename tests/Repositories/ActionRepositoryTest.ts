@@ -14,14 +14,14 @@ describe("The Action Repository", () => {
     it("should remove action aa", async function (done) {
 
         let myAction = new EmptyAction();
-        myAction.id = Utils.generateUUID();
+        myAction.idAction = Utils.generateUUID();
         //myAction.fight = new BaseFight();
         myAction.idAttacker = "1";
         myAction.atTurn = 1;
         myAction.tier = 0;
         myAction.missed = false;
         myAction.isHold = false;
-        myAction.type =  ActionType.Bondage;
+        myAction.name =  ActionType.Bondage;
         await ActionRepository.persist(myAction);
         let resultTrue = await ActionRepository.exists(myAction.idAction);
         expect(resultTrue).toBe(true);
@@ -35,13 +35,13 @@ describe("The Action Repository", () => {
     it("should say that action that was just inserted is in database.", async function (done) {
         let myAction = new EmptyAction();
         myAction.idAction = Utils.generateUUID();
-        myAction.idFight = 1;
+        myAction.idFight = "1";
         myAction.idAttacker = "1";
         myAction.atTurn = 1;
         myAction.tier = 0;
         myAction.missed = false;
         myAction.isHold = false;
-        myAction.type =  ActionType.Bondage;
+        myAction.name =  ActionType.Bondage;
         await ActionRepository.persist(myAction);
         let resultTrue = await ActionRepository.exists(myAction.idAction);
         expect(resultTrue).toBe(true);
@@ -51,13 +51,13 @@ describe("The Action Repository", () => {
     it("should save an action in the database.", async function (done) {
         let myAction = new EmptyAction();
         myAction.idAction = Utils.generateUUID();
-        myAction.idFight = 1;
+        myAction.idFight = "1";
         myAction.idAttacker = "1";
         myAction.atTurn = 1;
         myAction.tier = 0;
         myAction.missed = false;
         myAction.isHold = false;
-        myAction.type =  ActionType.Bondage;
+        myAction.name =  ActionType.Bondage;
         await ActionRepository.persist(myAction);
 
         expect(myAction.createdAt).toBeDefined();

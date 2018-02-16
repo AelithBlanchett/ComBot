@@ -1,15 +1,14 @@
-import {FightLength, FocusDamageOnMiss, Tier, TransactionType} from "../Common/Constants";
-import {Trigger} from "../Common/Constants";
-import {TriggerMoment} from "../Common/Constants";
-import {FightType} from "../Common/Constants";
-import * as Constants from "../Common/Constants";
+import {FightLength, Tier, TransactionType} from "../Common/BaseConstants";
+import {Trigger} from "../Common/BaseConstants";
+import {TriggerMoment} from "../Common/BaseConstants";
+import {FightType} from "../Common/BaseConstants";
+import * as Constants from "../Common/BaseConstants";
 import {Utils} from "../Common/Utils";
-import {FeatureType} from "../Common/Constants";
 import {BaseActiveFighter} from "../Common/BaseActiveFighter";
 import {IRWFighter} from "./IRWFighter";
 import {Commands} from "../Common/Parser";
 import {Modifier} from "./Modifiers/Modifier";
-import {Fight} from "./Fight";
+import {FeatureType, ModifierType} from "./RWConstants";
 
 export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
     outputStats(): string {
@@ -113,6 +112,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         this.lust = 0;
         this.livesRemaining = this.maxLives();
         this.focus = this.initialFocus();
+        this.consecutiveTurnsWithoutFocus = 0;
 
         this.powerDelta = 0;
         this.sensualityDelta = 0;
@@ -547,7 +547,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
     bondageItemsOnSelf():number {
         let bondageModCount = 0;
         for (let mod of this.modifiers) {
-            if (mod.type == Constants.ModifierType.Bondage) {
+            if (mod.type == ModifierType.Bondage) {
                 bondageModCount++;
             }
         }
@@ -567,9 +567,4 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
         return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${(this.getListOfActiveModifiers().length > 0 ? modifiersLine : "")} ${targetLine}`;
     }
-
-    penaltyOnAttackMissed(tier:Tier):void{
-        this.hitFP(FocusDamageOnMiss[Tier[tier]]);
-    }
-
 }

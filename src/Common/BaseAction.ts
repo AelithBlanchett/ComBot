@@ -1,17 +1,18 @@
-import {Tier, Trigger} from "./Constants";
+import {Tier, Trigger} from "./BaseConstants";
 import {Utils} from "./Utils";
 
 export abstract class BaseAction{
 
-    id: string;
+    idAction: string;
     name:string;
     tier: Tier;
     isHold: boolean;
     requiresRoll: boolean;
-    isTurnSkippingAction:boolean;
+    keepActorsTurn:boolean;
     explanation:string;
 
     singleTarget:boolean;
+    maxTargets:number;
 
     requiresBeingAlive:boolean;
     requiresBeingDead:boolean;
@@ -26,6 +27,12 @@ export abstract class BaseAction{
     targetMustBeInRange:boolean;
     targetMustBeOffRange:boolean;
 
+    requiresBeingInHold:boolean;
+    requiresNotBeingInHold:boolean;
+    targetMustBeInHold:boolean;
+    targetMustNotBeInHold:boolean;
+
+    usableOnSelf:boolean;
     usableOnAllies:boolean;
     usableOnEnemies:boolean;
 
@@ -36,7 +43,7 @@ export abstract class BaseAction{
                 tier: Tier,
                 isHold: boolean,
                 requiresRoll:boolean,
-                isTurnSkippingAction:boolean,
+                keepActorsTurn:boolean,
                 singleTarget:boolean,
                 requiresBeingAlive:boolean,
                 requiresBeingDead:boolean,
@@ -48,15 +55,21 @@ export abstract class BaseAction{
                 targetMustBeOffRing:boolean,
                 targetMustBeInRange:boolean,
                 targetMustBeOffRange:boolean,
+                requiresBeingInHold:boolean,
+                requiresNotBeingInHold:boolean,
+                targetMustBeInHold:boolean,
+                targetMustNotBeInHold:boolean,
+                usableOnSelf:boolean,
                 usableOnAllies:boolean,
                 usableOnEnemies:boolean,
-                explanation?:string){
-        this.id = Utils.generateUUID();
+                explanation?:string,
+                maxTargets?:number){
+        this.idAction = Utils.generateUUID();
         this.name = name;
         this.tier = tier;
         this.isHold = isHold;
         this.requiresRoll = requiresRoll;
-        this.isTurnSkippingAction = isTurnSkippingAction;
+        this.keepActorsTurn = keepActorsTurn;
         this.singleTarget = singleTarget;
         this.requiresBeingAlive = requiresBeingAlive;
         this.requiresBeingDead = requiresBeingDead;
@@ -68,9 +81,15 @@ export abstract class BaseAction{
         this.targetMustBeOffRange = targetMustBeOffRange;
         this.requiresBeingOffRing = requiresBeingOffRing;
         this.targetMustBeOffRing = targetMustBeOffRing;
+        this.requiresBeingInHold = requiresBeingInHold;
+        this.requiresNotBeingInHold = requiresNotBeingInHold;
+        this.targetMustBeInHold = targetMustBeInHold;
+        this.targetMustNotBeInHold = targetMustNotBeInHold;
+        this.usableOnSelf = usableOnSelf;
         this.usableOnAllies = usableOnAllies;
         this.usableOnEnemies = usableOnEnemies;
         this.explanation = explanation;
+        this.maxTargets = maxTargets;
         this.createdAt = new Date();
     }
 

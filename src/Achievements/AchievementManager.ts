@@ -1,7 +1,7 @@
 import {IAchievement} from "./IAchievement";
 import {EnabledAchievements, AchievementType} from "./Achievements";
-import * as Constants from "../Common/Constants";
-import {TransactionType} from "../Common/Constants";
+import * as Constants from "../Common/BaseConstants";
+import {TransactionType} from "../Common/BaseConstants";
 import {BaseFighter} from "../Common/BaseFighter";
 import {BaseActiveFighter} from "../Common/BaseActiveFighter";
 import {BaseFight} from "../Common/BaseFight";

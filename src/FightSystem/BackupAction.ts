@@ -1,4 +1,4 @@
-// import * as Constants from "../Common/Constants";
+// import * as Constants from "../Common/BaseConstants";
 // import Tier = Constants.Tier;
 // import BaseDamage = Constants.BaseDamage;
 // import {Fight} from "./Fight";
@@ -8,19 +8,19 @@
 // import FightTier = Constants.FightTier;
 // import ModifierType = Constants.ModifierType;
 // import TriggerMoment = Constants.TriggerMoment;
-// import {HighRiskMultipliers} from "../Common/Constants";
+// import {HighRiskMultipliers} from "../Common/BaseConstants";
 // import {Utils} from "../Common/Utils";
-// import {StrapToyLPDamagePerTurn} from "../Common/Constants";
+// import {StrapToyLPDamagePerTurn} from "../Common/BaseConstants";
 // import {Modifier} from "./Modifiers/Modifier";
 // import {ActiveFighter} from "./ActiveFighter";
 // import {ActionRepository} from "./Repositories/ActionRepository";
-// import {FocusDamageOnMiss} from "../Common/Constants";
-// import {FocusHealOnHit} from "../Common/Constants";
-// import {FocusDamageOnHit} from "../Common/Constants";
-// import {FailedHighRiskMultipliers} from "../Common/Constants";
-// import {MasturbateLpDamage} from "../Common/Constants";
-// import {SelfDebaseFpDamage} from "../Common/Constants";
-// import {StrapToyDiceRollPenalty} from "../Common/Constants";
+// import {FocusDamageOnMiss} from "../Common/BaseConstants";
+// import {FocusHealOnHit} from "../Common/BaseConstants";
+// import {FocusDamageOnHit} from "../Common/BaseConstants";
+// import {FailedHighRiskMultipliers} from "../Common/BaseConstants";
+// import {MasturbateLpDamage} from "../Common/BaseConstants";
+// import {SelfDebaseFpDamage} from "../Common/BaseConstants";
+// import {StrapToyDiceRollPenalty} from "../Common/BaseConstants";
 // import {ModifierFactory} from "./Modifiers/ModifierFactory";
 // import {BaseFeatureParameter} from "../Common/BaseFeatureParameter";
 // import {ActionType, BaseActionFactory, TypeAction} from "../Common/BaseAction";
@@ -61,12 +61,6 @@
 //
 //         if(this.fight && this.fight.diceLess){
 //             return scoreRequired;
-//         }
-//         if (this.type == ActionType.Rest) {
-//             scoreRequired = Constants.Fight.Action.RequiredScore.Rest;
-//         }
-//         else if (this.type == ActionType.Tag) {
-//             scoreRequired = Constants.Fight.Action.RequiredScore.Tag;
 //         }
 //         else if (this.type == ActionType.Bondage) {
 //             scoreRequired = Constants.Fight.Action.RequiredScore.BondageBunny;
@@ -119,9 +113,6 @@
 //     triggerAction():Trigger{
 //         let result;
 //         switch (this.type) {
-//             case ActionType.Brawl:
-//                 result = this.actionBrawl();
-//                 break;
 //             case ActionType.Bondage:
 //                 result = this.actionBondage();
 //                 break;
@@ -145,12 +136,6 @@
 //                 break;
 //             case ActionType.ItemPickup:
 //                 result = this.actionItemPickup();
-//                 break;
-//             case ActionType.Tease:
-//                 result = this.actionTease();
-//                 break;
-//             case ActionType.SubHold:
-//                 result = this.actionSubHold();
 //                 break;
 //             case ActionType.SexHold:
 //                 result = this.actionSexHold();
@@ -196,196 +181,6 @@
 //         return result;
 //     }
 //
-//     actionBrawl():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.BrawlAttack);
-//
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-//             this.hpDamageToDef += this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore);
-//         }
-//         return Trigger.BrawlAttack;
-//     }
-//
-//     actionTease():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.TeaseAttack);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-//             this.lpDamageToDef += this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore);
-//         }
-//         return Trigger.TeaseAttack;
-//     }
-//
-//     actionSubHold():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.SubmissionHold);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-//             let hpDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);
-//             let holdModifier = ModifierFactory.getModifier(ModifierType.SubHold, this.fight, this.defender, this.attacker, {tier: this.tier, hpDamage: hpDamage});
-//             let brawlBonusAttacker = ModifierFactory.getModifier(ModifierType.SubHoldBrawlBonus, this.fight, this.attacker, null, {parentIds: [holdModifier.idModifier]});
-//             let brawlBonusDefender = ModifierFactory.getModifier(ModifierType.SubHoldBrawlBonus, this.fight, this.defender, null, {parentIds: [holdModifier.idModifier]});
-//             this.appliedModifiers.push(holdModifier);
-//             this.appliedModifiers.push(brawlBonusAttacker);
-//             this.appliedModifiers.push(brawlBonusDefender);
-//         }
-//         return Trigger.SubmissionHold;
-//     }
-//
-//     actionSexHold():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.SexHoldAttack);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-//             let lustDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);
-//             let holdModifier = ModifierFactory.getModifier(ModifierType.SexHold, this.fight, this.defender, this.attacker, {tier: this.tier, lustDamage: lustDamage});
-//             let lustBonusAttacker = ModifierFactory.getModifier(ModifierType.SexHoldLustBonus, this.fight, this.attacker, null, {parentIds: [holdModifier.idModifier]});
-//             let lustBonusDefender = ModifierFactory.getModifier(ModifierType.SexHoldLustBonus, this.fight, this.defender, null, {parentIds: [holdModifier.idModifier]});
-//             this.appliedModifiers.push(holdModifier);
-//             this.appliedModifiers.push(lustBonusAttacker);
-//             this.appliedModifiers.push(lustBonusDefender);
-//         }
-//         return Trigger.SexHoldAttack;
-//     }
-//
-//     actionHumHold():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.HumiliationHold);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             let focusDamage = Math.floor(FocusDamageOnHit[Tier[this.tier]]);
-//             let holdModifier = ModifierFactory.getModifier(ModifierType.HumHold, this.fight, this.defender, this.attacker, {tier: this.tier, focusDamage: focusDamage});
-//             this.appliedModifiers.push(holdModifier);
-//             let humiliationModifier = ModifierFactory.getModifier(ModifierType.DegradationMalus, this.fight, this.defender, this.attacker, {parentIds: [holdModifier.idModifier]});
-//             this.appliedModifiers.push(humiliationModifier);
-//         }
-//         return Trigger.HumiliationHold;
-//     }
-//
-//     actionBondage():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Bondage);
-//         if(this.defender.isInSpecificHold(Constants.ModifierType.SexHold)){
-//             this.diceScore = -1;
-//             this.requiresRoll = false;
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
-//             let bdModifier = ModifierFactory.getModifier(ModifierType.Bondage, this.fight, this.defender, this.attacker);
-//             this.appliedModifiers.push(bdModifier);
-//         }
-//         else{
-//             this.diceRollRawValue = this.attacker.roll(1);
-//             this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
-//             this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//             if(this.diceScore >= this.requiredDiceScore()) {
-//                 this.missed = false;
-//                 this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
-//                 this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
-//                 let bdModifier = ModifierFactory.getModifier(ModifierType.Bondage, this.fight, this.defender, this.attacker);
-//                 this.appliedModifiers.push(bdModifier);
-//             }
-//         }
-//
-//         return Trigger.Bondage;
-//     }
-//
-//     actionHighRisk():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.HighRiskAttack);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-//             this.hpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * (HighRiskMultipliers[Tier[this.tier]]));
-//         }
-//         else{
-//             this.missed = true;
-//             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
-//             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-//             this.hpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.attacker.currentToughness, 0) * HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]);
-//         }
-//         return Trigger.HighRiskAttack;
-//     }
-//
-//     actionRiskyLewd():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.RiskyLewd);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-//             this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * HighRiskMultipliers[Tier[this.tier]]);
-//             this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * FailedHighRiskMultipliers[Tier[this.tier]]);
-//         }
-//         else{
-//             this.missed = true;
-//             this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
-//             this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-//             this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]);
-//             this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * FailedHighRiskMultipliers[Tier[this.tier]]);
-//         }
-//         return Trigger.RiskyLewd;
-//     }
-//
-//     actionForcedWorship():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.ForcedWorshipAttack);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentSensuality / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         this.lpDamageToAtk += (this.tier+1) * 5; //deal damage anyway. They're gonna be exposed!
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]] * 2;
-//             this.lpDamageToDef += 1;
-//         }
-//         return Trigger.ForcedWorshipAttack;
-//     }
-//
-//     actionItemPickup():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.ItemPickup);
-//         this.diceScore = -1;
-//         this.requiresRoll = false;
-//         this.missed = false;
-//         this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Light]];
-//         this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Light]];
-//         let itemPickupModifier = ModifierFactory.getModifier(ModifierType.ItemPickupBonus, this.fight, this.attacker, null);
-//         this.appliedModifiers.push(itemPickupModifier);
-//         return Trigger.ItemPickup;
-//     }
-//
-//     actionSextoyPickup():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.SextoyPickup);
-//         this.diceScore = -1;
-//         this.requiresRoll = false;
-//         this.missed = false;
-//         this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Light]];
-//         this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Light]];
-//         let itemPickupModifier = ModifierFactory.getModifier(ModifierType.SextoyPickupBonus, this.fight, this.attacker, null);
-//         this.appliedModifiers.push(itemPickupModifier);
-//         return Trigger.SextoyPickup;
-//     }
 //
 //     actionDegradation():Trigger{
 //         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Degradation);
@@ -400,74 +195,6 @@
 //         return Trigger.Degradation;
 //     }
 //
-//     actionTag():Trigger{ //"skips" a turn
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Tag);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()) {
-//             this.attacker.lastTagTurn = this.atTurn;
-//             this.defender.lastTagTurn = this.atTurn;
-//             this.attacker.isInTheRing = false;
-//             this.defender.isInTheRing = true;
-//             this.missed = false;
-//         }
-//         return Trigger.Tag;
-//     }
-//
-//     actionRest():Trigger{ //"skips" a turn
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Rest);
-//         this.defender = null;
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()) {
-//             this.missed = false;
-//             this.hpHealToAtk += this.attacker.hpPerHeart() * Constants.Fight.Action.Globals.hpPercentageToHealOnRest;
-//             this.lpHealToAtk += this.attacker.lustPerOrgasm() * Constants.Fight.Action.Globals.lpPercentageToHealOnRest;
-//             this.fpHealToAtk += this.attacker.maxFocus() * Constants.Fight.Action.Globals.fpPercentageToHealOnRest;
-//         }
-//         return Trigger.Rest;
-//     }
-//
-//     actionStun():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Stun);
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.diceScore >= this.requiredDiceScore()){
-//             this.missed = false;
-//             this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-//             this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-//             let nbOfAttacksStunned = 2;
-//             this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);
-//             let stunModifier = ModifierFactory.getModifier(ModifierType.Stun, this.fight, this.defender, this.attacker, {tier: this.tier, diceRoll: -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned)});
-//             this.appliedModifiers.push(stunModifier);
-//             this.fight.message.addHit("STUNNED!");
-//         }
-//         return Trigger.Stun;
-//     }
-//
-//     actionEscape():Trigger{
-//         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Escape);
-//         this.defender = null;
-//         this.tier = this.attacker.isInHoldOfTier();
-//         this.diceRollRawValue = this.attacker.roll(1);
-//         this.diceRollBonusFromStat = Math.ceil(this.attacker.currentDexterity / 10);
-//         this.diceScore = this.diceRollRawValue + this.diceRollBonusFromStat;
-//         if(this.attacker.isInHold()){
-//             if(this.diceScore >= this.requiredDiceScore()){
-//                 this.missed = false;
-//                 this.attacker.escapeHolds();
-//             }
-//         }
-//         else{
-//             this.missed = false;
-//             this.fight.message.addHit(`${this.attacker.getStylizedName()} took some more distance... just in case!`);
-//         }
-//
-//         return Trigger.Escape;
-//     }
 //
 //     actionReleaseHold():Trigger{
 //         this.attacker.triggerMods(TriggerMoment.Before, Trigger.Escape);

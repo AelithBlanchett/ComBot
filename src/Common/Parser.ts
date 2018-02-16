@@ -1,10 +1,9 @@
 import {Utils} from "./Utils";
-import * as Constants from "./Constants";
-import Team = Constants.Team;
-import Stats = Constants.Stats;
-import {FightType} from "./Constants";
-import {FeatureType} from "./Constants";
-import {FightLength} from "./Constants";
+import * as BaseConstants from "./BaseConstants";
+import Team = BaseConstants.Team;
+import Stats = BaseConstants.Stats;
+import {FightType} from "./BaseConstants";
+import {FightLength} from "./BaseConstants";
 
 export class Commands{
 
@@ -46,15 +45,15 @@ export class Commands{
         }
 
         let exampleStats = ``;
-        let intStatsToAssign:number = Math.floor(Constants.Globals.numberOfRequiredStatPoints / Constants.Globals.numberOfDifferentStats);
-        let statOverflow:number = Constants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * Constants.Globals.numberOfDifferentStats);
+        let intStatsToAssign:number = Math.floor(BaseConstants.Globals.numberOfRequiredStatPoints / BaseConstants.Globals.numberOfDifferentStats);
+        let statOverflow:number = BaseConstants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * BaseConstants.Globals.numberOfDifferentStats);
 
-        for(let i = 0; i < Constants.Globals.numberOfDifferentStats - 1; i++){
+        for(let i = 0; i < BaseConstants.Globals.numberOfDifferentStats - 1; i++){
             exampleStats += intStatsToAssign.toString() + `,`;
         }
         exampleStats += (intStatsToAssign + statOverflow).toString();
 
-        if (arrParam.length != Constants.Globals.numberOfDifferentStats) {
+        if (arrParam.length != BaseConstants.Globals.numberOfDifferentStats) {
            return `The number of parameters was incorrect. Example: !register ${exampleStats}`;
         }
         else if (!arrParam.every(arg => Commands.isInt(arg))) {
@@ -67,13 +66,13 @@ export class Commands{
                 return a + b;
             }, 0);
 
-            if (total != Constants.Globals.numberOfRequiredStatPoints) {
-                return `The total of stat points you've spent isn't equal to ${Constants.Globals.numberOfRequiredStatPoints}. (${total}). Example: !register ${exampleStats} (or !restat ${exampleStats} if you're already registered)`;
+            if (total != BaseConstants.Globals.numberOfRequiredStatPoints) {
+                return `The total of stat points you've spent isn't equal to ${BaseConstants.Globals.numberOfRequiredStatPoints}. (${total}). Example: !register ${exampleStats} (or !restat ${exampleStats} if you're already registered)`;
             }
 
-            for(let i = 0; i < Constants.Globals.numberOfDifferentStats; i++){
-                if (arrParam[i] > Constants.Globals.maxStatLimit || (arrParam[i] < Constants.Globals.minStatLimit)){
-                    return `The ${Constants.Stats[i]} stat must be higher than ${Constants.Globals.minStatLimit} and lower than ${Constants.Globals.maxStatLimit}. Example: !register ${exampleStats} (or !restat ${exampleStats} if you're already registered)`;
+            for(let i = 0; i < BaseConstants.Globals.numberOfDifferentStats; i++){
+                if (arrParam[i] > BaseConstants.Globals.maxStatLimit || (arrParam[i] < BaseConstants.Globals.minStatLimit)){
+                    return `The ${BaseConstants.Stats[i]} stat must be higher than ${BaseConstants.Globals.minStatLimit} and lower than ${BaseConstants.Globals.maxStatLimit}. Example: !register ${exampleStats} (or !restat ${exampleStats} if you're already registered)`;
                 }
             }
 
@@ -88,8 +87,8 @@ export class Commands{
         let amount = 0;
 
         if(splittedArgs.length > 1){
-            if(isNaN(splittedArgs[0]) || splittedArgs[0] <= Constants.Globals.tippingMinimum){
-                result.message = `The specified amount is invalid. It must be a number > ${Constants.Globals.tippingMinimum}.`;
+            if(isNaN(splittedArgs[0]) || splittedArgs[0] <= BaseConstants.Globals.tippingMinimum){
+                result.message = `The specified amount is invalid. It must be a number > ${BaseConstants.Globals.tippingMinimum}.`;
                 return result;
             }
             else{
@@ -107,42 +106,43 @@ export class Commands{
         return result;
     }
 
-    public static getFeatureType(args, onlyType:boolean = false){
-        let result = {featureType: null, turns: -1, message: null};
-        let splittedArgs = args.split(` `);
-        let typeToSearch = splittedArgs[0];
-
-        if(splittedArgs.length > 1 && !onlyType){
-            if(isNaN(splittedArgs[1]) || splittedArgs[1] <= Constants.Globals.featuresMinMatchesDurationCount || splittedArgs[1] > Constants.Globals.featuresMaxMatchesDurationCount){
-                result.message = `The number of fights specified is invalid. It must be a number > ${Constants.Globals.featuresMinMatchesDurationCount} and <= ${Constants.Globals.featuresMaxMatchesDurationCount}`;
-                return result;
-            }
-            else{
-                result.turns = splittedArgs[1];
-            }
-        }
-        else{
-            result.turns = 0;
-        }
-
-        let featTypes = Utils.getEnumList(FeatureType);
-        for(let featTypeId in featTypes){
-            featTypes[featTypeId] = featTypes[featTypeId].toLowerCase();
-        }
-        let indexOfFeatType = featTypes.indexOf(typeToSearch.toLowerCase());
-        if(indexOfFeatType != -1){
-            result.featureType =  FeatureType[FeatureType[indexOfFeatType]];
-        }
-        else{
-            result.message = `This feature doesn't exist.`;
-        }
-
-        if(result.featureType == FeatureType[FeatureType.SexyKickStart] || result.featureType == FeatureType[FeatureType.KickStart]){
-            result.message = `You did not specify a number of fights, and features requiring payment cannot be permanent.`;
-        }
-
-        return result;
-    }
+    //TODO FIX THIS FOR FEATURES
+    // public static getFeatureType(args, onlyType:boolean = false){
+    //     let result = {featureType: null, turns: -1, message: null};
+    //     let splittedArgs = args.split(` `);
+    //     let typeToSearch = splittedArgs[0];
+    //
+    //     if(splittedArgs.length > 1 && !onlyType){
+    //         if(isNaN(splittedArgs[1]) || splittedArgs[1] <= BaseConstants.Globals.featuresMinMatchesDurationCount || splittedArgs[1] > BaseConstants.Globals.featuresMaxMatchesDurationCount){
+    //             result.message = `The number of fights specified is invalid. It must be a number > ${BaseConstants.Globals.featuresMinMatchesDurationCount} and <= ${BaseConstants.Globals.featuresMaxMatchesDurationCount}`;
+    //             return result;
+    //         }
+    //         else{
+    //             result.turns = splittedArgs[1];
+    //         }
+    //     }
+    //     else{
+    //         result.turns = 0;
+    //     }
+    //
+    //     let featTypes = Utils.getEnumList(FeatureType);
+    //     for(let featTypeId in featTypes){
+    //         featTypes[featTypeId] = featTypes[featTypeId].toLowerCase();
+    //     }
+    //     let indexOfFeatType = featTypes.indexOf(typeToSearch.toLowerCase());
+    //     if(indexOfFeatType != -1){
+    //         result.featureType =  FeatureType[FeatureType[indexOfFeatType]];
+    //     }
+    //     else{
+    //         result.message = `This feature doesn't exist.`;
+    //     }
+    //
+    //     if(result.featureType == FeatureType[FeatureType.SexyKickStart] || result.featureType == FeatureType[FeatureType.KickStart]){
+    //         result.message = `You did not specify a number of fights, and features requiring payment cannot be permanent.`;
+    //     }
+    //
+    //     return result;
+    // }
 
     public static setFightType(args){
         let fightTypes = Utils.getEnumList(FightType);
@@ -173,7 +173,7 @@ export class Commands{
             return -1;
         }
         else{
-            if(args > Constants.Globals.numberOfAvailableTeams){
+            if(args > BaseConstants.Globals.numberOfAvailableTeams){
                 return -1;
             }
         }

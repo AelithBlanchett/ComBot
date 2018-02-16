@@ -1,8 +1,8 @@
-import * as Constants from "./Constants";
-import Trigger = Constants.Trigger;
-import TriggerMoment = Constants.TriggerMoment;
+import * as BaseConstants from "./BaseConstants";
+import Trigger = BaseConstants.Trigger;
+import TriggerMoment = BaseConstants.TriggerMoment;
 import {IBaseModifier} from "./IBaseModifier";
-import {Tier} from "./Constants";
+import {Tier} from "./BaseConstants";
 import {Fight} from "../FightSystem/Fight";
 import {ActiveFighter} from "../FightSystem/ActiveFighter";
 import {Utils} from "./Utils";
@@ -13,7 +13,7 @@ export abstract class BaseModifier implements IBaseModifier{
     idModifier: string;
     idFight:string;
     tier:Tier;
-    type:Constants.ModifierType;
+    type:string;
     idApplier:string;
     idReceiver:string;
 
@@ -33,7 +33,7 @@ export abstract class BaseModifier implements IBaseModifier{
     updatedAt: Date;
     deletedAt: Date;
 
-    constructor(receiver:string, applier:string, tier:Tier, modType:Constants.ModifierType, diceRoll:number, escapeRoll:number, uses:number,
+    constructor(receiver:string, applier:string, tier:Tier, modType:string, diceRoll:number, escapeRoll:number, uses:number,
                 timeToTrigger:TriggerMoment, event:string, parentActionIds:Array<string>, areMultipliers:boolean){
         this.idModifier = Utils.generateUUID();
         this.idReceiver = receiver;

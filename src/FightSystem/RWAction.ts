@@ -2,10 +2,11 @@
 import {BaseActiveAction} from "../Common/BaseActiveAction";
 import {Fight} from "./Fight";
 import {ActiveFighter} from "./ActiveFighter";
-import {Tier, TierDifficulty} from "../Common/Constants";
-import {BaseDamage} from "./Constants";
+import {Tier, TierDifficulty} from "../Common/BaseConstants";
+import {BaseDamage, FocusDamageOnMiss} from "./RWConstants";
 import {ActionRepository} from "./Repositories/ActionRepository";
 import {Modifier} from "./Modifiers/Modifier";
+import * as Constants from "./RWConstants"
 
 export abstract class RWAction extends BaseActiveAction<Fight, ActiveFighter> {
 
@@ -28,8 +29,85 @@ export abstract class RWAction extends BaseActiveAction<Fight, ActiveFighter> {
 
     appliedModifiers: Modifier[] = [];
 
-    baseAttackFormula(tier: Tier, actorAtk: number, targetDef: number, roll: number): number {
+    get hpDamageToDef():number{
+        if(this.hpDamageToDefs != null && this.hpDamageToDefs.length == 1){
+            return this.hpDamageToDefs[0];
+        }
+        else{
+            return 0;
+        }
+    }
 
+    set hpDamageToDef(value:number){
+        this.hpDamageToDefs = [value];
+    }
+
+    get lpDamageToDef():number{
+        if(this.lpDamageToDefs != null && this.lpDamageToDefs.length == 1){
+            return this.lpDamageToDefs[0];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    set lpDamageToDef(value:number){
+        this.lpDamageToDefs = [value];
+    }
+
+    get fpDamageToDef():number{
+        if(this.fpDamageToDefs != null && this.fpDamageToDefs.length == 1){
+            return this.fpDamageToDefs[0];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    set fpDamageToDef(value:number){
+        this.fpDamageToDefs = [value];
+    }
+
+    get hpHealToDef():number{
+        if(this.hpHealToDefs != null && this.hpHealToDefs.length == 1){
+            return this.hpHealToDefs[0];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    set hpHealToDef(value:number){
+        this.hpHealToDefs = [value];
+    }
+
+    get lpHealToDef():number{
+        if(this.lpHealToDefs != null && this.lpHealToDefs.length == 1){
+            return this.lpHealToDefs[0];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    set lpHealToDef(value:number){
+        this.lpHealToDefs = [value];
+    }
+
+    get fpHealToDef():number{
+        if(this.fpHealToDefs != null && this.fpHealToDefs.length == 1){
+            return this.fpHealToDefs[0];
+        }
+        else{
+            return 0;
+        }
+    }
+
+    set fpHealToDef(value:number){
+        this.fpHealToDefs = [value];
+    }
+
+    attackFormula(tier: Tier, actorAtk: number, targetDef: number, roll: number): number {
         let statDiff: number = 0;
         if (actorAtk - targetDef > 0) {
             statDiff = Math.ceil((actorAtk - targetDef) / 10);
@@ -48,12 +126,57 @@ export abstract class RWAction extends BaseActiveAction<Fight, ActiveFighter> {
         return this.diceScoreBaseDamage + this.diceScoreStatDifference + this.diceScoreBonusPoints;
     }
 
+    specificRequiredDiceScore():number{
+        let scoreRequired = 0;
+
+        //TODO replace this
+        // if (this.type == ActionType.Finisher) {
+        //     scoreRequired = this.addRequiredScore(scoreRequired, 6, "FIN");
+        // }
+
+        scoreRequired += this.addRequiredScoreWithExplanation((Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.attacker.bondageItemsOnSelf()), "BDG");
+
+        //No effects apply if it's a multi-target action. Should we have any?
+        if(this.singleTarget && this.defender){
+            scoreRequired += this.addRequiredScoreWithExplanation(-(Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.defender.bondageItemsOnSelf()), "BDG");
+            scoreRequired += this.addRequiredScoreWithExplanation(Math.floor((this.defender.currentDexterity - this.attacker.currentDexterity) / 15), "DEXDIFF");
+
+            if(this.defender.focus >= 0){
+                scoreRequired += this.addRequiredScoreWithExplanation(Math.floor((this.defender.focus - this.attacker.focus) / 15), "FPDIFF");
+            }
+            if(this.defender.focus < 0){
+                scoreRequired += this.addRequiredScoreWithExplanation(Math.floor(this.defender.focus / 10) - 1, "FPZERO");
+            }
+
+            let defenderStunnedTier = this.defender.getStunnedTier();
+            if(defenderStunnedTier >= Tier.Light){
+                switch(defenderStunnedTier){
+                    case Tier.Light:
+                        scoreRequired += this.addRequiredScoreWithExplanation(-2, "L-STUN");
+                        break;
+                    case Tier.Medium:
+                        scoreRequired += this.addRequiredScoreWithExplanation(-4, "M-STUN");
+                        break;
+                    case Tier.Heavy:
+                        scoreRequired += this.addRequiredScoreWithExplanation(-6, "H-STUN");
+                        break;
+                }
+            }
+        }
+
+        return scoreRequired;
+    }
+
     onHit():void{
-        this.prepare();
+        this.make();
         this.applyDamage();
     }
 
-    abstract prepare():void;
+    onMiss():void{
+        this.attacker.hitFP(FocusDamageOnMiss[Tier[this.tier]]);
+    }
+
+    abstract make():void;
 
     applyDamage():void{
         if (this.hpDamageToDefs.length > 0) {
@@ -191,10 +314,10 @@ export abstract class RWAction extends BaseActiveAction<Fight, ActiveFighter> {
 export class EmptyAction extends RWAction {
 
     constructor(){
-        super(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        super(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    prepare(): void {
+    make(): void {
 
     }
 }

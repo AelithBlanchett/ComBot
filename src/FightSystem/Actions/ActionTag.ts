@@ -1,8 +1,8 @@
 import {ActionExplanation, ActionType, RWAction} from "../RWAction";
-import * as Constants from "../../Common/Constants";
+import * as Constants from "../../Common/BaseConstants";
 import {ActiveFighter} from "../ActiveFighter";
 import {Fight} from "../Fight";
-import {Tier} from "../../Common/Constants";
+import Tier = Constants.Tier;
 
 export class ActionTag extends RWAction {
 
@@ -14,7 +14,7 @@ export class ActionTag extends RWAction {
             Tier.None,
             false, //isHold
             true,  //requiresRoll
-            false, //isTurnSkippingAction
+            false, //keepActorsTurn
             true,  //singleTarget
             true,  //requiresBeingAlive
             false, //requiresBeingDead
@@ -26,12 +26,21 @@ export class ActionTag extends RWAction {
             true,  //targetMustBeOffRing
             false, //targetMustBeInRange
             false, //targetMustBeOffRange
+            false, //requiresBeingInHold,
+            true, //requiresNotBeingInHold,
+            false, //targetMustBeInHold,
+            false, //targetMustNotBeInHold,
+            false, //usableOnSelf
             true,  //usableOnAllies
             false, //usableOnEnemies
             ActionExplanation[ActionType.Tag]);
     }
 
-    prepare(): void {
+    get requiredDiceScore():number{
+        return Constants.Fight.Action.RequiredScore.Tag;
+    }
+
+    make(): void {
         this.attacker.lastTagTurn = this.atTurn;
         this.defenders[0].lastTagTurn = this.atTurn;
         this.attacker.isInTheRing = false;

@@ -1,6 +1,6 @@
 import {Model} from "../../Common/Model";
 import {Utils} from "../../Common/Utils";
-import * as Constants from "../../Common/Constants";
+import * as BaseConstants from "../../Common/BaseConstants";
 import {RWAction, EmptyAction} from "../RWAction";
 
 export class ActionRepository{
@@ -12,7 +12,7 @@ export class ActionRepository{
                 let baseParameter:any = {
                     idFight: action.fight.idFight,
                     atTurn: action.atTurn,
-                    type: action.name,
+                    name: action.name,
                     tier: action.tier,
                     isHold: action.isHold,
                     diceScore: action.diceScore,
@@ -33,20 +33,20 @@ export class ActionRepository{
                     fpHealToAtk: action.lpHealToAtk,
                     requiresRoll: action.requiresRoll};
 
-                if(!await ActionRepository.exists(action.id)){
-                    baseParameter.idAction = action.id;
+                if(!await ActionRepository.exists(action.idAction)){
+                    baseParameter.idAction = action.idAction;
                     action.createdAt = new Date();
                     baseParameter.createdAt = action.createdAt;
-                    await Model.db(Constants.SQL.actionTableName).insert(baseParameter).into(Constants.SQL.actionTableName);
+                    await Model.db(BaseConstants.SQL.actionTableName).insert(baseParameter).into(BaseConstants.SQL.actionTableName);
                 }
                 else{
                     action.updatedAt = new Date();
                     baseParameter.updatedAt = action.updatedAt;
-                    await Model.db(Constants.SQL.actionTableName).where({idAction: action.id}).update(
+                    await Model.db(BaseConstants.SQL.actionTableName).where({idAction: action.idAction}).update(
                         {
                             idFight: action.fight.idFight,
                             atTurn: action.atTurn,
-                            type: action.name,
+                            name: action.name,
                             tier: action.tier,
                             isHold: action.isHold,
                             diceScore: action.diceScore,
@@ -67,7 +67,7 @@ export class ActionRepository{
                             fpHealToAtk: action.lpHealToAtk,
                             requiresRoll: action.requiresRoll,
                             updatedAt: action.updatedAt
-                        }).into(Constants.SQL.actionTableName);
+                        }).into(BaseConstants.SQL.actionTableName);
                 }
             }
         }
@@ -81,7 +81,7 @@ export class ActionRepository{
 
         try
         {
-            let loadedData = await Model.db(Constants.SQL.actionTableName).where({idFight: idFight}).select();
+            let loadedData = await Model.db(BaseConstants.SQL.actionTableName).where({idFight: idFight}).select();
 
             for(let data of loadedData){
                 let action = new EmptyAction();
@@ -101,7 +101,7 @@ export class ActionRepository{
         let loadedData = [];
         if(idAction){
             try{
-                loadedData = await Model.db(Constants.SQL.actionTableName).where({idAction: idAction}).select();
+                loadedData = await Model.db(BaseConstants.SQL.actionTableName).where({idAction: idAction}).select();
             }
             catch(ex){
                 throw ex;
@@ -113,7 +113,7 @@ export class ActionRepository{
     public static async delete(actionId:string):Promise<void>{
         if(actionId){
             try{
-                await Model.db(Constants.SQL.actionTableName).where({idAction: actionId}).del();
+                await Model.db(BaseConstants.SQL.actionTableName).where({idAction: actionId}).del();
             }
             catch(ex){
                 throw ex;

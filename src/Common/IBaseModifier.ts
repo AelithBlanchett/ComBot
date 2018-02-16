@@ -1,4 +1,4 @@
-import {ModifierType, Tier, Trigger, TriggerMoment} from "./Constants";
+import {Tier, Trigger, TriggerMoment} from "./BaseConstants";
 import {BaseActiveFighter} from "./BaseActiveFighter";
 import {BaseFight} from "./BaseFight";
 
@@ -6,7 +6,7 @@ export interface IBaseModifier{
     idModifier: string;
     idFight: string;
     tier:Tier;
-    type:ModifierType;
+    type:string;
     applier: BaseActiveFighter;
     idApplier: string;
     receiver: BaseActiveFighter;

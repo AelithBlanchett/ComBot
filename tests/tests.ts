@@ -1,9 +1,7 @@
 import {Fight} from "../src/FightSystem/Fight";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
-import * as Constants from "../src/Common/Constants";
+import * as BaseConstants from "../src/Common/BaseConstants";
 import {Utils} from "../src/Common/Utils";
-import {FeatureType} from "../src/Common/Constants";
-import {ModifierType} from "../src/Common/Constants";
 import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
 import {ActiveFighterRepository} from "../src/FightSystem/Repositories/ActiveFighterRepository";
@@ -14,6 +12,7 @@ import {ModifierRepository} from "../src/FightSystem/Repositories/ModifierReposi
 import {BaseCommandHandler} from "../src/Common/BaseCommandHandler";
 import {FeatureFactory} from "../src/Common/FeatureFactory";
 import {ActionType} from "../src/FightSystem/RWAction";
+import {FeatureType, ModifierType} from "../src/FightSystem/RWConstants";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -54,7 +53,7 @@ function abstractDatabase() {
     };
 
     ActionRepository.persist = async function (action) {
-        action.id = Utils.generateUUID();
+        action.idAction = Utils.generateUUID();
     };
 
     FightRepository.persist = async function () {
@@ -103,7 +102,7 @@ function abstractDatabase() {
     };
 
     BaseCommandHandler.setUpCurrentSeasonValue = function () {
-        Constants.Globals.currentSeason = 1;
+        BaseConstants.Globals.currentSeason = 1;
     };
 }
 
@@ -111,8 +110,8 @@ function abstractDatabase() {
 
 function createFighter(name):ActiveFighter {
     let myFighter;
-    let intStatsToAssign:number = Math.floor(Constants.Globals.numberOfRequiredStatPoints / Constants.Globals.numberOfDifferentStats);
-    let statOverflow:number = Constants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * Constants.Globals.numberOfDifferentStats);
+    let intStatsToAssign:number = Math.floor(BaseConstants.Globals.numberOfRequiredStatPoints / BaseConstants.Globals.numberOfDifferentStats);
+    let statOverflow:number = BaseConstants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * BaseConstants.Globals.numberOfDifferentStats);
     if (Utils.findIndex(usedFighters, "name", name) == -1) {
         myFighter = getMock(ActiveFighter);
         let randomId = -1;
@@ -150,11 +149,13 @@ function createFighter(name):ActiveFighter {
     return myFighter;
 }
 
-async function doAction(cmd:CommandHandler, action:string, target:string = "") {
+async function doAction(cmd:CommandHandler, action:string, target:string = "", waitAtEnding:boolean = true) {
     await cmd.fight.waitUntilWaitingForAction();
     cmd.fight.currentPlayer.dice.addMod(50);
-    cmd[action](target, {character: cmd.fight.currentPlayer.name, channel: "here"});
-    await cmd.fight.waitUntilWaitingForAction();
+    await cmd[action](target, {character: cmd.fight.currentPlayer.name, channel: "here"});
+    if(waitAtEnding){
+        await cmd.fight.waitUntilWaitingForAction();
+    }
 }
 
 
@@ -274,7 +275,7 @@ describe("Before the fight, the test suite should verify that", () => {
 
     it("should create a fighter with all the stats adding up to the requirement", async function () { //2
         let fighter = createFighter("Yolo");
-        expect(fighter.endurance + fighter.dexterity + fighter.sensuality + fighter.power + fighter.willpower + fighter.toughness).toBe(Constants.Globals.numberOfRequiredStatPoints);
+        expect(fighter.endurance + fighter.dexterity + fighter.sensuality + fighter.power + fighter.willpower + fighter.toughness).toBe(BaseConstants.Globals.numberOfRequiredStatPoints);
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
 });
@@ -390,8 +391,7 @@ describe("Before the fight, the player(s)", () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    fit("should tag successfully with Aelith", async function (done) { // 9
-        debug = true;
+    it("should tag successfully with Aelith", async function (done) { // 9
         let cmd = new CommandHandler(fChatLibInstance, "here");
         await initiateMatchSettings2vs2Tag(cmd);
         await cmd.fight.waitUntilWaitingForAction();
@@ -491,19 +491,19 @@ describe("Before the fight, the player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it(`should give a loss after ${Constants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`, async function (done) {
+    it(`should give a loss after ${BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`, async function (done) {
         let cmd = new CommandHandler(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.getFighterByName("Aelith Blanchette").focus = -100;
-        for (let i = 0; i < Constants.Fight.Action.Globals.maxTurnsWithoutFocus; i++) {
+        for (let i = 0; i < BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus; i++) {
             await cmd.fight.nextTurn();
         }
         if (cmd.fight.getFighterByName("Aelith Blanchette").isBroken()) {
             done();
         }
         else {
-            done.fail(new Error(`Player was still alive after ${Constants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`));
+            done.fail(new Error(`Player was still alive after ${BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`));
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
@@ -513,7 +513,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-        if (wasHealthHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.SubHold) != -1) {
+        if (wasHealthHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.SubHold) != -1) {
             done();
         }
         else {
@@ -527,7 +527,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-        for (let i = 0; i < Constants.Fight.Action.Globals.initialNumberOfTurnsForHold; i++) {
+        for (let i = 0; i < BaseConstants.Fight.Action.Globals.initialNumberOfTurnsForHold; i++) {
             await cmd.fight.nextTurn();
             refillHPLPFP(cmd, "Aelith Blanchette");
         }
@@ -563,7 +563,7 @@ describe("Before the fight, the player(s)", () => {
         await doAction(cmd, "subhold", "Light");
         await doAction(cmd, "brawl", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasMessageSent(Constants.ModifierType.SubHoldBrawlBonus)) {
+        if (wasMessageSent(ModifierType.SubHoldBrawlBonus)) {
             done();
         }
         else {
@@ -577,9 +577,8 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-        await doAction(cmd, "subhold", "Light");
-        await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.currentPlayer.isInHold()) {
+        await doAction(cmd, "subhold", "Light", false);
+        if (wasPrivMessageSent("You must not be held in a hold to do that.")) {
             done();
         }
         else {
@@ -627,7 +626,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-            let indexOfSubHoldModifier = cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.SubHold);
+            let indexOfSubHoldModifier = cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.SubHold);
             if (indexOfSubHoldModifier == -1) {
                 done.fail(new Error("Did not find the correct subhold modifier in the defender's list."));
             }
@@ -655,7 +654,7 @@ describe("Before the fight, the player(s)", () => {
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "sexhold", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasLustHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.SexHold) != -1) {
+        if (wasLustHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.SexHold) != -1) {
             done();
         }
         else {
@@ -690,7 +689,7 @@ describe("Before the fight, the player(s)", () => {
         refillHPLPFP(cmd, "Aelith Blanchette");
         await doAction(cmd, "humhold", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == Constants.ModifierType.HumHold) != -1) {
+        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.HumHold) != -1) {
             done();
         }
         else {
@@ -721,7 +720,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.nextTurn();
         await doAction(cmd, "brawl", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasMessageSent(Constants.ModifierType.ItemPickupBonus)) {
+        if (wasMessageSent(ModifierType.ItemPickupBonus)) {
             done();
         }
         else {
@@ -738,7 +737,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.nextTurn();
         await doAction(cmd, "tease", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.getFighterByName("TheTinaArmstrong").modifiers.findIndex((x) => x.type == Constants.ModifierType.SextoyPickupBonus) != -1) {
+        if (cmd.fight.getFighterByName("TheTinaArmstrong").modifiers.findIndex((x) => x.type == ModifierType.SextoyPickupBonus) != -1) {
             done();
         }
         else {
@@ -801,7 +800,7 @@ describe("Before the fight, the player(s)", () => {
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "bondage", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasPrivMessageSent(Constants.Messages.checkAttackRequirementsNotInSexualHold)) {
+        if (wasPrivMessageSent(BaseConstants.Messages.checkAttackRequirementsNotInSexualHold)) {
             done();
         }
         else {
@@ -814,7 +813,7 @@ describe("Before the fight, the player(s)", () => {
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         await doAction(cmd, "forfeit", "");
-        if (wasMessageSent(Constants.Messages.forfeitItemApply.substring(32))) {
+        if (wasMessageSent(BaseConstants.Messages.forfeitItemApply.substring(32))) {
             done();
         }
         else {
@@ -870,7 +869,8 @@ describe("Before the fight, the player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it("should do a stun and grant the stun modifier, and reduce the dice roll", async function (done) {
+    fit("should do a stun and grant the stun modifier, and reduce the dice roll", async function (done) {
+        debug = true;
         let cmd = new CommandHandler(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
@@ -893,7 +893,7 @@ describe("Before the fight, the player(s)", () => {
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "forcedworship", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasMessageSent(Constants.Messages.HitMessage)) {
+        if (wasMessageSent(BaseConstants.Messages.HitMessage)) {
             done();
         }
         else {

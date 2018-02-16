@@ -1,9 +1,9 @@
-import {Tier, TierDifficulty, Trigger, TriggerMoment} from "./Constants";
+import {Tier, TierDifficulty, Trigger, TriggerMoment} from "./BaseConstants";
 import {BaseAction} from "./BaseAction";
 import {BaseActiveFighter} from "./BaseActiveFighter";
 import {BaseFight} from "./BaseFight";
 import {Utils} from "./Utils";
-import * as Constants from "../Common/Constants";
+import * as BaseConstants from "../Common/BaseConstants";
 import {BaseModifier} from "./BaseModifier";
 
 
@@ -26,6 +26,10 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
 
     appliedModifiers:BaseModifier[] = [];
 
+    temporaryIdAttacker:string;
+    temporaryIdDefenders:string[];
+    temporaryIdFight:string;
+
     constructor(fight:Fight,
                 attacker:ActiveFighter,
                 defenders:ActiveFighter[],
@@ -33,7 +37,7 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
                 tier: Tier,
                 isHold: boolean,
                 requiresRoll:boolean,
-                isTurnSkippingAction:boolean,
+                keepActorsTurn:boolean,
                 singleTarget:boolean,
                 requiresBeingAlive:boolean,
                 requiresBeingDead:boolean,
@@ -45,14 +49,20 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
                 targetMustBeOffRing:boolean,
                 targetMustBeInRange:boolean,
                 targetMustBeOffRange:boolean,
+                requiresBeingInHold:boolean,
+                requiresNotBeingInHold:boolean,
+                targetMustBeInHold:boolean,
+                targetMustNotBeInHold:boolean,
+                usableOnSelf:boolean,
                 usableOnAllies:boolean,
                 usableOnEnemies:boolean,
-                explanation?:string){
+                explanation?:string,
+                maxTargets?:number){
         super(name,
               tier,
               isHold,
               requiresRoll,
-              isTurnSkippingAction,
+              keepActorsTurn,
               singleTarget,
               requiresBeingAlive,
               requiresBeingDead,
@@ -64,9 +74,15 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
               targetMustBeOffRing,
               targetMustBeInRange,
               targetMustBeOffRange,
+              requiresBeingInHold,
+              requiresNotBeingInHold,
+              targetMustBeInHold,
+              targetMustNotBeInHold,
+              usableOnSelf,
               usableOnAllies,
               usableOnEnemies,
-              explanation);
+              explanation,
+              maxTargets);
         this.fight = fight;
         this.attacker = attacker;
         this.defenders = defenders;
@@ -82,12 +98,48 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         this.appliedModifiers = [];
     }
 
+    get idAttacker(){
+        return (this.attacker != null ? this.attacker.name : this.temporaryIdAttacker);
+    }
+
+    set idAttacker(value:string){
+        this.temporaryIdAttacker = value;
+    }
+
+    get idDefenders():string[]{
+        return (this.defenders != null ? this.defenders.map(x => x.name) : this.temporaryIdDefenders);
+    }
+
+    set idDefenders(value:string[]){
+        this.temporaryIdDefenders = value;
+    }
+
+    get idFight(){
+        return (this.fight != null ? this.fight.idFight : this.temporaryIdFight);
+    }
+
+    set idFight(value:string){
+        this.temporaryIdFight = value;
+    }
+
+    get defender(){
+        if(this.defenders == null){
+            return null;
+        }
+        if(this.defenders.length == 1){
+            return this.defenders[0];
+        }
+        else{
+            throw new Error("Wrong function call: there are too many targets, this function can only return one.");
+        }
+    }
+
     execute():void{
         this.checkRequirements();
         this.triggerBeforeEvent();
         this.announceAction();
         this.diceRequiredRoll = this.requiredDiceScore;
-        if(!this.requiresRoll || this.roll() >= this.diceRequiredRoll){
+        if(this.fight.diceLess || !this.requiresRoll || this.roll() >= this.diceRequiredRoll){
             this.missed = false;
             this.displayHitMessage();
             this.onHit();
@@ -121,16 +173,14 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
 
         scoreRequired += this.specificRequiredDiceScore();
 
-        if(scoreRequired <= Constants.Globals.diceCount){
-            scoreRequired = this.addRequiredScoreWithExplanation(Constants.Globals.diceCount, "MIN");
+        if(scoreRequired <= BaseConstants.Globals.diceCount){
+            scoreRequired = this.addRequiredScoreWithExplanation(BaseConstants.Globals.diceCount, "MIN");
         }
 
         return scoreRequired;
     }
 
-    specificRequiredDiceScore():number{
-        return 0;
-    };
+    abstract specificRequiredDiceScore():number;
 
     addRequiredScoreWithExplanation(value:number, reason:string):number{
         if(value != 0){
@@ -149,40 +199,46 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         for(let defender of this.defenders){
             if(this.tier == Tier.Heavy && this.attacker.isInHoldAppliedBy(defender.name)){
                 this.attacker.releaseHoldsAppliedBy(defender.name);
-                this.fight.message.addHit(Utils.strFormat(Constants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), defender.getStylizedName()]));
+                this.fight.message.addHit(Utils.strFormat(BaseConstants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), defender.getStylizedName()]));
             }
             else if(this.tier == Tier.Heavy && defender.isApplyingHold()){
                 defender.releaseHoldsApplied();
-                this.fight.message.addHit(Utils.strFormat(Constants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), defender.getStylizedName()]));
+                this.fight.message.addHit(Utils.strFormat(BaseConstants.Messages.ForcedHoldRelease, [this.attacker.getStylizedName(), defender.getStylizedName()]));
             }
         }
     }
 
     //TODO replace those with constants
     checkRequirements():void{
-        if(this.singleTarget && this.defenders.length > 1){
-            throw new Error(Constants.Messages.cantAttackTooManyTargets);
+        if(this.singleTarget && !this.usableOnSelf && this.defenders.length > 1){
+            throw new Error(BaseConstants.Messages.cantAttackTooManyTargets);
         }
         if(this.requiresBeingAlive && this.attacker.isTechnicallyOut()){
-            throw new Error(Constants.Messages.cantAttackPlayerIsOut);
+            throw new Error(BaseConstants.Messages.cantAttackPlayerIsOut);
         }
         if(this.requiresBeingDead && !this.attacker.isTechnicallyOut()){
             throw new Error("Action requires being dead.");
         }
         if(this.requiresBeingInRing && !this.attacker.isInTheRing){
-            throw new Error(Constants.Messages.cantAttackPlayerOutOfTheRing);
+            throw new Error(BaseConstants.Messages.cantAttackPlayerOutOfTheRing);
         }
         if(this.requiresBeingOffRing && this.attacker.isInTheRing){
             throw new Error("Actor must be off ring.");
         }
+        if(this.requiresBeingInHold && !this.attacker.isInHold()){
+            throw new Error("You must be held in a hold to do that.");
+        }
+        if(this.requiresNotBeingInHold && this.attacker.isInHold()){
+            throw new Error("You must not be held in a hold to do that.");
+        }
         if(this.targetMustBeAlive && this.defenders.findIndex(x => x.isTechnicallyOut() == true) != -1){
-            throw new Error(Constants.Messages.cantAttackTargetOutOfFight);
+            throw new Error(BaseConstants.Messages.cantAttackTargetOutOfFight);
         }
         if(this.targetMustBeDead && this.defenders.findIndex(x => x.isTechnicallyOut() == false) != -1){
-            throw new Error(Constants.Messages.cantAttackTargetOutOfFight);
+            throw new Error(BaseConstants.Messages.cantAttackTargetOutOfFight);
         }
         if(this.targetMustBeInRing && this.defenders.findIndex(x => x.isInTheRing == false) != -1){
-            throw new Error(Constants.Messages.cantAttackTargetIsOutOfTheRing);
+            throw new Error(BaseConstants.Messages.cantAttackTargetIsOutOfTheRing);
         }
         if(this.targetMustBeOffRing &&  this.defenders.findIndex(x => x.isInTheRing == true) != -1){
             throw new Error("Target(s) must be off ring.");
@@ -193,12 +249,18 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         if(this.targetMustBeOffRange && this.attacker.isInRange(this.defenders)){
             throw new Error("Target(s) must be off range.");
         }
-        if(!(this.usableOnAllies && this.usableOnEnemies)){
+        if(this.targetMustBeInHold && this.defenders.filter(x => x.isInHold()).length != this.defenders.length){
+            throw new Error("Target(s) must be held in a hold to do that.");
+        }
+        if(this.targetMustNotBeInHold && this.defenders.filter(x => !x.isInHold()).length != this.defenders.length){
+            throw new Error("Target(s) must not be held in a hold to do that.");
+        }
+        if(!this.usableOnSelf && !(this.usableOnAllies && this.usableOnEnemies)){
             if(!this.usableOnAllies && this.defenders.findIndex(x => x.assignedTeam == this.attacker.assignedTeam) != -1){
-                throw new Error(Constants.Messages.doActionTargetIsSameTeam);
+                throw new Error(BaseConstants.Messages.doActionTargetIsSameTeam);
             }
             if(!this.usableOnEnemies && this.defenders.findIndex(x => x.assignedTeam != this.attacker.assignedTeam) != -1){
-                throw new Error(Constants.Messages.doActionTargetIsNotSameTeam);
+                throw new Error(BaseConstants.Messages.doActionTargetIsNotSameTeam);
             }
         }
     }
@@ -218,17 +280,15 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
     }
     abstract onHit():void;
 
-    onMiss():void{
-
-    }
+    abstract onMiss():void;
 
     displayHitMessage(){
-        let message:string = (this.explanation != null ? Utils.strFormat(this.explanation, [this.attacker.getStylizedName()]) : Constants.Messages.HitMessage);
+        let message:string = (this.explanation != null ? Utils.strFormat(this.explanation, [this.attacker.getStylizedName()]) : BaseConstants.Messages.HitMessage);
         this.fight.message.addHit(message);
     }
 
     displayMissMessage(){
-        this.fight.message.addHit(Constants.Messages.MissMessage);
+        this.fight.message.addHit(BaseConstants.Messages.MissMessage);
     }
 
     triggerBeforeEvent():void{
@@ -254,13 +314,13 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
     //
     //
     // //TODO move this to respective attacks
-    // if (this.name == "Submit" && this.fight.currentTurn <= Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
-    //     throw new Error(Utils.strFormat(Constants.Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
+    // if (this.name == "Submit" && this.fight.currentTurn <= BaseConstants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
+    //     throw new Error(Utils.strFormat(BaseConstants.Messages.tapoutTooEarly, [BaseConstants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
     // }
     //
     // //TODO move this to respective attacks
     // if (this.name == "Stun" && this.defenders.findIndex(x => x.isStunned() == true) != -1) {
-    //     throw new Error(Constants.Messages.targetAlreadyStunned);
+    //     throw new Error(BaseConstants.Messages.targetAlreadyStunned);
     // }
 
 }

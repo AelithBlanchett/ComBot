@@ -1,13 +1,19 @@
-import {FeatureType, ModifierType, Trigger, TriggerMoment} from "../../Common/Constants";
+import {Trigger, TriggerMoment} from "../../Common/BaseConstants";
 import {BaseFeature} from "../../Common/BaseFeature";
 import {BaseFeatureParameter} from "../../Common/BaseFeatureParameter";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {FeatureType, ModifierType} from "../RWConstants";
 
 export namespace Feature{
     export class BondageBunny extends BaseFeature{
 
         constructor(){
-            super(FeatureType.BondageBunny);
+            //TODO FIX THIS
+            super(FeatureType.BondageBunny, null);
+        }
+
+        getCost():number{
+            return 0; //TODO FIX THIS
         }
 
         applyFeature(moment: TriggerMoment, event:Trigger, parameters?:BaseFeatureParameter):string{
@@ -20,7 +26,12 @@ export namespace Feature{
         hpDamageMultiplier:number;
 
         constructor(){
-            super(FeatureType.KickStart);
+            //TODO FIX THIS
+            super(FeatureType.KickStart, null);
+        }
+
+        getCost():number{
+            return 0; //TODO FIX THIS
         }
 
         applyFeature(moment: TriggerMoment, event:Trigger, parameters?:BaseFeatureParameter):string{

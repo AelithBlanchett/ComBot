@@ -3,7 +3,7 @@ import {RWFighter} from "../../src/FightSystem/RWFighter";
 import {FighterRepository} from "../../src/FightSystem/Repositories/FighterRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as Constants from "../../src/Common/Constants";
+import * as BaseConstants from "../../src/Common/BaseConstants";
 
 describe("The RWFighter Repository", () => {
 
@@ -20,7 +20,7 @@ describe("The RWFighter Repository", () => {
         let myFighter = new RWFighter();
         myFighter.name = "Aelith Blanchetts";
 
-        await Model.db(Constants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
+        await Model.db(BaseConstants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
 
         await FighterRepository.persist(myFighter);
         let resultTrue = await FighterRepository.exists(myFighter.name);
@@ -30,7 +30,7 @@ describe("The RWFighter Repository", () => {
         let resultFalse = await FighterRepository.exists(myFighter.name);
         expect(resultFalse).toBe(false);
 
-        await Model.db(Constants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
+        await Model.db(BaseConstants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
 
         done();
     });

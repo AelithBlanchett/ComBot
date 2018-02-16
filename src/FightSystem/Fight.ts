@@ -1,12 +1,13 @@
 import {Utils} from "../Common/Utils";
-import * as Constants from "../Common/Constants";
+import * as Constants from "../Common/BaseConstants";
 import {ActiveFighter} from "./ActiveFighter";
 import {ActiveFighterRepository} from "./Repositories/ActiveFighterRepository";
 import {FightRepository} from "./Repositories/FightRepository";
-import {ModifierType} from "../Common/Constants";
 import {ModifierFactory} from "./Modifiers/ModifierFactory";
 import {BaseFight} from "../Common/BaseFight";
 import {RWActionFactory} from "./Actions/RWActionFactory";
+import {ModifierType} from "./RWConstants";
+import {Trigger, TriggerMoment} from "../Common/BaseConstants";
 
 export class Fight extends BaseFight<ActiveFighter>{
 
@@ -17,6 +18,22 @@ export class Fight extends BaseFight<ActiveFighter>{
 
     async loadFighter(idFighter: string):Promise<ActiveFighter> {
         return await ActiveFighterRepository.initialize(idFighter);
+    }
+
+    async nextTurn(){
+        for (let fighter of this.fighters) {
+            fighter.triggerMods(TriggerMoment.Any, Trigger.OnTurnTick.toString());
+            if(!fighter.isInHold()){
+                fighter.healFP(1);
+            }
+            if(fighter.focus < fighter.minFocus()){
+                fighter.consecutiveTurnsWithoutFocus++;
+            }
+            else{
+                fighter.consecutiveTurnsWithoutFocus = 0;
+            }
+        }
+        await super.nextTurn();
     }
 
     punishPlayerOnForfeit(fighter: ActiveFighter) {

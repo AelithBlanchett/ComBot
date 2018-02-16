@@ -1,8 +1,9 @@
 import {Model} from "../../Common/Model";
 import {Utils} from "../../Common/Utils";
 import {Modifier} from "../Modifiers/Modifier";
-import * as Constants from "../../Common/Constants";
+import * as BaseConstants from "../../Common/BaseConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {ModifierType} from "../RWConstants";
 
 export class ModifierRepository{
 
@@ -11,7 +12,7 @@ export class ModifierRepository{
         {
             if(!await ModifierRepository.exists(modifier.idModifier)){
                 modifier.createdAt = new Date();
-                await Model.db(Constants.SQL.modifiersTableName).insert(
+                await Model.db(BaseConstants.SQL.modifiersTableName).insert(
                     {
                         idModifier: modifier.idModifier,
                         idFight: modifier.idFight,
@@ -30,11 +31,11 @@ export class ModifierRepository{
                         timeToTrigger: modifier.timeToTrigger,
                         idParentActions: modifier.idParentActions.join(";"),
                         createdAt: modifier.createdAt
-                    }).into(Constants.SQL.modifiersTableName);
+                    }).into(BaseConstants.SQL.modifiersTableName);
             }
             else{
                 modifier.updatedAt = new Date();
-                await Model.db(Constants.SQL.modifiersTableName).where({idModifier: modifier.idModifier}).update(
+                await Model.db(BaseConstants.SQL.modifiersTableName).where({idModifier: modifier.idModifier}).update(
                     {
                         idFight: modifier.idFight,
                         idReceiver: modifier.idReceiver,
@@ -52,7 +53,7 @@ export class ModifierRepository{
                         timeToTrigger: modifier.timeToTrigger,
                         idParentActions: JSON.stringify(modifier.idParentActions),
                         updatedAt: modifier.updatedAt
-                    }).into(Constants.SQL.modifiersTableName);
+                    }).into(BaseConstants.SQL.modifiersTableName);
             }
 
         }
@@ -66,10 +67,10 @@ export class ModifierRepository{
 
         try
         {
-            let loadedData = await Model.db(Constants.SQL.modifiersTableName).where({idFight: idFight, idReceiver: idFighter}).and.whereNull('deletedAt').select();
+            let loadedData = await Model.db(BaseConstants.SQL.modifiersTableName).where({idFight: idFight, idReceiver: idFighter}).and.whereNull('deletedAt').select();
 
             for(let data of loadedData){
-                let modifier = ModifierFactory.getModifier(Constants.ModifierType.DummyModifier, null, null);
+                let modifier = ModifierFactory.getModifier(ModifierType.DummyModifier, null, null);
                 Utils.mergeFromTo(data, modifier);
                 modifier.idParentActions = [];
                 if(data.idParentActions != null){
@@ -89,13 +90,13 @@ export class ModifierRepository{
     }
 
     public static async exists(idModifier:string):Promise<boolean>{
-        let loadedData = await Model.db(Constants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').select();
+        let loadedData = await Model.db(BaseConstants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').select();
         return (loadedData.length > 0);
     }
 
     public static async delete(idModifier:string):Promise<void>{
         try{
-            await Model.db(Constants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').update({
+            await Model.db(BaseConstants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').update({
                 deletedAt: new Date()
             });
         }
@@ -106,7 +107,7 @@ export class ModifierRepository{
 
     public static async deleteFromFight(idFight:string):Promise<void>{
         try{
-            await Model.db(Constants.SQL.modifiersTableName).where({idFight: idFight}).and.whereNull('deletedAt').update({
+            await Model.db(BaseConstants.SQL.modifiersTableName).where({idFight: idFight}).and.whereNull('deletedAt').update({
                 deletedAt: new Date()
             });
         }

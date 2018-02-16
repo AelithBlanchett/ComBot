@@ -1,10 +1,10 @@
 import {Model} from "../../src/Common/Model";
 import {ModifierRepository} from "../../src/FightSystem/Repositories/ModifierRepository";
-import {ModifierType} from "../../src/Common/Constants";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as Constants from "../../src/Common/Constants";
+import * as Constants from "../../src/Common/BaseConstants";
 import {ModifierFactory} from "../../src/FightSystem/Modifiers/ModifierFactory";
+import {ModifierType} from "../../src/FightSystem/RWConstants";
 
 describe("The Fight Repository", () => {
 

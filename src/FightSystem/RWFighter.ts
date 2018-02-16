@@ -1,6 +1,6 @@
 import {BaseFighter} from "../Common/BaseFighter";
 import {IRWFighter} from "./IRWFighter";
-import {TransactionType} from "../Common/Constants";
+import {TransactionType} from "../Common/BaseConstants";
 
 export class RWFighter extends BaseFighter implements IRWFighter {
     save(): Promise<void> {
