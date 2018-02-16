@@ -10,12 +10,12 @@ export abstract class BaseFeature{
     uses: number;
     permanent: boolean;
     idReceiver:string;
-    receiver:BaseActiveFighter;
+    receiver:BaseFighter;
     createdAt:Date;
     updatedAt:Date;
     deletedAt:Date;
 
-    constructor(featureType:string, receiver:BaseActiveFighter, id?:string) {
+    constructor(featureType:string, receiver:BaseFighter, id?:string) {
         if(id){
             this.id = id;
         }
@@ -44,7 +44,7 @@ export abstract class BaseFeature{
         let messageAboutFeature:string = "";
 
         if(wasFeatureTriggered){
-            messageAboutFeature = `${this.receiver.getStylizedName()} is affected by the ${this.type}, ${triggeredFeatureMessage}`;
+            messageAboutFeature = `${this.receiver} is affected by the ${this.type}, ${triggeredFeatureMessage}`;
         }
 
         return messageAboutFeature;

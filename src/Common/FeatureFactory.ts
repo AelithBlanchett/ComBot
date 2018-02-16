@@ -3,6 +3,7 @@ import {Utils} from "./Utils";
 import {BaseFeature} from "./BaseFeature";
 import {Feature} from "../FightSystem/Features/Features";
 import {FeatureType} from "../FightSystem/RWConstants";
+import {BaseFighter} from "./BaseFighter";
 
 export class FeatureFactory{
 
@@ -17,7 +18,7 @@ export class FeatureFactory{
         return feature;
     }
 
-    static getFeature(featureName:string, uses:number, id?:string){
+    static getFeature(featureName:string, receiver:BaseFighter, uses:number, id?:string){
         let feature:BaseFeature = null;
 
         let featureTypes = Utils.getStringEnumList(FeatureType);
@@ -47,6 +48,7 @@ export class FeatureFactory{
         if(id != null){
             feature.id = id;
         }
+        feature.receiver = receiver;
         feature.uses = uses;
 
         return feature;

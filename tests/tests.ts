@@ -798,9 +798,8 @@ describe("Before the fight, the player(s)", () => {
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
-        await doAction(cmd, "bondage", "Light");
-        await cmd.fight.waitUntilWaitingForAction();
-        if (wasPrivMessageSent(BaseConstants.Messages.checkAttackRequirementsNotInSexualHold)) {
+        await doAction(cmd, "bondage", "Light", false);
+        if (wasPrivMessageSent("Target(s) must be held in a hold to do that.")) {
             done();
         }
         else {
@@ -838,7 +837,7 @@ describe("Before the fight, the player(s)", () => {
 
     it("should grant the itemPickupModifier bonus for the KickStart feature", async function (done) {
         let cmd = new CommandHandler(fChatLibInstance, "here");
-        createFighter("TheTinaArmstrong").features.push(FeatureFactory.getFeature(FeatureType.KickStart, 1));
+        createFighter("TheTinaArmstrong").features.push(FeatureFactory.getFeature(FeatureType.KickStart, createFighter("TheTinaArmstrong"),  1));
         await initiateMatchSettings1vs1(cmd);
 
         await cmd.fight.waitUntilWaitingForAction();
@@ -869,8 +868,7 @@ describe("Before the fight, the player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    fit("should do a stun and grant the stun modifier, and reduce the dice roll", async function (done) {
-        debug = true;
+    it("should do a stun and grant the stun modifier, and reduce the dice roll", async function (done) {
         let cmd = new CommandHandler(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();

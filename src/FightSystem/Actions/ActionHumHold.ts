@@ -30,7 +30,7 @@ export class ActionHumHold extends RWAction {
             false, //targetMustBeOffRange
             false, //requiresBeingInHold,
             true, //requiresNotBeingInHold,
-            true, //targetMustBeInHold,
+            false, //targetMustBeInHold,
             false, //targetMustNotBeInHold,
             false, //usableOnSelf
             false,  //usableOnAllies

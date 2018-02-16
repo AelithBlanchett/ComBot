@@ -107,6 +107,22 @@ export abstract class BaseModifier implements IBaseModifier{
         let searchedEventNumber:number = parseInt(searchedEvent);
         let isNumber = (!isNaN(checkedEventNumber) && !isNaN(searchedEventNumber));
 
+        if(!isNumber){
+            let checkedEventNumberConverted = checkedEventNumber;
+            let searchedEventNumberConverted = searchedEventNumber;
+            if(isNaN(checkedEventNumber)){
+                checkedEventNumberConverted = Trigger[checkedEvent];
+            }
+            if(isNaN(searchedEventNumber)){
+                searchedEventNumberConverted = Trigger[searchedEvent];
+            }
+            if((!isNaN(checkedEventNumberConverted) && !isNaN(searchedEventNumberConverted))){
+                isNumber = true;
+                checkedEventNumber = checkedEventNumberConverted;
+                searchedEventNumber = searchedEventNumberConverted;
+            }
+        }
+
         if(isNumber){
             if(checkedEventNumber & searchedEventNumber){
                 if(checkedMoment & searchedMoment){

@@ -104,7 +104,7 @@ export abstract class BaseFighter{
     }
 
     addFeature(type:string, matches:number):number{
-        let feature:any = FeatureFactory.getFeature(type, matches);
+        let feature:any = FeatureFactory.getFeature(type, this, matches);
         let amountToRemove:number = feature.getCost() * matches;
 
         if(this.tokens - amountToRemove >= 0){
