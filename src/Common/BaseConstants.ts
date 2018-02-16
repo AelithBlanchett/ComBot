@@ -107,7 +107,7 @@ export namespace Fight {
             public static stunHPDamageMultiplier: number = 0.33;
             public static dicePenaltyMultiplierWhileStunned: number = 2;
 
-            public static passFpDamage: number = 6;
+            public static passFpDamage: number = 10;
 
             public static fpHealOnNextTurn: number = 2;
 

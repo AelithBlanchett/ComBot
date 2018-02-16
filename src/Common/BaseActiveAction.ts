@@ -311,16 +311,4 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
 
     abstract async save():Promise<void>;
 
-    //
-    //
-    // //TODO move this to respective attacks
-    // if (this.name == "Submit" && this.fight.currentTurn <= BaseConstants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
-    //     throw new Error(Utils.strFormat(BaseConstants.Messages.tapoutTooEarly, [BaseConstants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
-    // }
-    //
-    // //TODO move this to respective attacks
-    // if (this.name == "Stun" && this.defenders.findIndex(x => x.isStunned() == true) != -1) {
-    //     throw new Error(BaseConstants.Messages.targetAlreadyStunned);
-    // }
-
 }

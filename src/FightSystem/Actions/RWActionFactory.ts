@@ -18,6 +18,14 @@ import {ActionSextoyPickup} from "./ActionSextoyPickup";
 import {ActionBondage} from "./ActionBondage";
 import {ActionStun} from "./ActionStun";
 import {ActionForcedWorship} from "./ActionForcedWorship";
+import {ActionReleaseHold} from "./ActionReleaseHold";
+import {ActionDegradation} from "./ActionDegradation";
+import {ActionStrapToy} from "./ActionStrapToy";
+import {ActionSubmit} from "./ActionSubmit";
+import {ActionFinisher} from "./ActionFinisher";
+import {ActionPass} from "./ActionPass";
+import {ActionSelfDebase} from "./ActionSelfDebase";
+import {ActionMasturbate} from "./ActionMasturbate";
 
 export class RWActionFactory implements IActionFactory<Fight, ActiveFighter> {
     getAction(actionName: string, fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier): RWAction {
@@ -28,6 +36,9 @@ export class RWActionFactory implements IActionFactory<Fight, ActiveFighter> {
                 break;
             case ActionType.Tease:
                 action = new ActionTease(fight, attacker, defenders, tier);
+                break;
+            case ActionType.Degradation:
+                action = new ActionDegradation(fight, attacker, defenders, tier);
                 break;
             case ActionType.HighRisk:
                 action = new ActionHighRisk(fight, attacker, defenders, tier);
@@ -50,23 +61,44 @@ export class RWActionFactory implements IActionFactory<Fight, ActiveFighter> {
             case ActionType.ForcedWorship:
                 action = new ActionForcedWorship(fight, attacker, defenders, tier);
                 break;
+            case ActionType.StrapToy:
+                action = new ActionStrapToy(fight, attacker, defenders, tier);
+                break;
             case ActionType.ItemPickup:
                 action = new ActionItemPickup(fight, attacker, defenders);
                 break;
             case ActionType.SextoyPickup:
                 action = new ActionSextoyPickup(fight, attacker, defenders);
                 break;
+            case ActionType.SelfDebase:
+                action = new ActionSelfDebase(fight, attacker, defenders, tier);
+                break;
+            case ActionType.Masturbate:
+                action = new ActionMasturbate(fight, attacker, defenders, tier);
+                break;
             case ActionType.Escape:
                 action = new ActionEscape(fight, attacker, defenders);
                 break;
+            case ActionType.ReleaseHold:
+                action = new ActionReleaseHold(fight, attacker, defenders);
+                break;
             case ActionType.Rest:
                 action = new ActionRest(fight, attacker, defenders);
+                break;
+            case ActionType.Submit:
+                action = new ActionSubmit(fight, attacker, defenders);
+                break;
+            case ActionType.Finisher:
+                action = new ActionFinisher(fight, attacker, defenders);
                 break;
             case ActionType.Tag:
                 action = new ActionTag(fight, attacker, defenders);
                 break;
             case ActionType.Bondage:
                 action = new ActionBondage(fight, attacker, defenders);
+                break;
+            case ActionType.Pass:
+                action = new ActionPass(fight, attacker, defenders);
                 break;
             default:
                 throw new Error(`The ${actionName} action doesn't exist!`);

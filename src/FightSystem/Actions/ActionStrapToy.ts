@@ -3,16 +3,19 @@ import * as Constants from "../../Common/BaseConstants";
 import {ActiveFighter} from "../ActiveFighter";
 import {Fight} from "../Fight";
 import Tier = Constants.Tier;
-import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
+import {
+    FocusDamageOnHit, FocusHealOnHit, ModifierType, StrapToyDiceRollPenalty,
+    StrapToyLPDamagePerTurn
+} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 
-export class ActionStun extends RWAction {
+export class ActionStrapToy extends RWAction {
 
     constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
         super(fight,
             attacker,
             defenders,
-            ActionType.Stun,
+            ActionType.StrapToy,
             tier,
             false, //isHold
             true,  //requiresRoll
@@ -25,7 +28,7 @@ export class ActionStun extends RWAction {
             true,  //targetMustBeAlive
             false, //targetMustBeDead
             true, //targetMustBeInRing
-            false,  //targetMustBeOffRing
+            false, //targetMustBeOffRing
             true, //targetMustBeInRange
             false, //targetMustBeOffRange
             false, //requiresBeingInHold,
@@ -35,26 +38,20 @@ export class ActionStun extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
-            ActionExplanation[ActionType.Stun]);
+            ActionExplanation[ActionType.StrapToy]);
     }
 
     addBonusesToRollFromStats():number{
-        return Math.ceil(this.attacker.currentDexterity / 10);
+        return Math.ceil(this.attacker.currentSensuality / 10);
     }
 
-    checkRequirements():void{
-        super.checkRequirements();
-        if (this.defenders.findIndex(x => x.isStunned() == true) != -1) {
-            throw new Error(Constants.Messages.targetAlreadyStunned);
-        }
-    }
-
-    make(): void {
+    make():void {
         this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-        this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);
-        let stunModifier = ModifierFactory.getModifier(ModifierType.Stun, this.fight, this.defender, this.attacker, {tier: this.tier, diceRoll: -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned)});
-        this.appliedModifiers.push(stunModifier);
-        this.fight.message.addHit("STUNNED!");
+        let nbOfTurnsWearingToy = this.tier + 1;
+        let lpDamage = StrapToyLPDamagePerTurn[Tier[this.tier]];
+        let strapToyModifier = ModifierFactory.getModifier(ModifierType.StrapToy, this.fight, this.defender, null, {focusDamage: this.fpDamageToDef, lustDamage: lpDamage, tier: this.tier, diceRoll: StrapToyDiceRollPenalty[Tier[this.tier]], uses: nbOfTurnsWearingToy});
+        this.appliedModifiers.push(strapToyModifier);
+        this.fight.message.addHit("The sextoy started vibrating!");
     }
 }

@@ -3,17 +3,17 @@ import * as Constants from "../../Common/BaseConstants";
 import {ActiveFighter} from "../ActiveFighter";
 import {Fight} from "../Fight";
 import Tier = Constants.Tier;
-import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
-import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {FocusDamageOnHit, FocusDamageOnMiss, FocusHealOnHit} from "../RWConstants";
+import {Utils} from "../../Common/Utils";
 
-export class ActionStun extends RWAction {
+export class ActionFinisher extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
+    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
         super(fight,
             attacker,
             defenders,
-            ActionType.Stun,
-            tier,
+            ActionType.Finisher,
+            Tier.Heavy,
             false, //isHold
             true,  //requiresRoll
             false, //keepActorsTurn
@@ -35,26 +35,28 @@ export class ActionStun extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
-            ActionExplanation[ActionType.Stun]);
+            ActionExplanation[ActionType.Finisher]);
     }
 
     addBonusesToRollFromStats():number{
-        return Math.ceil(this.attacker.currentDexterity / 10);
+        return Math.ceil(this.attacker.currentWillpower / 10);
     }
 
     checkRequirements():void{
         super.checkRequirements();
-        if (this.defenders.findIndex(x => x.isStunned() == true) != -1) {
-            throw new Error(Constants.Messages.targetAlreadyStunned);
+        if((this.defender.livesRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 2)){
+            throw new Error(`You can't finish your opponent right now. They must have only one life left, or it must at least be their ${Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 2}th turn without focus.`)
         }
     }
 
     make(): void {
-        this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-        this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);
-        let stunModifier = ModifierFactory.getModifier(ModifierType.Stun, this.fight, this.defender, this.attacker, {tier: this.tier, diceRoll: -((this.tier + 1) * Constants.Fight.Action.Globals.dicePenaltyMultiplierWhileStunned)});
-        this.appliedModifiers.push(stunModifier);
-        this.fight.message.addHit("STUNNED!");
+        this.defender.triggerPermanentOutsideRing();
+        this.fight.message.addHit(Utils.strFormat(Constants.Messages.finishMessage, [this.defender.getStylizedName()]));
+    }
+
+    onMiss():void{
+        this.fpDamageToAtk += FocusDamageOnMiss[Tier[Tier.Heavy]];
+        this.fight.message.addHit(Utils.strFormat(Constants.Messages.finishFailMessage, [this.attacker.getStylizedName()]));
+        this.applyDamage();
     }
 }
