@@ -208,52 +208,51 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         }
     }
 
-    //TODO replace those with constants
     checkRequirements():void{
         if(this.singleTarget && !this.usableOnSelf && this.defenders.length > 1){
-            throw new Error(BaseConstants.Messages.cantAttackTooManyTargets);
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.tooManyTargets]));
         }
         if(this.requiresBeingAlive && this.attacker.isTechnicallyOut()){
-            throw new Error(BaseConstants.Messages.cantAttackPlayerIsOut);
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.playerOutOfFight]));
         }
         if(this.requiresBeingDead && !this.attacker.isTechnicallyOut()){
-            throw new Error("Action requires being dead.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.playerStillInFight]));
         }
         if(this.requiresBeingInRing && !this.attacker.isInTheRing){
-            throw new Error(BaseConstants.Messages.cantAttackPlayerOutOfTheRing);
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.playerOutOfRing]));
         }
         if(this.requiresBeingOffRing && this.attacker.isInTheRing){
-            throw new Error("Actor must be off ring.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.playerOnTheRing]));
         }
         if(this.requiresBeingInHold && !this.attacker.isInHold()){
-            throw new Error("You must be held in a hold to do that.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.mustBeStuckInHold]));
         }
         if(this.requiresNotBeingInHold && this.attacker.isInHold()){
-            throw new Error("You must not be held in a hold to do that.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.mustNotBeStuckInHold]));
         }
         if(this.targetMustBeAlive && this.defenders.findIndex(x => x.isTechnicallyOut() == true) != -1){
-            throw new Error(BaseConstants.Messages.cantAttackTargetOutOfFight);
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetOutOfFight]));
         }
         if(this.targetMustBeDead && this.defenders.findIndex(x => x.isTechnicallyOut() == false) != -1){
-            throw new Error(BaseConstants.Messages.cantAttackTargetOutOfFight);
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetNotOutOfFight]));
         }
         if(this.targetMustBeInRing && this.defenders.findIndex(x => x.isInTheRing == false) != -1){
-            throw new Error(BaseConstants.Messages.cantAttackTargetIsOutOfTheRing);
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetOutOfRing]));
         }
         if(this.targetMustBeOffRing &&  this.defenders.findIndex(x => x.isInTheRing == true) != -1){
-            throw new Error("Target(s) must be off ring.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetStillInRing]));
         }
         if(this.targetMustBeInRange && !this.attacker.isInRange(this.defenders)){
-            throw new Error("Target(s) must be in range.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetMustBeInRange]));
         }
         if(this.targetMustBeOffRange && this.attacker.isInRange(this.defenders)){
-            throw new Error("Target(s) must be off range.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetMustBeOffRange]));
         }
         if(this.targetMustBeInHold && this.defenders.filter(x => x.isInHold()).length != this.defenders.length){
-            throw new Error("Target(s) must be held in a hold to do that.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetMustBeInHold]));
         }
         if(this.targetMustNotBeInHold && this.defenders.filter(x => !x.isInHold()).length != this.defenders.length){
-            throw new Error("Target(s) must not be held in a hold to do that.");
+            throw new Error(Utils.strFormat(BaseConstants.Messages.cantAttackExplanation, [BaseConstants.Messages.targetMustNotBeInHold]));
         }
         if(!this.usableOnSelf && !(this.usableOnAllies && this.usableOnEnemies)){
             if(!this.usableOnAllies && this.defenders.findIndex(x => x.assignedTeam == this.attacker.assignedTeam) != -1){

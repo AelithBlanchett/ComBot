@@ -456,7 +456,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
 
         if(!this.waitingForAction){
-            throw new Error(BaseConstants.Messages.canAttackNotWaitingForAction);
+            throw new Error(BaseConstants.Messages.lastActionStillProcessing);
         }
 
         if (this.currentPlayer == null || attacker != this.currentPlayer.name) {

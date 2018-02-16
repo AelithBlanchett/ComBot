@@ -226,14 +226,26 @@ export class Messages {
 
     static rollAllDiceEchoRoll = "%s rolled a %s";
 
-    static canAttackNoAction = `The last action hasn't been processed yet.`;
-    static canAttackNotWaitingForAction = `The last action hasn't been processed yet.`;
-    static cantAttackPlayerIsOut = `You are out of this fight.`;
-    static cantAttackPlayerOutOfTheRing = `You cannot do that since you're not inside the ring.`;
-    static cantAttackTargetIsOutOfTheRing = `One of your target(s) isn't inside the ring.`;
-    static cantAttackTooManyTargets = `You can't target multiple players, this is a single-target attack.`;
-    static cantAttackTargetOutOfFight = `One of your target(s) target is out of this fight.`;
-    static canAttackIsInHold = `You cannot do that since you're in a hold.`;
+    static cantAttackExplanation = `You cannot do that right now: %s`;
+
+    static lastActionStillProcessing = `The last action hasn't been processed yet.`;
+    static playerOutOfFight = `You are out of this fight.`;
+    static playerStillInFight = `You are still participating in this fight.`;
+    static playerOutOfRing = `You are not inside the ring.`;
+    static playerOnTheRing = `You are inside the ring.`;
+    static targetOutOfRing = `One of your target(s) isn't inside the ring.`;
+    static targetStillInRing = `One of your target(s) is still inside the ring.`;
+    static tooManyTargets = `You can't target multiple players, this is a single-target attack.`;
+    static targetOutOfFight = `One of your target(s) is out of this fight.`;
+    static targetNotOutOfFight = `One of your target(s) is not out of this fight.`;
+    static stuckInHold = `You're stuck in a hold.`;
+    static mustBeStuckInHold  = "You must be stuck in a hold.";
+    static mustNotBeStuckInHold  = "You must not be stuck in a hold.";
+    static targetMustBeInRange = "Your target(s) must be in range.";
+    static targetMustBeOffRange = "Your target(s) must be off range.";
+    static targetMustBeInHold = "Your target(s) must be held in a hold.";
+    static targetMustNotBeInHold = "Your target(s) must not be held in a hold.";
+
 
     static checkAttackRequirementsNotInSexualHold = `You cannot do that since your target is not in a sexual hold.`;
 

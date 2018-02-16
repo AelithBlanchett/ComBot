@@ -84,13 +84,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
     heartsHealLastRound: number = 0;
     orgasmsHealLastRound: number = 0;
 
-    //TODO: reimplement
-    //targets:ActiveFighter[];
-    // fight:Fight;
     modifiers:Modifier[];
-    // actionsDone:Action[];
-    // actionsInflicted:Action[];
-    // pendingAction:Action = null;
 
     constructor(){
         super();

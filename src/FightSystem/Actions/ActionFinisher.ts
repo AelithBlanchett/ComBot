@@ -42,6 +42,10 @@ export class ActionFinisher extends RWAction {
         return Math.ceil(this.attacker.currentWillpower / 10);
     }
 
+    specificRequiredDiceScore():number{
+        return this.addRequiredScoreWithExplanation(6, "FIN");
+    }
+
     checkRequirements():void{
         super.checkRequirements();
         if((this.defender.livesRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 2)){

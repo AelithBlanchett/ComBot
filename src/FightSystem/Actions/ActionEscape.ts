@@ -37,8 +37,6 @@ export class ActionEscape extends RWAction {
             ActionExplanation[ActionType.Escape]);
     }
 
-    //TODO implement harder rolls against tougher holds?
-
     addBonusesToRollFromStats():number{
         return Math.ceil(this.attacker.currentDexterity / 10);
     }

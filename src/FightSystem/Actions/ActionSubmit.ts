@@ -5,6 +5,7 @@ import {Fight} from "../Fight";
 import Tier = Constants.Tier;
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
 import {Utils} from "../../Common/Utils";
+import {FightType} from "../../Common/BaseConstants";
 
 export class ActionSubmit extends RWAction {
 
@@ -42,6 +43,9 @@ export class ActionSubmit extends RWAction {
         super.checkRequirements();
         if (this.fight.currentTurn <= Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
             throw new Error(Utils.strFormat(Constants.Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
+        }
+        if (this.fight.fightType == FightType.LastManStanding) {
+            throw new Error(Utils.strFormat(Constants.Messages.wrongMatchTypeForAction, ["submit", "Last Man Standing"]));
         }
     }
 

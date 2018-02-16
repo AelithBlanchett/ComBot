@@ -129,11 +129,6 @@ export abstract class RWAction extends BaseActiveAction<Fight, ActiveFighter> {
     specificRequiredDiceScore():number{
         let scoreRequired = 0;
 
-        //TODO replace this
-        // if (this.type == ActionType.Finisher) {
-        //     scoreRequired = this.addRequiredScore(scoreRequired, 6, "FIN");
-        // }
-
         scoreRequired += this.addRequiredScoreWithExplanation((Constants.Fight.Action.Globals.difficultyIncreasePerBondageItem * this.attacker.bondageItemsOnSelf()), "BDG");
 
         //No effects apply if it's a multi-target action. Should we have any?
@@ -360,54 +355,3 @@ export class ActionExplanation {
     static Pass = `[b][color=red]%s passed their turn...[/color][/b]`;
     static SelfDebase = `[b][color=red]%s is sinking deeper...[/color][/b]`;
 }
-
-// export class BaseActionType {
-//     static Tag = 0;
-//     static Rest = 1;
-//     static Stun = 2;
-//     static Escape = 3;
-//     static Submit = 4;
-//     static Pass = 5;
-//     static ReleaseHold = 6;
-// }
-//
-// export class ActionExplanation {
-//     static Tag = `[b][color=red]TAG![/color][/b] %s heads out of the ring!`;
-//     static Rest = `[b][color=red]%s rests for a bit![/color][/b]`;
-//     static Escape = `[b][color=red]%s got away![/color][/b]`;
-//     static Submit = `[b][color=red]%s taps out! It's over, it's done![/color][/b]`;
-//     static Pass = `[b][color=red]%s passed their turn...[/color][/b]`;
-// }
-
-// //TODO move this to tag attack
-// let turnsSinceLastTag = (this.currentPlayer.lastTagTurn - this.currentTurn);
-// let turnsToWait = (Constants.Fight.Action.Globals.turnsToWaitBetweenTwoTags * 2) - turnsSinceLastTag; // *2 because there are two fighters
-// if(turnsToWait > 0){
-//     throw new Error(`[b][color=red]You can't tag yet. Turns left: ${turnsToWait}[/color][/b]`);
-// }
-// if(!this.currentTarget.canMoveFromOrOffRing){
-//     throw new Error(`[b][color=red]You can't tag with this character. They're permanently out.[/color][/b]`);
-// }
-// if(this.currentTarget.assignedTeam != this.currentPlayer.assignedTeam){
-//     throw new Error(`[b][color=red]You can't tag with this character as they are not in your team.[/color][/b]`);
-// }
-//
-//
-// //TODO move this to respective attacks
-// if (this.name == "Submit" && this.fight.currentTurn <= Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
-//     throw new Error(Utils.strFormat(Constants.Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
-// }
-//
-// //TODO move this to respective attacks
-// if (this.name == "Stun" && this.defenders.findIndex(x => x.isStunned() == true) != -1) {
-//     throw new Error(Constants.Messages.targetAlreadyStunned);
-// }
-// //TODO move this to respective attacks
-// if (action == ActionType.Bondage) {
-//     if(!this.currentTarget.isInHold() && !this.currentTarget.hasFeature(FeatureType.BondageBunny)){
-//         throw new Error(Constants.Messages.checkAttackRequirementsNotInSexualHold);
-//     }
-// }
-// if (action == ActionType.Submit && this.fightType == FightType.LastManStanding) {
-//     throw new Error(Utils.strFormat(Constants.Messages.wrongMatchTypeForAction, ["submit", "Last Man Standing"]));
-// }

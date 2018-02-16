@@ -87,7 +87,7 @@ export class BaseCommandHandler {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    //TODO reimplement this somewhere else
+    //TODO reimplement this in specific commandhandler, or find a way to list commands
     // async autoplay(args:string, data:FChatResponse) {
     //     if (this.fChatLibInstance.isUserMaster(data.character, "")) {
     //         this.blnAutofight = !this.blnAutofight;
