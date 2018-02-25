@@ -1,6 +1,6 @@
 import {Trigger, TriggerMoment} from "../../Common/BaseConstants";
-import {BaseFeature} from "../../Common/BaseFeature";
-import {BaseFeatureParameter} from "../../Common/BaseFeatureParameter";
+import {BaseFeature} from "../../Common/Features/BaseFeature";
+import {BaseFeatureParameter} from "../../Common/Features/BaseFeatureParameter";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {FeatureType, ModifierType} from "../RWConstants";
 

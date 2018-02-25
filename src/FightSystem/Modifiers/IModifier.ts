@@ -1,4 +1,4 @@
-import {IBaseModifier} from "../../Common/IBaseModifier";
+import {IBaseModifier} from "../../Common/Modifiers/IBaseModifier";
 
 export interface IModifier extends IBaseModifier{
     hpDamage: number;

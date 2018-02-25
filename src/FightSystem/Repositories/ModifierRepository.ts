@@ -1,5 +1,5 @@
-import {Model} from "../../Common/Model";
-import {Utils} from "../../Common/Utils";
+import {Model} from "../../Common/Utils/Model";
+import {Utils} from "../../Common/Utils/Utils";
 import {Modifier} from "../Modifiers/Modifier";
 import * as BaseConstants from "../../Common/BaseConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";

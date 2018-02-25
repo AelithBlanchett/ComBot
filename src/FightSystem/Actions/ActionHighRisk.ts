@@ -1,13 +1,13 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FailedHighRiskMultipliers, FocusDamageOnHit, FocusHealOnHit, HighRiskMultipliers} from "../RWConstants";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionHighRisk extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers) {
         super(fight,
             attacker,
             defenders,
@@ -42,15 +42,15 @@ export class ActionHighRisk extends RWAction {
     }
 
     make():void {
-        this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-        this.hpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * (HighRiskMultipliers[Tier[this.tier]]));
+        this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
+        this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
+        this.hpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * (HighRiskMultipliers[Tiers[this.tier]]));
     }
 
     onMiss():void{
-        this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
-        this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-        this.hpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.attacker.currentToughness, 0) * HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]);
+        this.fpDamageToAtk += FocusDamageOnHit[Tiers[this.tier]];
+        this.fpHealToDef += FocusHealOnHit[Tiers[this.tier]];
+        this.hpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.attacker.currentToughness, 0) * HighRiskMultipliers[Tiers[this.tier]] * FailedHighRiskMultipliers[Tiers[this.tier]]);
         this.applyDamage();
     }
 }

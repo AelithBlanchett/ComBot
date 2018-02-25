@@ -1,9 +1,10 @@
-import {Model} from "../../Common/Model";
-import {ActiveFighter} from "../ActiveFighter";
+import {Model} from "../../Common/Utils/Model";
+import {ActiveFighter} from "../Fight/ActiveFighter";
 import {FighterRepository} from "./FighterRepository";
-import {Utils} from "../../Common/Utils";
+import {Utils} from "../../Common/Utils/Utils";
 import {ModifierRepository} from "./ModifierRepository";
 import * as BaseConstants from "../../Common/BaseConstants";
+import {FeatureFactory} from "../Features/FeatureFactory";
 
 export class ActiveFighterRepository{
 
@@ -95,7 +96,7 @@ export class ActiveFighterRepository{
     }
 
     public static async initialize(idFighter:string):Promise<ActiveFighter>{
-        let loadedActiveFighter:ActiveFighter = new ActiveFighter();
+        let loadedActiveFighter:ActiveFighter = new ActiveFighter(new FeatureFactory());
 
         if(!await FighterRepository.exists(idFighter)){
             return null;
@@ -110,7 +111,7 @@ export class ActiveFighterRepository{
     }
 
     public static async load(idFighter:string, idFight:string):Promise<ActiveFighter>{
-        let loadedActiveFighter:ActiveFighter = new ActiveFighter();
+        let loadedActiveFighter:ActiveFighter = new ActiveFighter(new FeatureFactory());
 
         if(!await ActiveFighterRepository.exists(idFighter, idFight)){
             return null;
@@ -143,7 +144,7 @@ export class ActiveFighterRepository{
             let loadedData = await Model.db(BaseConstants.SQL.activeFightersTableName).where({idFight: idFight}).select();
 
             for(let data of loadedData){
-                let activeFighter = new ActiveFighter();
+                let activeFighter = new ActiveFighter(new FeatureFactory());
                 activeFighter = await ActiveFighterRepository.load(data.idFighter, idFight);
                 loadedActiveFighters.push(activeFighter);
             }

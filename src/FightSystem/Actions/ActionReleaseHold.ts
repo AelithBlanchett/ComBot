@@ -1,18 +1,16 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
-import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
-import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionReleaseHold extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
         super(fight,
             attacker,
             defenders,
             ActionType.ReleaseHold,
-            Tier.None,
+            Tiers.None,
             false, //isHold
             false,  //requiresRoll
             true, //keepActorsTurn

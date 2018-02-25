@@ -1,14 +1,14 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionSexHold extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers) {
         super(fight,
             attacker,
             defenders,
@@ -43,8 +43,8 @@ export class ActionSexHold extends RWAction {
     }
 
     make():void {
-        this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
+        this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
+        this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
         let lustDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);
         let holdModifier = ModifierFactory.getModifier(ModifierType.SexHold, this.fight, this.defender, this.attacker, {tier: this.tier, lustDamage: lustDamage});
         let lustBonusAttacker = ModifierFactory.getModifier(ModifierType.SexHoldLustBonus, this.fight, this.attacker, null, {parentIds: [holdModifier.idModifier]});

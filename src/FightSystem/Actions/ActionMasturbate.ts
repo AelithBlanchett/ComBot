@@ -1,13 +1,12 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
-import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
-import {FocusDamageOnHit, FocusHealOnHit, SelfDebaseFpDamage, MasturbateLpDamage} from "../RWConstants";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
+import {MasturbateLpDamage} from "../RWConstants";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionMasturbate extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier: Tier) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier: Tiers) {
         super(fight,
             attacker,
             defenders,
@@ -38,6 +37,6 @@ export class ActionMasturbate extends RWAction {
     }
 
     make(): void {
-        this.lpDamageToAtk = MasturbateLpDamage[Tier[this.tier]];
+        this.lpDamageToAtk = MasturbateLpDamage[Tiers[this.tier]];
     }
 }

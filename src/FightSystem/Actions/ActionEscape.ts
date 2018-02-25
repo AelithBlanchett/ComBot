@@ -1,18 +1,18 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionEscape extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
         super(fight,
             attacker,
             defenders,
             ActionType.Escape,
-            Tier.None,
+            Tiers.None,
             false, //isHold
             true,  //requiresRoll
             true, //keepActorsTurn

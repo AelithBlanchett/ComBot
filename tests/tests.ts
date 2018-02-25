@@ -1,18 +1,20 @@
-import {Fight} from "../src/FightSystem/Fight";
-import {CommandHandler} from "../src/FightSystem/CommandHandler";
+import {RWFight} from "../src/FightSystem/Fight/RWFight";
+import {RendezVousWrestling} from "../src/FightSystem/RendezVousWrestling";
 import * as BaseConstants from "../src/Common/BaseConstants";
-import {Utils} from "../src/Common/Utils";
-import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
+import {Utils} from "../src/Common/Utils/Utils";
+import {ActiveFighter} from "../src/FightSystem/Fight/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
 import {ActiveFighterRepository} from "../src/FightSystem/Repositories/ActiveFighterRepository";
 import {ActionRepository} from "../src/FightSystem/Repositories/ActionRepository";
 import {FightRepository} from "../src/FightSystem/Repositories/FightRepository";
-import {Dice} from "../src/Common/Dice";
+import {Dice} from "../src/Common/Utils/Dice";
 import {ModifierRepository} from "../src/FightSystem/Repositories/ModifierRepository";
-import {BaseCommandHandler} from "../src/Common/BaseCommandHandler";
-import {FeatureFactory} from "../src/Common/FeatureFactory";
-import {ActionType} from "../src/FightSystem/RWAction";
+import {FeatureFactory} from "../src/FightSystem/Features/FeatureFactory";
+import {ActionType} from "../src/FightSystem/Actions/RWAction";
 import {FeatureType, ModifierType} from "../src/FightSystem/RWConstants";
+import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
+import {Messages} from "../src/Common/Constants/Messages";
+import {GameSettings} from "../src/Common/Configuration/GameSettings";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -22,7 +24,7 @@ let mockedClasses = [];
 let usedIndexes = [];
 let usedFighters = [];
 
-const DEFAULT_TIMEOUT_UNIT_TEST = 2000;
+const DEFAULT_TIMEOUT_UNIT_TEST = 50;
 
 function getMock(mockedClass) {
     if (mockedClasses.indexOf(mockedClass) != -1) {
@@ -81,7 +83,7 @@ function abstractDatabase() {
     };
 
     FightRepository.load = async function () {
-        return new Fight();
+        return new RWFight();
     };
 
     ModifierRepository.persist = async function () {
@@ -100,18 +102,14 @@ function abstractDatabase() {
 
     ModifierRepository.deleteFromFight = async function () {
     };
-
-    BaseCommandHandler.setUpCurrentSeasonValue = function () {
-        BaseConstants.Globals.currentSeason = 1;
-    };
 }
 
 //Utilities
 
 function createFighter(name):ActiveFighter {
     let myFighter;
-    let intStatsToAssign:number = Math.floor(BaseConstants.Globals.numberOfRequiredStatPoints / BaseConstants.Globals.numberOfDifferentStats);
-    let statOverflow:number = BaseConstants.Globals.numberOfRequiredStatPoints - (intStatsToAssign * BaseConstants.Globals.numberOfDifferentStats);
+    let intStatsToAssign:number = Math.floor(GameSettings.numberOfRequiredStatPoints / GameSettings.numberOfDifferentStats);
+    let statOverflow:number = GameSettings.numberOfRequiredStatPoints - (intStatsToAssign * GameSettings.numberOfDifferentStats);
     if (Utils.findIndex(usedFighters, "name", name) == -1) {
         myFighter = getMock(ActiveFighter);
         let randomId = -1;
@@ -149,7 +147,7 @@ function createFighter(name):ActiveFighter {
     return myFighter;
 }
 
-async function doAction(cmd:CommandHandler, action:string, target:string = "", waitAtEnding:boolean = true) {
+async function doAction(cmd:RendezVousWrestling, action:string, target:string = "", waitAtEnding:boolean = true) {
     await cmd.fight.waitUntilWaitingForAction();
     cmd.fight.currentPlayer.dice.addMod(50);
     await cmd[action](target, {character: cmd.fight.currentPlayer.name, channel: "here"});
@@ -159,7 +157,7 @@ async function doAction(cmd:CommandHandler, action:string, target:string = "", w
 }
 
 
-function wasHealthHit(cmd:CommandHandler, name:string) {
+function wasHealthHit(cmd:RendezVousWrestling, name:string) {
     return (
         (
             cmd.fight.getFighterByName(name).hp == cmd.fight.getFighterByName(name).hpPerHeart() &&
@@ -170,7 +168,7 @@ function wasHealthHit(cmd:CommandHandler, name:string) {
     );
 }
 
-function wasLustHit(cmd:CommandHandler, name:string) {
+function wasLustHit(cmd:RendezVousWrestling, name:string) {
     return (
         (
             cmd.fight.getFighterByName(name).lust == cmd.fight.getFighterByName(name).lustPerOrgasm() &&
@@ -275,7 +273,7 @@ describe("Before the fight, the test suite should verify that", () => {
 
     it("should create a fighter with all the stats adding up to the requirement", async function () { //2
         let fighter = createFighter("Yolo");
-        expect(fighter.endurance + fighter.dexterity + fighter.sensuality + fighter.power + fighter.willpower + fighter.toughness).toBe(BaseConstants.Globals.numberOfRequiredStatPoints);
+        expect(fighter.endurance + fighter.dexterity + fighter.sensuality + fighter.power + fighter.willpower + fighter.toughness).toBe(GameSettings.numberOfRequiredStatPoints);
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
 });
@@ -299,16 +297,16 @@ describe("Before the fight", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should check if a joining fighter exists", async function (done) { //4
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        let x = new RendezVousWrestling(fChatLibInstance, "here");
+        let data:IMsgEvent = {message: "", character: "Aelith Blanchette", channel: "here"};
         await x.join("", data);
         expect(ActiveFighterRepository.initialize).toHaveBeenCalled();
         done();
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should not allow a player to join a match twice", async function (done) { //5
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        let x = new RendezVousWrestling(fChatLibInstance, "here");
+        let data:IMsgEvent = {message: "", character: "Aelith Blanchette", channel: "here"};
         await x.join("", data);
         await x.join("", data);
         if (wasMessageSent("You have already joined the fight")) {
@@ -320,9 +318,9 @@ describe("Before the fight", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should wait for everyone to start using the default blue and red team", async function (done) { //8
-        let x = new CommandHandler(fChatLibInstance, "here");
-        await x.join("", {character: "Aelith Blanchette", channel: "here"});
-        await x.join("", {character: "TheTinaArmstrong", channel: "here"});
+        let x = new RendezVousWrestling(fChatLibInstance, "here");
+        await x.join("", {message: "", character: "Aelith Blanchette", channel: "here"});
+        await x.join("", {message: "", character: "TheTinaArmstrong", channel: "here"});
         if (wasMessageSent("stepped into the ring for the [color=Blue]Blue[/color] team! Waiting for everyone to be !ready.")
             && wasMessageSent("stepped into the ring for the [color=Red]Red[/color] team! Waiting for everyone to be !ready.")
             && x.fight.hasStarted == false) {
@@ -334,8 +332,8 @@ describe("Before the fight", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should let a player join the match", async function (done) { //3
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        let x = new RendezVousWrestling(fChatLibInstance, "here");
+        let data:IMsgEvent = {message: "", character: "Aelith Blanchette", channel: "here"};
         await x.join("", data);
         if (wasMessageSent("stepped into the ring for the")) {
             done();
@@ -346,8 +344,8 @@ describe("Before the fight", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should let a player join the match and set themselves as ready", async function (done) { //6
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        let x = new RendezVousWrestling(fChatLibInstance, "here");
+        let data:IMsgEvent = {message: "", character: "Aelith Blanchette", channel: "here"};
         await x.ready("", data);
         if (wasMessageSent("is now ready to get it on!")) {
             done();
@@ -358,8 +356,8 @@ describe("Before the fight", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should not let a player that is already ready to do it again", async function (done) { //7
-        let x = new CommandHandler(fChatLibInstance, "here");
-        let data:FChatResponse = {character: "Aelith Blanchette", channel: "here"};
+        let x = new RendezVousWrestling(fChatLibInstance, "here");
+        let data:IMsgEvent = {message: "", character: "Aelith Blanchette", channel: "here"};
         await x.ready("", data);
         await x.ready("", data);
         if (wasMessageSent("You are already ready.")) {
@@ -392,7 +390,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should tag successfully with Aelith", async function (done) { // 9
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings2vs2Tag(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -407,7 +405,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST + 100000);
 
     it("should swap to TheTinaArmstrong", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let fighterNameBefore = cmd.fight.currentPlayer.name;
@@ -422,7 +420,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a brawl move", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -436,7 +434,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a sexstrike move", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         await doAction(cmd, "tease", "Light");
@@ -449,7 +447,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a highrisk move", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -463,7 +461,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a penetration move", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -477,7 +475,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should pass", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let fighterNameBefore = cmd.fight.currentPlayer.name;
@@ -492,7 +490,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it(`should give a loss after ${BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`, async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.getFighterByName("Aelith Blanchette").focus = -100;
@@ -508,7 +506,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a subhold and tick", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -522,7 +520,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a subhold and expire after the number of turns specified", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -540,7 +538,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a subhold and let the opponent escape", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -556,7 +554,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a subhold and trigger bonus brawl modifier", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -572,22 +570,22 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should not be allowed to do a subhold while already in one", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
         await doAction(cmd, "subhold", "Light", false);
-        if (wasPrivMessageSent("You must not be held in a hold to do that.")) {
+        if (wasPrivMessageSent(Messages.mustNotBeStuckInHold)) {
             done();
         }
         else {
-            done.fail(new Error("Did not say that the attacker is locked in a hold."));
+            done.fail(new Error("Did not say "+Messages.mustNotBeStuckInHold));
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should be allowed to do a second subhold while already APPLYING one", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -604,7 +602,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should stack the current subhold with another subhold, verify stacking", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -621,7 +619,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should stack the current subhold with another subhold, verify uses", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -648,7 +646,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a sexhold and tick", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -663,7 +661,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should be able to do a humhold with sexhold", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -680,7 +678,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should be making the humhold tick", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -698,7 +696,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should be applying degradation modifier with humhold", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -712,7 +710,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should pickup an item and trigger bonus brawl modifier", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -729,7 +727,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should pickup a sextoy and trigger bonus sexstrike modifier", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -746,7 +744,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should win the match with bondage attacks", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -770,7 +768,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("shouldn't win the match without all the needed bondage attacks", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -794,25 +792,25 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should say you can't place a bondage attack without a sexhold", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "bondage", "Light", false);
-        if (wasPrivMessageSent("Target(s) must be held in a hold to do that.")) {
+        if (wasPrivMessageSent(Messages.targetMustBeInHold)) {
             done();
         }
         else {
-            done.fail(new Error("Did not say that the attacker must apply a sexhold for a bondage attack."));
+            done.fail(new Error("Did not say " + Messages.targetMustBeInHold));
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should forfeit the match and give the win", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         await doAction(cmd, "forfeit", "");
-        if (wasMessageSent(BaseConstants.Messages.forfeitItemApply.substring(32))) {
+        if (wasMessageSent(Messages.forfeitItemApply.substring(32))) {
             done();
         }
         else {
@@ -821,7 +819,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should call the match a draw", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         await doAction(cmd, "draw", "");
@@ -836,8 +834,8 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should grant the itemPickupModifier bonus for the KickStart feature", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
-        createFighter("TheTinaArmstrong").features.push(FeatureFactory.getFeature(FeatureType.KickStart, createFighter("TheTinaArmstrong"),  1));
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
+        createFighter("TheTinaArmstrong").features.push(new FeatureFactory().getFeature(FeatureType.KickStart, createFighter("TheTinaArmstrong"),  1));
         await initiateMatchSettings1vs1(cmd);
 
         await cmd.fight.waitUntilWaitingForAction();
@@ -853,7 +851,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a stun and grant the stun modifier", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -869,7 +867,7 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a stun and grant the stun modifier, and reduce the dice roll", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
@@ -885,13 +883,13 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should do a forcedworship attack", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "forcedworship", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasMessageSent(BaseConstants.Messages.HitMessage)) {
+        if (wasMessageSent(Messages.HitMessage)) {
             done();
         }
         else {
@@ -900,12 +898,12 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal 0 hp because it's already full", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let initialHp = cmd.fight.getFighterByName("Aelith Blanchette").hp;
         cmd.fight.getFighterByName("Aelith Blanchette").healHP(10);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         let healedHp = (cmd.fight.getFighterByName("Aelith Blanchette").hpPerHeart() - initialHp);
         if (healedHp == 0) {
@@ -917,13 +915,13 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal whatever hp amount is left", async function (done) { // 0
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let initialHp = 10;
         cmd.fight.getFighterByName("Aelith Blanchette").hp = initialHp;
         cmd.fight.getFighterByName("Aelith Blanchette").healHP(50);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         let healedFp = (cmd.fight.getFighterByName("Aelith Blanchette").hpPerHeart() - initialHp);
         let lifeAfter = cmd.fight.getFighterByName("Aelith Blanchette").hp;
@@ -936,13 +934,13 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal 1 HP", async function (done) { // 0
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let initialHp = 1;
         cmd.fight.getFighterByName("Aelith Blanchette").hp = initialHp;
         cmd.fight.getFighterByName("Aelith Blanchette").healHP(1);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         let healedHp = (cmd.fight.getFighterByName("Aelith Blanchette").hp - initialHp);
         if (healedHp == 1) {
@@ -954,11 +952,11 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal 0 lp because it's already full", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.getFighterByName("Aelith Blanchette").healLP(10);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         if (cmd.fight.getFighterByName("Aelith Blanchette").lust == 0) {
             done();
@@ -969,13 +967,13 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal whatever lp amount is left", async function (done) { // 0
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let initialLp = 2;
         cmd.fight.getFighterByName("Aelith Blanchette").lust = initialLp;
         cmd.fight.getFighterByName("Aelith Blanchette").healLP(50);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         let healedLp = (initialLp - cmd.fight.getFighterByName("Aelith Blanchette").lust);
         let lifeAfter = cmd.fight.getFighterByName("Aelith Blanchette").lust;
@@ -988,13 +986,13 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal 1 LP", async function (done) { // 0
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let initialLp = 1;
         cmd.fight.getFighterByName("Aelith Blanchette").lust = 1;
         cmd.fight.getFighterByName("Aelith Blanchette").healLP(1);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         let healedLp = (initialLp - cmd.fight.getFighterByName("Aelith Blanchette").lust);
         if (healedLp == 1) {
@@ -1006,13 +1004,13 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal 0 fp because it's already full", async function (done) {
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         refillHPLPFP(cmd, "Aelith Blanchette");
         let initialFp = cmd.fight.getFighterByName("Aelith Blanchette").focus;
         cmd.fight.getFighterByName("Aelith Blanchette").healFP(10);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         let healedFp = (cmd.fight.getFighterByName("Aelith Blanchette").maxFocus() - initialFp);
         if (healedFp == 0) {
@@ -1024,12 +1022,12 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal whatever fp amount is left", async function (done) { // 0
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.getFighterByName("Aelith Blanchette").focus = 1;
         cmd.fight.getFighterByName("Aelith Blanchette").healFP(Number.MAX_VALUE);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         if (cmd.fight.getFighterByName("Aelith Blanchette").focus == cmd.fight.getFighterByName("Aelith Blanchette").maxFocus()) {
             done();
@@ -1040,13 +1038,13 @@ describe("Before the fight, the player(s)", () => {
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should heal 1 FP", async function (done) { // 0
-        let cmd = new CommandHandler(fChatLibInstance, "here");
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         let initialFp = 1;
         cmd.fight.getFighterByName("Aelith Blanchette").focus = initialFp;
         cmd.fight.getFighterByName("Aelith Blanchette").healFP(1);
-        cmd.fight.message.send();
+        cmd.fight.sendFightMessage();
         await cmd.fight.waitUntilWaitingForAction();
         let healedHp = (cmd.fight.getFighterByName("Aelith Blanchette").focus - initialFp);
         if (healedHp == 1) {

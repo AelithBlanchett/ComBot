@@ -1,12 +1,11 @@
 import * as BaseConstants from "../../Common/BaseConstants";
 import {Modifier} from "./Modifier";
-import {IModifier} from "./IModifier";
-import {Tier} from "../../Common/BaseConstants";
-import {Utils} from "../../Common/Utils";
-import {Fight} from "../Fight";
-import {BaseFight} from "../../Common/BaseFight";
-import {BaseActiveFighter} from "../../Common/BaseActiveFighter";
+import {Utils} from "../../Common/Utils/Utils";
+import {BaseFight} from "../../Common/Fight/BaseFight";
+import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
+import {Tiers} from "../Constants/Tiers";
 import {ModifierType} from "../RWConstants";
+import * as modifiersList from "./modifiers.json";
 
 export class ModifierFactory{
 
@@ -20,10 +19,10 @@ export class ModifierFactory{
         }
 
         //Merges the properties found in the json config file with our custom parameters object
-        Utils.mergeFromTo(BaseConstants.Globals.modifiersList[indexOfSearchedModifier], parameters);
+        Utils.mergeFromTo(modifiersList[indexOfSearchedModifier], parameters);
 
         parameters.type = ModifierType[modifierName];
-        parameters.tier = parameters.tier || Tier.None;
+        parameters.tier = parameters.tier || Tiers.None;
         parameters.hpDamage = parameters.hpDamage || 0;
         parameters.lustDamage = parameters.lustDamage || 0;
         parameters.focusDamage = parameters.focusDamage || 0;
@@ -89,7 +88,7 @@ export class ModifierFactory{
             throw new Error("This modifier wasn't found in the ModifierType list.");
         }
 
-        let indexOfSearchedModifier = BaseConstants.Globals.modifiersList.findIndex(x => x.name.toLowerCase() == realModifierName.toLowerCase());
+        let indexOfSearchedModifier = (<any>modifiersList).findIndex(x => x.name.toLowerCase() == realModifierName.toLowerCase());
         if(indexOfSearchedModifier != -1){
             inputParameters = ModifierFactory.checkAndInitializeDefaultValues(indexOfSearchedModifier, realModifierName, inputParameters);
             modifier = new Modifier(receiver.name,

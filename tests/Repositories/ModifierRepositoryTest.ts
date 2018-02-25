@@ -1,4 +1,4 @@
-import {Model} from "../../src/Common/Model";
+import {Model} from "../../src/Common/Utils/Model";
 import {ModifierRepository} from "../../src/FightSystem/Repositories/ModifierRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();

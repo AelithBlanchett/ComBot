@@ -1,9 +1,10 @@
-import {RWFighter} from "../src/FightSystem/RWFighter";
+import {RWFighter} from "../src/FightSystem/Fight/RWFighter";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as BaseConstants from "../src/Common/BaseConstants";
-import {Utils} from "../src/Common/Utils";
-import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
+import {Utils} from "../src/Common/Utils/Utils";
+import {ActiveFighter} from "../src/FightSystem/Fight/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
+import {FeatureFactory} from "../src/FightSystem/Features/FeatureFactory";
 var waitUntil = require('wait-until');
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
@@ -28,13 +29,13 @@ async function initiateMatchSettings2vs2TagForDb(cmdHandler) {
 describe("The database(s)", () => {
 
     async function resetData() {
-        let firstFighter = new RWFighter();
+        let firstFighter = new RWFighter(new FeatureFactory());
         firstFighter.name = "test1";
-        let secondFighter = new RWFighter();
+        let secondFighter = new RWFighter(new FeatureFactory());
         secondFighter.name = "test2";
-        let thirdFighter = new RWFighter();
+        let thirdFighter = new RWFighter(new FeatureFactory());
         thirdFighter.name = "test3";
-        let fourthFighter = new RWFighter();
+        let fourthFighter = new RWFighter(new FeatureFactory());
         fourthFighter.name = "test4";
 
         await FighterRepository.persist(firstFighter);
@@ -156,7 +157,7 @@ describe("The database(s)", () => {
 
     //xit("should write a new action in the database", async function (done) {
     //    ActiveFighter.load("test2").then(x => {
-    //        let fight = new Fight(null, null);
+    //        let fight = new RWFight(null, null);
     //        let myAction = new Action(fight, 1, 1, ActionType.Brawl, x);
     //        Action.commitDb(myAction).then(idAction => {
     //            expect(idAction).toBeGreaterThan(0);
@@ -169,8 +170,8 @@ describe("The database(s)", () => {
     //
     //it("should write a new fight in the database", function (done) {
     //    RWFighter.load("test2").then(x => {
-    //        let myFight = new Fight(fChatLibInstance, "here", "hello");
-    //        Fight.saveState(myFight).then(idAction => {
+    //        let myFight = new RWFight(fChatLibInstance, "here", "hello");
+    //        RWFight.saveState(myFight).then(idAction => {
     //            expect(idAction).toBeGreaterThan(0);
     //            done();
     //        }).catch(err => {
@@ -191,7 +192,7 @@ describe("The database(s)", () => {
             }).done((res) => {
                 if (res) {
                     cmd.fight.setCurrentPlayer("test1");
-                    cmd.tag("test2", {character: "test1", channel: "here"});
+                    cmd.tag("test2", {character: "test1", channel: "here", message:"!tag"});
                     waitUntil().interval(100).times(50).condition(() => {
                         return (cmd.fight.currentPlayer != undefined && cmd.fight.currentPlayer.name != "test2");
                     }).done(() => {
@@ -207,7 +208,7 @@ describe("The database(s)", () => {
 
     // it("should create an action", async function (done) {
     //     let action = new Action();
-    //     action.buildAction(new Fight(null, null, null), 1, 0, 1, null);
+    //     action.buildAction(new RWFight(null, null, null), 1, 0, 1, null);
     //     await ActionRepository.persist(action);
     // });
     //

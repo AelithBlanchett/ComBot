@@ -1,19 +1,18 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
-import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionBondage extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
         super(fight,
             attacker,
             defenders,
             ActionType.Bondage,
-            Tier.None,
+            Tiers.None,
             false, //isHold
             true,  //requiresRoll
             false, //keepActorsTurn
@@ -50,8 +49,8 @@ export class ActionBondage extends RWAction {
     }
 
     make(): void {
-        this.fpHealToAtk += FocusHealOnHit[Tier[Tier.Heavy]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[Tier.Heavy]];
+        this.fpHealToAtk += FocusHealOnHit[Tiers[Tiers.Heavy]];
+        this.fpDamageToDef += FocusDamageOnHit[Tiers[Tiers.Heavy]];
         let bdModifier = ModifierFactory.getModifier(ModifierType.Bondage, this.fight, this.defender, this.attacker);
         this.appliedModifiers.push(bdModifier);
     }

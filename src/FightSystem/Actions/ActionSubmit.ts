@@ -1,20 +1,20 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
-import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
-import {Utils} from "../../Common/Utils";
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
+import {Utils} from "../../Common/Utils/Utils";
 import {FightType} from "../../Common/BaseConstants";
+import {Messages} from "../../Common/Constants/Messages";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionSubmit extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
         super(fight,
             attacker,
             defenders,
             ActionType.Submit,
-            Tier.None,
+            Tiers.None,
             false, //isHold
             false,  //requiresRoll
             false, //keepActorsTurn
@@ -42,15 +42,15 @@ export class ActionSubmit extends RWAction {
     checkRequirements():void{
         super.checkRequirements();
         if (this.fight.currentTurn <= Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
-            throw new Error(Utils.strFormat(Constants.Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
+            throw new Error(Utils.strFormat(Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
         }
         if (this.fight.fightType == FightType.LastManStanding) {
-            throw new Error(Utils.strFormat(Constants.Messages.wrongMatchTypeForAction, ["submit", "Last Man Standing"]));
+            throw new Error(Utils.strFormat(Messages.wrongMatchTypeForAction, ["submit", "Last Man Standing"]));
         }
     }
 
     make(): void {
         this.attacker.triggerPermanentOutsideRing();
-        this.fight.message.addHit(Utils.strFormat(Constants.Messages.tapoutMessage, [this.attacker.getStylizedName()]));
+        this.fight.message.addHit(Utils.strFormat(Messages.tapoutMessage, [this.attacker.getStylizedName()]));
     }
 }

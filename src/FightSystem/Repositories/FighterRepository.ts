@@ -1,14 +1,14 @@
-import {Model} from "../../Common/Model";
-import {RWFighter} from "../RWFighter";
-import {Utils} from "../../Common/Utils";
+import {Model} from "../../Common/Utils/Model";
+import {RWFighter} from "../Fight/RWFighter";
+import {Utils} from "../../Common/Utils/Utils";
 import {IAchievement} from "../../Achievements/IAchievement";
 import {AchievementManager} from "../../Achievements/AchievementManager";
 import {TransactionType} from "../../Common/BaseConstants";
 import * as BaseConstants from "../../Common/BaseConstants";
-import {BaseFeature} from "../../Common/BaseFeature";
-import {FeatureFactory} from "../../Common/FeatureFactory";
-import {IRWFighter} from "../IRWFighter";
-import {ActiveFighter} from "../ActiveFighter";
+import {BaseFeature} from "../../Common/Features/BaseFeature";
+import {FeatureFactory} from "../Features/FeatureFactory";
+import {IRWFighter} from "../Fight/IRWFighter";
+import {ActiveFighter} from "../Fight/ActiveFighter";
 
 export class FighterRepository{
 
@@ -112,12 +112,12 @@ export class FighterRepository{
     public static async persistAchievements(fighter:IRWFighter):Promise<void>{
 
         for(let achievement of fighter.achievements){
-            let loadedData = await Model.db(BaseConstants.SQL.fightersAchievementsTableName).where({idFighter: fighter.name, idAchievement: achievement.getType()}).select();
+            let loadedData = await Model.db(BaseConstants.SQL.fightersAchievementsTableName).where({idFighter: fighter.name, idAchievement: achievement.getName()}).select();
 
             if(loadedData.length == 0){
                 achievement.createdAt = new Date();
                 await Model.db(BaseConstants.SQL.fightersAchievementsTableName).insert({
-                    idAchievement: achievement.getType(),
+                    idAchievement: achievement.getName(),
                     idFighter: fighter.name,
                     createdAt: achievement.createdAt
                 });
@@ -150,7 +150,7 @@ export class FighterRepository{
     }
 
     public static async load(name:string):Promise<IRWFighter>{
-        let loadedFighter:RWFighter = new RWFighter();
+        let loadedFighter:RWFighter = new RWFighter(new FeatureFactory());
 
         if(!await FighterRepository.exists(name)){
             return null;
@@ -177,7 +177,7 @@ export class FighterRepository{
 
     public static async loadActiveFighter(name:string):Promise<ActiveFighter>{
         let baseFighter = await FighterRepository.load(name);
-        let activeFighter = new ActiveFighter();
+        let activeFighter = new ActiveFighter(new FeatureFactory());
         Utils.mergeFromTo(baseFighter, activeFighter);
         return activeFighter;
     }
@@ -215,7 +215,7 @@ export class FighterRepository{
 
         let featuresArray:BaseFeature[] = [];
         for(let row of result){
-            featuresArray.push(FeatureFactory.getFeature(row.type, row.uses, row.idFeature));
+            featuresArray.push(new FeatureFactory().getFeature(row.type, row.uses, row.idFeature));
         }
         return featuresArray;
     }

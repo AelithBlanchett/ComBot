@@ -1,11 +1,11 @@
-import {Fight} from "../../src/FightSystem/Fight";
-import {Model} from "../../src/Common/Model";
+import {RWFight} from "../../src/FightSystem/Fight/RWFight";
+import {Model} from "../../src/Common/Utils/Model";
 import {FightRepository} from "../../src/FightSystem/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 import * as BaseConstants from "../../src/Common/BaseConstants";
 
-describe("The Fight Repository", () => {
+describe("The RWFight Repository", () => {
 
     it("should do nothing. lol.", async function (done) {
         done();
@@ -13,7 +13,7 @@ describe("The Fight Repository", () => {
 
     it("should try everything around fight 1", async function (done) {
 
-        let myFight = new Fight();
+        let myFight = new RWFight();
 
         await FightRepository.persist(myFight);
         let resultTrue = await FightRepository.exists(myFight.idFight);

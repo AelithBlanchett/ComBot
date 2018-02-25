@@ -1,7 +1,7 @@
-import {AchievementType} from "./Achievements";
-import {BaseFighter} from "../Common/BaseFighter";
-import {BaseActiveFighter} from "../Common/BaseActiveFighter";
-import {BaseFight} from "../Common/BaseFight";
+import {BaseFighter} from "../Common/Fight/BaseFighter";
+import {BaseActiveFighter} from "../Common/Fight/BaseActiveFighter";
+import {BaseFight} from "../Common/Fight/BaseFight";
+
 export interface IAchievement{
     createdAt:Date;
 
@@ -9,6 +9,6 @@ export interface IAchievement{
     getDetailedDescription():string;
     getReward():number;
     getUniqueShortName():string;
-    getType():AchievementType;
+    getName():string;
 }
 

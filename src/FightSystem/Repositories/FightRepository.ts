@@ -1,16 +1,16 @@
-import {Fight} from "../Fight";
-import {Model} from "../../Common/Model";
+import {RWFight} from "../Fight/RWFight";
+import {Model} from "../../Common/Utils/Model";
 import {ActionRepository} from "./ActionRepository";
-import {Utils} from "../../Common/Utils";
+import {Utils} from "../../Common/Utils/Utils";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FighterRepository} from "./FighterRepository";
 import * as BaseConstants from "../../Common/BaseConstants";
 import {ModifierRepository} from "./ModifierRepository";
-import {RWAction} from "../RWAction";
+import {RWAction} from "../Actions/RWAction";
 
 export class FightRepository{
 
-    public static async persist(fight:Fight):Promise<void>{
+    public static async persist(fight:RWFight):Promise<void>{
         try
         {
             let currentSeason = await Model.db(BaseConstants.SQL.constantsTableName).where({key: BaseConstants.SQL.currentSeasonKeyName}).first();
@@ -69,8 +69,8 @@ export class FightRepository{
         return (loadedData.length > 0);
     }
 
-    public static async loadLatestInvolvingFighter(idFighter:string):Promise<Fight>{
-        let loadedFight:Fight = new Fight();
+    public static async loadLatestInvolvingFighter(idFighter:string):Promise<RWFight>{
+        let loadedFight:RWFight = new RWFight();
 
         if(!await FighterRepository.exists(idFighter)){
             return null;
@@ -93,8 +93,8 @@ export class FightRepository{
         return loadedFight;
     }
 
-    public static async load(idFight:string):Promise<Fight>{
-        let loadedFight:Fight = new Fight();
+    public static async load(idFight:string):Promise<RWFight>{
+        let loadedFight:RWFight = new RWFight();
 
         if(!await FightRepository.exists(idFight, true)){
             return null;
@@ -121,7 +121,7 @@ export class FightRepository{
         return loadedFight;
     }
 
-    public static async loadActions(fight:Fight):Promise<RWAction[]>{
+    public static async loadActions(fight:RWFight):Promise<RWAction[]>{
         let loadedActions:RWAction[] = [];
 
         if(!await FightRepository.exists(fight.idFight)){

@@ -1,19 +1,20 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusDamageOnMiss, FocusHealOnHit} from "../RWConstants";
-import {Utils} from "../../Common/Utils";
+import {Utils} from "../../Common/Utils/Utils";
+import {Messages} from "../../Common/Constants/Messages";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionFinisher extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
         super(fight,
             attacker,
             defenders,
             ActionType.Finisher,
-            Tier.Heavy,
+            Tiers.Heavy,
             false, //isHold
             true,  //requiresRoll
             false, //keepActorsTurn
@@ -55,12 +56,12 @@ export class ActionFinisher extends RWAction {
 
     make(): void {
         this.defender.triggerPermanentOutsideRing();
-        this.fight.message.addHit(Utils.strFormat(Constants.Messages.finishMessage, [this.defender.getStylizedName()]));
+        this.fight.message.addHit(Utils.strFormat(Messages.finishMessage, [this.defender.getStylizedName()]));
     }
 
     onMiss():void{
-        this.fpDamageToAtk += FocusDamageOnMiss[Tier[Tier.Heavy]];
-        this.fight.message.addHit(Utils.strFormat(Constants.Messages.finishFailMessage, [this.attacker.getStylizedName()]));
+        this.fpDamageToAtk += FocusDamageOnMiss[Tiers[Tiers.Heavy]];
+        this.fight.message.addHit(Utils.strFormat(Messages.finishFailMessage, [this.attacker.getStylizedName()]));
         this.applyDamage();
     }
 }

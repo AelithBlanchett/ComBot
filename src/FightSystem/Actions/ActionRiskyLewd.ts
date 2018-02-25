@@ -1,13 +1,13 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FailedHighRiskMultipliers, FocusDamageOnHit, FocusHealOnHit, HighRiskMultipliers} from "../RWConstants";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionRiskyLewd extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers) {
         super(fight,
             attacker,
             defenders,
@@ -42,17 +42,17 @@ export class ActionRiskyLewd extends RWAction {
     }
 
     make():void {
-        this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
-        this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * HighRiskMultipliers[Tier[this.tier]]);
-        this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * FailedHighRiskMultipliers[Tier[this.tier]]);
+        this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
+        this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
+        this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * HighRiskMultipliers[Tiers[this.tier]]);
+        this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * FailedHighRiskMultipliers[Tiers[this.tier]]);
     }
 
     onMiss():void{
-        this.fpDamageToAtk += FocusDamageOnHit[Tier[this.tier]];
-        this.fpHealToDef += FocusHealOnHit[Tier[this.tier]];
-        this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * HighRiskMultipliers[Tier[this.tier]] * FailedHighRiskMultipliers[Tier[this.tier]]);
-        this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * FailedHighRiskMultipliers[Tier[this.tier]]);
+        this.fpDamageToAtk += FocusDamageOnHit[Tiers[this.tier]];
+        this.fpHealToDef += FocusHealOnHit[Tiers[this.tier]];
+        this.lpDamageToAtk += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.attacker.currentEndurance, 0) * HighRiskMultipliers[Tiers[this.tier]] * FailedHighRiskMultipliers[Tiers[this.tier]]);
+        this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, 0) * FailedHighRiskMultipliers[Tiers[this.tier]]);
         this.applyDamage();
     }
 }

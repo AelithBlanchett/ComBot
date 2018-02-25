@@ -1,14 +1,14 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionHumHold extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers) {
         super(fight,
             attacker,
             defenders,
@@ -44,8 +44,8 @@ export class ActionHumHold extends RWAction {
 
     make():void {
         this.missed = false;
-        this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-        let focusDamage = Math.floor(FocusDamageOnHit[Tier[this.tier]]);
+        this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
+        let focusDamage = Math.floor(FocusDamageOnHit[Tiers[this.tier]]);
         let holdModifier = ModifierFactory.getModifier(ModifierType.HumHold, this.fight, this.defender, this.attacker, {tier: this.tier, focusDamage: focusDamage});
         this.appliedModifiers.push(holdModifier);
         let humiliationModifier = ModifierFactory.getModifier(ModifierType.DegradationMalus, this.fight, this.defender, this.attacker, {parentIds: [holdModifier.idModifier]});

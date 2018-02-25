@@ -1,17 +1,14 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
-import {
-    FocusDamageOnHit, FocusHealOnHit, ModifierType, StrapToyDiceRollPenalty,
-    StrapToyLPDamagePerTurn
-} from "../RWConstants";
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
+import {FocusDamageOnHit, FocusHealOnHit, ModifierType, StrapToyDiceRollPenalty, StrapToyLPDamagePerTurn} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionStrapToy extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers) {
         super(fight,
             attacker,
             defenders,
@@ -46,11 +43,11 @@ export class ActionStrapToy extends RWAction {
     }
 
     make():void {
-        this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]];
+        this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
+        this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
         let nbOfTurnsWearingToy = this.tier + 1;
-        let lpDamage = StrapToyLPDamagePerTurn[Tier[this.tier]];
-        let strapToyModifier = ModifierFactory.getModifier(ModifierType.StrapToy, this.fight, this.defender, null, {focusDamage: this.fpDamageToDef, lustDamage: lpDamage, tier: this.tier, diceRoll: StrapToyDiceRollPenalty[Tier[this.tier]], uses: nbOfTurnsWearingToy});
+        let lpDamage = StrapToyLPDamagePerTurn[Tiers[this.tier]];
+        let strapToyModifier = ModifierFactory.getModifier(ModifierType.StrapToy, this.fight, this.defender, null, {focusDamage: this.fpDamageToDef, lustDamage: lpDamage, tier: this.tier, diceRoll: StrapToyDiceRollPenalty[Tiers[this.tier]], uses: nbOfTurnsWearingToy});
         this.appliedModifiers.push(strapToyModifier);
         this.fight.message.addHit("The sextoy started vibrating!");
     }

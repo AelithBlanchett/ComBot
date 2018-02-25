@@ -1,14 +1,9 @@
 import * as BaseConstants from "../../Common/BaseConstants";
-import Trigger = BaseConstants.Trigger;
-import {Utils} from "../../Common/Utils";
 import TriggerMoment = BaseConstants.TriggerMoment;
-import {Tier} from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {IBaseModifier} from "../../Common/IBaseModifier";
-import {Fight} from "../Fight";
-import {BaseModifier} from "../../Common/BaseModifier";
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
+import {BaseModifier} from "../../Common/Modifiers/BaseModifier";
 import {IModifier} from "./IModifier";
-import {BaseFight} from "../../Common/BaseFight";
 import {ModifierType} from "../RWConstants";
 
 export class Modifier extends BaseModifier implements IModifier{
@@ -20,11 +15,11 @@ export class Modifier extends BaseModifier implements IModifier{
     lustHeal: number;
     focusHeal: number;
 
-    fight:Fight;
+    fight:RWFight;
     applier:ActiveFighter;
     receiver:ActiveFighter;
 
-    constructor(receiver:string, applier:string, tier:Tier, modType:ModifierType, hpDamage:number, lustDamage:number, focusDamage:number, diceRoll:number, escapeRoll:number, uses:number,
+    constructor(receiver:string, applier:string, tier:number, modType:ModifierType, hpDamage:number, lustDamage:number, focusDamage:number, diceRoll:number, escapeRoll:number, uses:number,
                 timeToTrigger:TriggerMoment, event:string, parentActionIds:Array<string>, areMultipliers:boolean){
         super(receiver, applier, tier, modType, diceRoll, escapeRoll, uses, timeToTrigger, event, parentActionIds, areMultipliers);
         this.hpDamage = hpDamage;

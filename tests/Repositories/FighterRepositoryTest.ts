@@ -1,9 +1,10 @@
-import {Model} from "../../src/Common/Model";
-import {RWFighter} from "../../src/FightSystem/RWFighter";
+import {Model} from "../../src/Common/Utils/Model";
+import {RWFighter} from "../../src/FightSystem/Fight/RWFighter";
 import {FighterRepository} from "../../src/FightSystem/Repositories/FighterRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 import * as BaseConstants from "../../src/Common/BaseConstants";
+import {FeatureFactory} from "../../src/FightSystem/Features/FeatureFactory";
 
 describe("The RWFighter Repository", () => {
 
@@ -17,7 +18,7 @@ describe("The RWFighter Repository", () => {
 
     it("should do all tests around RWFighter Aelith Blanchetts", async function (done) {
 
-        let myFighter = new RWFighter();
+        let myFighter = new RWFighter(new FeatureFactory());
         myFighter.name = "Aelith Blanchetts";
 
         await Model.db(BaseConstants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();

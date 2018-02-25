@@ -1,7 +1,7 @@
 import {ActionRepository} from "../../src/FightSystem/Repositories/ActionRepository";
-import {Utils} from "../../src/Common/Utils";
-import {ActionType, EmptyAction} from "../../src/FightSystem/RWAction";
-import {BaseFight} from "../../src/Common/BaseFight";
+import {Utils} from "../../src/Common/Utils/Utils";
+import {ActionType, EmptyAction} from "../../src/FightSystem/Actions/RWAction";
+import {BaseFight} from "../../src/Common/Fight/BaseFight";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 

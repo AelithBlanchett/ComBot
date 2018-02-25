@@ -1,13 +1,12 @@
-import {ActionExplanation, ActionType, RWAction} from "../RWAction";
-import * as Constants from "../../Common/BaseConstants";
-import {ActiveFighter} from "../ActiveFighter";
-import {Fight} from "../Fight";
-import Tier = Constants.Tier;
+import {ActionExplanation, ActionType, RWAction} from "./RWAction";
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
+import {Tiers} from "../Constants/Tiers";
 
 export class ActionForcedWorship extends RWAction {
 
-    constructor(fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier) {
+    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers) {
         super(fight,
             attacker,
             defenders,
@@ -43,8 +42,8 @@ export class ActionForcedWorship extends RWAction {
 
     make():void {
         this.lpDamageToAtk += (this.tier+1) * 5;
-        this.fpHealToAtk += FocusHealOnHit[Tier[this.tier]];
-        this.fpDamageToDef += FocusDamageOnHit[Tier[this.tier]] * 2;
+        this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
+        this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]] * 2;
         this.lpDamageToDef += 1;
     }
 

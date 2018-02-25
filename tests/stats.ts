@@ -1,26 +1,23 @@
-import {RWFighter} from "../src/FightSystem/RWFighter";
-import {Fight} from "../src/FightSystem/Fight";
+import {RWFight} from "../src/FightSystem/Fight/RWFight";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
 import * as BaseConstants from "../src/Common/BaseConstants";
-import Tier = BaseConstants.Tier;
-import {Utils} from "../src/Common/Utils";
-import {EnumEx} from "../src/Common/Utils";
+import {Utils} from "../src/Common/Utils/Utils";
+import {EnumEx} from "../src/Common/Utils/Utils";
 import Trigger = BaseConstants.Trigger;
 var waitUntil = require('wait-until');
 var Jasmine = require('jasmine');
 var async = require('async');
 var stats = require('stats-lite');
-import {ActiveFighter} from "../src/FightSystem/ActiveFighter";
+import {ActiveFighter} from "../src/FightSystem/Fight/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
 import {ActiveFighterRepository} from "../src/FightSystem/Repositories/ActiveFighterRepository";
 import {ActionRepository} from "../src/FightSystem/Repositories/ActionRepository";
 import {FightRepository} from "../src/FightSystem/Repositories/FightRepository";
-import {Dice} from "../src/Common/Dice";
-import {Team} from "../src/Common/BaseConstants";
-import {TierDifficulty} from "../src/Common/BaseConstants";
-import {IRWFighter} from "../src/FightSystem/IRWFighter";
-import {ActionType} from "../src/FightSystem/RWAction";
+import {Dice} from "../src/Common/Utils/Dice";
+import {IRWFighter} from "../src/FightSystem/Fight/IRWFighter";
+import {ActionType} from "../src/FightSystem/Actions/RWAction";
 import {BaseDamage} from "../src/FightSystem/RWConstants";
+import {TierDifficulty, Tiers} from "../src/FightSystem/Constants/Tiers";
 var jasmine = new Jasmine();
 var fChatLibInstance:any;
 var debug = false;
@@ -98,7 +95,7 @@ function abstractDatabase() {
     };
 
     FightRepository.load = async function (id) {
-        return new Fight();
+        return new RWFight();
     };
 }
 
@@ -265,7 +262,7 @@ describe("The player(s)", () => {
     }, DEFAULT_TIMEOUT);
 
     // async function doMoveInLoop(tier, action, nonRandom, cb){
-    //     let fight = new Fight();
+    //     let fight = new RWFight();
     //     fight.build(fChatLibInstance, 'here');
     //     var first = createFighter("test"+Utils.getRandomInt(0,10000000));
     //     var second = createFighter("test"+Utils.getRandomInt(0,10000000));
@@ -330,7 +327,7 @@ describe("The player(s)", () => {
         // cb(null, result);
     }
 
-    function calculateFor2(tier:Tier, attack:ActionType, nonRandom:boolean, done: any){
+    function calculateFor2(tier:Tiers, attack:ActionType, nonRandom:boolean, done: any){
         var i = 0;
         while(i < neededInstances){
             let boundDo = doMoveInLoop2.bind(null, tier, attack, nonRandom);
@@ -343,7 +340,7 @@ describe("The player(s)", () => {
             let lpData = [].concat.apply([], res.map((x) => x[2]));
             let fpData = [].concat.apply([], res.map((x) => x[3]));
 
-            console.log(`${(nonRandom ? "1":"0")};${Tier[tier]};${ActionType[attack]};${stats.mean(turnsData)};${stats.median(turnsData)};${stats.variance(turnsData)};${stats.stdev(turnsData)};${stats.percentile(turnsData, 0.90)};${stats.mean(hpData)};${stats.median(hpData)};${stats.variance(hpData)};${stats.stdev(hpData)};${stats.percentile(hpData, 0.90)};${stats.mean(lpData)};${stats.median(lpData)};${stats.variance(lpData)};${stats.stdev(lpData)};${stats.percentile(lpData, 0.90)};${stats.mean(fpData)};${stats.median(fpData)};${stats.variance(fpData)};${stats.stdev(fpData)};${stats.percentile(fpData, 0.90)}`);
+            console.log(`${(nonRandom ? "1":"0")};${Tiers[tier]};${ActionType[attack]};${stats.mean(turnsData)};${stats.median(turnsData)};${stats.variance(turnsData)};${stats.stdev(turnsData)};${stats.percentile(turnsData, 0.90)};${stats.mean(hpData)};${stats.median(hpData)};${stats.variance(hpData)};${stats.stdev(hpData)};${stats.percentile(hpData, 0.90)};${stats.mean(lpData)};${stats.median(lpData)};${stats.variance(lpData)};${stats.stdev(lpData)};${stats.percentile(lpData, 0.90)};${stats.mean(fpData)};${stats.median(fpData)};${stats.variance(fpData)};${stats.stdev(fpData)};${stats.percentile(fpData, 0.90)}`);
 
             res = null;
             turnsData = null;
@@ -357,7 +354,7 @@ describe("The player(s)", () => {
         });
     }
 
-    function attackFormula(tier:Tier, actorAtk:number, targetDef:number, roll:number){
+    function attackFormula(tier:Tiers, actorAtk:number, targetDef:number, roll:number){
         var statDiff = 0;
         if(actorAtk-targetDef > 0){
             statDiff = Math.ceil((actorAtk-targetDef) / 10);
@@ -367,7 +364,7 @@ describe("The player(s)", () => {
         if(calculatedBonus > 0){
             diceBonus = calculatedBonus;
         }
-        return BaseDamage[Tier[tier]] + statDiff + diceBonus;
+        return BaseDamage[Tiers[tier]] + statDiff + diceBonus;
     }
 
     xit("should check triggers", function(){

@@ -1,9 +1,8 @@
-import {IActionFactory} from "../../Common/IActionFactory";
-import {ActionType, RWAction} from "../RWAction";
+import {IActionFactory} from "../../Common/Actions/IActionFactory";
+import {ActionType, RWAction} from "./RWAction";
 import {ActionTag} from "./ActionTag";
-import {Fight} from "../Fight";
-import {ActiveFighter} from "../ActiveFighter";
-import {Tier} from "../../Common/BaseConstants";
+import {RWFight} from "../Fight/RWFight";
+import {ActiveFighter} from "../Fight/ActiveFighter";
 import {ActionBrawl} from "./ActionBrawl";
 import {ActionTease} from "./ActionTease";
 import {ActionHighRisk} from "./ActionHighRisk";
@@ -26,9 +25,10 @@ import {ActionFinisher} from "./ActionFinisher";
 import {ActionPass} from "./ActionPass";
 import {ActionSelfDebase} from "./ActionSelfDebase";
 import {ActionMasturbate} from "./ActionMasturbate";
+import {Tiers} from "../Constants/Tiers";
 
-export class RWActionFactory implements IActionFactory<Fight, ActiveFighter> {
-    getAction(actionName: string, fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tier): RWAction {
+export class RWActionFactory implements IActionFactory<RWFight, ActiveFighter> {
+    getAction(actionName: string, fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers): RWAction {
         let action:RWAction;
         switch(actionName){
             case ActionType.Brawl:
