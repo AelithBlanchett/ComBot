@@ -133,7 +133,7 @@ export enum TransactionType{
     Restat = 3,
     FightStart = 4,
     Tip = 5,
-    DonationFromAelith = 6
+    DonationFromAdmin = 6
 }
 
 export enum FightType {
@@ -154,57 +154,46 @@ export enum TriggerMoment {
 }
 
 export enum Trigger {
-    HPDamage = 1 << 0,
-    LustDamage = 1 << 1,
-    FocusDamage = 1 << 2,
-    Damage = HPDamage | LustDamage,
-    BarDamage = HPDamage | LustDamage | FocusDamage,
+    MainBarDamage = 1 << 0,
+    SecondaryBarDamage = 1 << 1,
+    UtilitaryBarDamage = 1 << 2,
+    Damage = MainBarDamage | SecondaryBarDamage,
+    BarDamage = Damage | UtilitaryBarDamage,
 
-    HPHealing = 1 << 3,
-    LustHealing = 1 << 4,
-    FocusHealing = 1 << 5,
-    Heal = HPHealing | LustHealing,
-    BarHealing = Heal | FocusDamage,
+    MainBarHealing = 1 << 3,
+    SecondaryBarHealing = 1 << 4,
+    UtilitaryBarHealing = 1 << 5,
+    Heal = MainBarHealing | SecondaryBarHealing,
+    BarHealing = Heal | UtilitaryBarDamage,
 
-    Orgasm = 1 << 6,
-    HeartLoss = 1 << 7,
-    OrgasmOrHeartLoss = Orgasm | HeartLoss,
+    MainBarDepleted = 1 << 6,
+    SecondaryBarDepleted = 1 << 7,
+    LifeLoss = MainBarDepleted | SecondaryBarDepleted,
 
     InitiationRoll = 1 << 8,
     SingleRoll = 1 << 9,
     Roll = SingleRoll | InitiationRoll,
 
-    Brawl = 1 << 10,
-    TeaseAttack = 1 << 11,
-    ForcedWorshipAttack = 1 << 12,
-    HighRiskAttack = 1 << 13,
-    RiskyLewd = 1 << 14,
-    Stun = 1 << 15,
-    Attack = Brawl | TeaseAttack | ForcedWorshipAttack | Stun,
-    SubmissionHold = 1 << 16,
-    Bondage = 1 << 17,
-    Degradation = 1 << 18,
-    HumiliationHold = 1 << 19,
-    SexHoldAttack = 1 << 20,
-    Hold = SubmissionHold | HumiliationHold | SexHoldAttack,
-    SensualityBasedAttack = TeaseAttack | SexHoldAttack | ForcedWorshipAttack | HumiliationHold | RiskyLewd,
-    PowerBasedAttack = Brawl | SubmissionHold | HighRiskAttack | Stun,
+    PhysicalAttack = 1 << 10,
+    Stun = 1 << 11,
+    MagicalAttack = 1 << 12,
+    RangedAttack = 1 << 13,
+    GrapplingHold = 1 << 14,
+    Attack = PhysicalAttack | Stun | MagicalAttack | RangedAttack | GrapplingHold,
 
-    ItemPickup = 1 << 21,
-    SextoyPickup = 1 << 22,
-    Pickup = ItemPickup | SextoyPickup,
-
-    Tag = 1 << 23,
-    Escape = 1 << 24,
-    Rest = 1 << 25,
-    Submit = 1 << 27,
+    Tag = 1 << 15,
+    Escape = 1 << 16,
+    Rest = 1 << 17,
+    Submit = 1 << 18,
     PassiveAction = Tag | Escape | Rest,
-    AnyOffensiveAction = Attack | Hold,
-    AnyAction = PassiveAction | AnyOffensiveAction,
+    AnyAction = PassiveAction | Attack,
 
-    OnTurnTick = 1 << 28,
-    None = 1 << 29,
+    BonusPickup = 1 << 19,
 
-    StrapToy = 1 << 30,
-    Finisher = 1 << 31
+    TurnChange = 1 << 20,
+    None = 1 << 21,
+
+    FinishingMove = 1 << 22
+
+    //There's still room for 9 more triggers, but choose them with precaution!
 }

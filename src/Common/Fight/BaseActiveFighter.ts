@@ -4,7 +4,7 @@ import {FightLength} from "../BaseConstants";
 import {Trigger} from "../BaseConstants";
 import {TriggerMoment} from "../BaseConstants";
 import * as BaseConstants from "../BaseConstants";
-import {AchievementManager} from "../../Achievements/AchievementManager";
+import {AchievementManager} from "../Achievements/AchievementManager";
 import {BaseFighter} from "./BaseFighter";
 import {BaseModifier} from "../Modifiers/BaseModifier";
 import {Teams} from "../Constants/Teams";
@@ -88,7 +88,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     }
 
     //returns dice score
-    roll(times:number = 1, event:string = Trigger.Roll.toString()):number {
+    roll(times:number = 1, event:Trigger = Trigger.Roll):number {
         this.triggerMods(TriggerMoment.Before, event);
         let result = 0;
         if (times == 1) {
@@ -108,7 +108,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
 
     nextRound():void{}
 
-    triggerMods(moment:TriggerMoment, event:string, objFightAction?:any):boolean {
+    triggerMods(moment:TriggerMoment, event:Trigger, objFightAction?:any):boolean {
         let atLeastOneModWasActivated:boolean = false;
         for (let mod of this.modifiers) {
             let message = mod.trigger(moment, event, objFightAction);
@@ -185,7 +185,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     getStunnedTier():number {
         let stunTier = -1;
         for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.type == "Stun") {
+            if (mod.receiver.name == this.name && mod.name == "Stun") {
                 stunTier = mod.tier;
             }
         }
@@ -199,7 +199,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isApplyingHold():boolean {
         let isApplyingHold = false;
         for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && mod.isAHold()) {
+            if (mod.receiver.name == this.name && mod.isAHold()) {
                 isApplyingHold = true;
             }
         }
@@ -209,7 +209,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isApplyingHoldOfTier():number {
         let tier = -1;
         for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && mod.isAHold()) {
+            if (mod.receiver.name == this.name && mod.isAHold()) {
                 tier = mod.tier;
             }
         }
@@ -219,7 +219,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isInHold():boolean {
         let isInHold = false;
         for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.isAHold()) {
+            if (mod.receiver.name == this.name && mod.isAHold()) {
                 isInHold = true;
             }
         }
@@ -230,7 +230,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isInSpecificHold(holdType:string):boolean {
         let isInHold = false;
         for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.isAHold() && mod.type == holdType) {
+            if (mod.receiver.name == this.name && mod.isAHold() && mod.name == holdType) {
                 isInHold = true;
             }
         }
@@ -240,7 +240,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isInHoldAppliedBy(fighterName:string):boolean {
         let isTrue = false;
         for (let mod of this.modifiers) {
-            if (mod.idApplier == fighterName && mod.isAHold()) {
+            if (mod.receiver.name == fighterName && mod.isAHold()) {
                 isTrue = true;
             }
         }
@@ -250,7 +250,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     isInHoldOfTier():number {
         let tier = -1;
         for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.isAHold()) {
+            if (mod.receiver.name == this.name && mod.isAHold()) {
                 tier = mod.tier;
             }
         }
@@ -259,15 +259,15 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
 
     releaseHoldsApplied() {
         for (let mod of this.modifiers) {
-            if (mod.idApplier == this.name && mod.isAHold()) {
-                mod.receiver.releaseHoldsAppliedBy(mod.idApplier);
+            if (mod.applier != null && mod.applier.name == this.name && mod.isAHold()) {
+                mod.receiver.releaseHoldsAppliedBy(mod.applier.name);
             }
         }
     }
 
     releaseHoldsAppliedBy(fighterName:string) {
         for (let mod of this.modifiers) {
-            if (mod.idApplier == fighterName && mod.isAHold()) {
+            if (mod.applier != null && mod.applier.name == fighterName && mod.isAHold()) {
                 this.removeMod(mod.idModifier);
             }
         }
@@ -275,7 +275,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
 
     escapeHolds() {
         for (let mod of this.modifiers) {
-            if (mod.idReceiver == this.name && mod.isAHold()) {
+            if (mod.receiver.name == this.name && mod.isAHold()) {
                 this.removeMod(mod.idModifier);
             }
         }
@@ -284,7 +284,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     getListOfActiveModifiers():string{
         let strMods = "";
         for(let mod of this.modifiers){
-            strMods += mod.type + ", ";
+            strMods += mod.name + ", ";
         }
         strMods = strMods.substring(0, strMods.length - 2);
         return strMods;

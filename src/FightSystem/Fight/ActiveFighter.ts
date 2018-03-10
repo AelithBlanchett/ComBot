@@ -10,10 +10,13 @@ import {Commands} from "../../Common/Utils/Parser";
 import {Modifier} from "../Modifiers/Modifier";
 import {FeatureType, ModifierType} from "../RWConstants";
 import {GameSettings} from "../../Common/Configuration/GameSettings";
-import {FeatureFactory} from "../Features/FeatureFactory";
+import {IFeatureFactory} from "../../Common/Features/IFeatureFactory";
+import {RWFight} from "./RWFight";
+import {RWFighter} from "./RWFighter";
 
 export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
+    //TODO
     restat(statArray: number[]) {
         throw new Error("Method not implemented.");
     }
@@ -93,7 +96,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
     modifiers:Modifier[];
 
-    constructor(featureFactory:FeatureFactory){
+    constructor(featureFactory:IFeatureFactory<RWFight, RWFighter>){
         super(featureFactory);
         this.toughness = 1;
         this.toughness = 1;
@@ -369,7 +372,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
             hp = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.HPHealing.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.MainBarHealing);
         }
         if (this.hp + hp > this.hpPerHeart()) {
             hp = this.hpPerHeart() - this.hp; //reduce the number if it overflows the bar
@@ -377,7 +380,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         this.hp += hp;
         this.hpHealLastRound += hp;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.HPHealing.toString());
+            this.triggerMods(TriggerMoment.After, Trigger.MainBarHealing);
         }
     }
 
@@ -387,7 +390,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
             lust = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.LustHealing.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.SecondaryBarHealing);
         }
         if (this.lust - lust < 0) {
             lust = this.lust; //reduce the number if it overflows the bar
@@ -395,7 +398,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         this.lust -= lust;
         this.lpHealLastRound += lust;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.LustHealing.toString());
+            this.triggerMods(TriggerMoment.After, Trigger.SecondaryBarHealing);
         }
     }
 
@@ -405,7 +408,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
             focus = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.FocusHealing.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.UtilitaryBarHealing);
         }
         if (this.focus + focus > this.maxFocus()) {
             focus = this.maxFocus() - this.focus; //reduce the number if it overflows the bar
@@ -413,7 +416,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         this.focus += focus;
         this.fpHealLastRound += focus;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.FocusHealing.toString());
+            this.triggerMods(TriggerMoment.After, Trigger.UtilitaryBarHealing);
         }
     }
 
@@ -423,12 +426,12 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
             hp = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.HPDamage.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.MainBarDamage);
         }
         this.hp -= hp;
         this.hpDamageLastRound += hp;
         if (this.hp <= 0) {
-            this.triggerMods(TriggerMoment.Before, Trigger.HeartLoss.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.MainBarDepleted);
             this.hp = 0;
             //this.heartsRemaining--;
             this.livesRemaining--;
@@ -440,10 +443,10 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
             else if (this.livesRemaining == 1) {
                 this.fight.message.addHit(`[b][color=red]Last life[/color][/b] for ${this.name}!`);
             }
-            this.triggerMods(TriggerMoment.After, Trigger.HeartLoss.toString());
+            this.triggerMods(TriggerMoment.After, Trigger.MainBarDepleted);
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.HPDamage.toString());
+            this.triggerMods(TriggerMoment.After, Trigger.MainBarDamage);
         }
     }
 
@@ -453,12 +456,12 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
             lust = 1;
         }
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.LustDamage.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.SecondaryBarDamage);
         }
         this.lust += lust;
         this.lpDamageLastRound += lust;
         if (this.lust >= this.lustPerOrgasm()) {
-            this.triggerMods(TriggerMoment.Before, Trigger.Orgasm.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.SecondaryBarDepleted);
             this.lust = 0;
             //this.orgasmsRemaining--;
             this.livesRemaining--;
@@ -466,27 +469,27 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
             this.fight.message.addHit(`[b][color=pink]Orgasm on the mat![/color][/b] ${this.name} has ${this.livesRemaining} lives left.`);
             this.lust = 0;
             if (triggerMods) {
-                this.triggerMods(TriggerMoment.After, Trigger.Orgasm.toString());
+                this.triggerMods(TriggerMoment.After, Trigger.SecondaryBarDepleted);
             }
             if (this.livesRemaining == 1) {
                 this.fight.message.addHit(`[b][color=red]Last life[/color][/b] for ${this.name}!`);
             }
         }
-        this.triggerMods(TriggerMoment.After, Trigger.LustDamage.toString());
+        this.triggerMods(TriggerMoment.After, Trigger.SecondaryBarDamage);
     }
 
-    hitFP(focusDamage:number, triggerMods:boolean = true) { //focusDamage CAN BE NEGATIVE to gain it
+    hitFP(focusDamage:number, triggerMods:boolean = true) {
         if (focusDamage <= 0) {
             return;
         }
         focusDamage = Math.floor(focusDamage);
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.Before, Trigger.FocusDamage.toString());
+            this.triggerMods(TriggerMoment.Before, Trigger.UtilitaryBarDamage);
         }
         this.focus -= focusDamage;
         this.fpDamageLastRound += focusDamage;
         if (triggerMods) {
-            this.triggerMods(TriggerMoment.After, Trigger.FocusDamage.toString());
+            this.triggerMods(TriggerMoment.After, Trigger.UtilitaryBarDamage);
         }
     }
 
@@ -548,7 +551,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
     bondageItemsOnSelf():number {
         let bondageModCount = 0;
         for (let mod of this.modifiers) {
-            if (mod.type == ModifierType.Bondage) {
+            if (mod.name == ModifierType.Bondage) {
                 bondageModCount++;
             }
         }

@@ -1,43 +1,35 @@
-import {Model} from "../../src/Common/Utils/Model";
-import {RWFighter} from "../../src/FightSystem/Fight/RWFighter";
-import {FighterRepository} from "../../src/FightSystem/Repositories/FighterRepository";
+import {RWFight} from "../../../src/FightSystem/Fight/RWFight";
+import {Database} from "../../../src/Common/Utils/Model";
+import {FightRepository} from "../../../src/FightSystem/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as BaseConstants from "../../src/Common/BaseConstants";
-import {FeatureFactory} from "../../src/FightSystem/Features/FeatureFactory";
+import * as BaseConstants from "../../../src/Common/BaseConstants";
 
-describe("The RWFighter Repository", () => {
-
-    beforeEach(async () =>{
-        //await Model.db('nsfw_fighters').del();
-    });
+describe("The RWFight Repository", () => {
 
     it("should do nothing. lol.", async function (done) {
         done();
     });
 
-    it("should do all tests around RWFighter Aelith Blanchetts", async function (done) {
+    it("should try everything around fight 1", async function (done) {
 
-        let myFighter = new RWFighter(new FeatureFactory());
-        myFighter.name = "Aelith Blanchetts";
+        let myFight = new RWFight();
 
-        await Model.db(BaseConstants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
-
-        await FighterRepository.persist(myFighter);
-        let resultTrue = await FighterRepository.exists(myFighter.name);
+        await FightRepository.persist(myFight);
+        let resultTrue = await FightRepository.exists(myFight.idFight);
         expect(resultTrue).toBe(true);
 
-        await FighterRepository.remove(myFighter.name);
-        let resultFalse = await FighterRepository.exists(myFighter.name);
+        await FightRepository.delete(myFight.idFight);
+        let resultFalse = await FightRepository.exists(myFight.idFight);
         expect(resultFalse).toBe(false);
 
-        await Model.db(BaseConstants.SQL.fightersTableName).where({name: myFighter.name, season: 1}).del();
+        await Database.get(BaseConstants.SQL.fightTableName).where({idFight: myFight.idFight}).del();
 
         done();
     });
 
     // it("should say that action that was just inserted is in database.", async function (done) {
-    //     let myFighter = new RWFighter();
+    //     let myFighter = new Fighter();
     //     myFighter.name = "Aelith Blanchette";
     //
     //     await ActiveFighterRepository.persist(myFighter);

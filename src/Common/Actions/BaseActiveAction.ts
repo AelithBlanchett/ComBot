@@ -1,4 +1,4 @@
-import {TriggerMoment} from "../BaseConstants";
+import {Trigger, TriggerMoment} from "../BaseConstants";
 import {BaseAction} from "./BaseAction";
 import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
 import {BaseFight} from "../Fight/BaseFight";
@@ -7,6 +7,7 @@ import * as BaseConstants from "../BaseConstants";
 import {BaseModifier} from "../Modifiers/BaseModifier";
 import {Messages} from "../Constants/Messages";
 import {GameSettings} from "../Configuration/GameSettings";
+import {BaseFeatureParameter} from "../Features/BaseFeatureParameter";
 
 
 export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, ActiveFighter extends BaseActiveFighter = BaseActiveFighter> extends BaseAction{
@@ -100,30 +101,6 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
         this.appliedModifiers = [];
     }
 
-    get idAttacker(){
-        return (this.attacker != null ? this.attacker.name : this.temporaryIdAttacker);
-    }
-
-    set idAttacker(value:string){
-        this.temporaryIdAttacker = value;
-    }
-
-    get idDefenders():string[]{
-        return (this.defenders != null ? this.defenders.map(x => x.name) : this.temporaryIdDefenders);
-    }
-
-    set idDefenders(value:string[]){
-        this.temporaryIdDefenders = value;
-    }
-
-    get idFight(){
-        return (this.fight != null ? this.fight.idFight : this.temporaryIdFight);
-    }
-
-    set idFight(value:string){
-        this.temporaryIdFight = value;
-    }
-
     get defender(){
         if(this.defenders == null){
             return null;
@@ -132,7 +109,7 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
             return this.defenders[0];
         }
         else{
-            throw new Error("Wrong function call: there are too many targets, this function can only return one.");
+            throw new Error(Messages.errorTooManyDefendersForThisCall);
         }
     }
 
@@ -264,11 +241,6 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
     }
 
     announceAction():void{
-        // let strTier = "";
-        // if(this.tier >= 0){
-        //     strTier = Tier[this.tier];
-        // }
-
         if(this.defenders.length){
             this.fight.message.addAction(`${this.name} on ${this.defenders.map(x => x.getStylizedName()).join(",")}`);
         }
@@ -290,21 +262,19 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
     }
 
     triggerBeforeEvent():void{
-        this.attacker.triggerMods(TriggerMoment.Before, this.name);
-        //TODO reimplement features here
-        // this.attacker.triggerFeatures(TriggerMoment.Before, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
-        // if(this.defender){
-        //     this.defender.triggerFeatures(TriggerMoment.Before, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
-        // }
+        this.attacker.triggerMods(TriggerMoment.Before, Trigger.AnyAction);
+        this.attacker.triggerFeatures(TriggerMoment.Before, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
+        if(this.defender){
+            this.defender.triggerFeatures(TriggerMoment.Before, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
+        }
     }
 
     triggerAfterEvent():void{
-        this.attacker.triggerMods(TriggerMoment.After, this.name);
-        //TODO reimplement features here
-        // this.attacker.triggerFeatures(TriggerMoment.After, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
-        // if(this.defender){
-        //     this.defender.triggerFeatures(TriggerMoment.After, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
-        // }
+        this.attacker.triggerMods(TriggerMoment.After, Trigger.AnyAction);
+        this.attacker.triggerFeatures(TriggerMoment.After, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
+        if(this.defender){
+            this.defender.triggerFeatures(TriggerMoment.After, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
+        }
     }
 
     abstract async save():Promise<void>;

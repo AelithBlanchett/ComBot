@@ -5,14 +5,14 @@ import {Utils} from "../src/Common/Utils/Utils";
 import {ActiveFighter} from "../src/FightSystem/Fight/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
 import {FeatureFactory} from "../src/FightSystem/Features/FeatureFactory";
-var waitUntil = require('wait-until');
-var Jasmine = require('jasmine');
-var jasmine = new Jasmine();
-var fChatLibInstance: any;
-var debug = false;
-var mockedClasses = [];
-var usedIndexes = [];
-var usedFighters = [];
+let waitUntil = require('wait-until');
+let Jasmine = require('jasmine');
+let jasmine = new Jasmine();
+let fChatLibInstance: any;
+let debug = false;
+let mockedClasses = [];
+let usedIndexes = [];
+let usedFighters = [];
 
 async function initiateMatchSettings2vs2TagForDb(cmdHandler) {
         cmdHandler.fight.setFightType("tagteam");

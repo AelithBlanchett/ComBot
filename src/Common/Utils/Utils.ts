@@ -1,3 +1,5 @@
+import {Trigger, TriggerMoment} from "../BaseConstants";
+
 let vsprintf = require('sprintf-js').vsprintf;
 
 export class Utils {
@@ -116,6 +118,17 @@ export class Utils {
         }
 
         return augmentedOutput;
+    }
+
+    static willTriggerForEvent(checkedMoment: TriggerMoment, searchedMoment:TriggerMoment, checkedEvent:Trigger, searchedEvent:Trigger):boolean{
+        let canPass = false;
+
+        if(checkedEvent & searchedEvent){
+            if(checkedMoment & searchedMoment){
+                canPass = true;
+            }
+        }
+        return canPass;
     }
 }
 

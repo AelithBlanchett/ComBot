@@ -23,7 +23,7 @@ export class RWFight extends BaseFight<ActiveFighter>{
 
     async nextTurn(){
         for (let fighter of this.fighters) {
-            fighter.triggerMods(TriggerMoment.Any, Trigger.OnTurnTick.toString());
+            fighter.triggerMods(TriggerMoment.Any, Trigger.TurnChange);
             if(!fighter.isInHold()){
                 fighter.healFP(1);
             }

@@ -1,4 +1,4 @@
-import {Model} from "../../Common/Utils/Model";
+import {Database} from "../../Common/Utils/Model";
 import {Utils} from "../../Common/Utils/Utils";
 import * as BaseConstants from "../../Common/BaseConstants";
 import {RWAction, EmptyAction} from "../Actions/RWAction";
@@ -37,12 +37,12 @@ export class ActionRepository{
                     baseParameter.idAction = action.idAction;
                     action.createdAt = new Date();
                     baseParameter.createdAt = action.createdAt;
-                    await Model.db(BaseConstants.SQL.actionTableName).insert(baseParameter).into(BaseConstants.SQL.actionTableName);
+                    await Database.get(BaseConstants.SQL.actionTableName).insert(baseParameter).into(BaseConstants.SQL.actionTableName);
                 }
                 else{
                     action.updatedAt = new Date();
                     baseParameter.updatedAt = action.updatedAt;
-                    await Model.db(BaseConstants.SQL.actionTableName).where({idAction: action.idAction}).update(
+                    await Database.get(BaseConstants.SQL.actionTableName).where({idAction: action.idAction}).update(
                         {
                             idFight: action.fight.idFight,
                             atTurn: action.atTurn,
@@ -81,12 +81,13 @@ export class ActionRepository{
 
         try
         {
-            let loadedData = await Model.db(BaseConstants.SQL.actionTableName).where({idFight: idFight}).select();
+            let loadedData = await Database.get(BaseConstants.SQL.actionTableName).where({idFight: idFight}).select();
 
             for(let data of loadedData){
-                let action = new EmptyAction();
-                Utils.mergeFromTo(data, action);
-                loadedActions.push(action);
+                //TODO FIX THIS
+                // let action = new EmptyAction();
+                // Utils.mergeFromTo(data, action);
+                // loadedActions.push(action);
             }
 
         }
@@ -101,7 +102,7 @@ export class ActionRepository{
         let loadedData = [];
         if(idAction){
             try{
-                loadedData = await Model.db(BaseConstants.SQL.actionTableName).where({idAction: idAction}).select();
+                loadedData = await Database.get(BaseConstants.SQL.actionTableName).where({idAction: idAction}).select();
             }
             catch(ex){
                 throw ex;
@@ -113,7 +114,7 @@ export class ActionRepository{
     public static async delete(actionId:string):Promise<void>{
         if(actionId){
             try{
-                await Model.db(BaseConstants.SQL.actionTableName).where({idAction: actionId}).del();
+                await Database.get(BaseConstants.SQL.actionTableName).where({idAction: actionId}).del();
             }
             catch(ex){
                 throw ex;

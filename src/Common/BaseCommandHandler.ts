@@ -8,7 +8,7 @@ import {FighterRepository} from "../FightSystem/Repositories/FighterRepository";
 import {FightRepository} from "../FightSystem/Repositories/FightRepository";
 import {TransactionType} from "./BaseConstants";
 import {FightLength} from "./BaseConstants";
-import {Model} from "./Utils/Model";
+import {Database} from "./Utils/Model";
 import {BaseFighter} from "./Fight/BaseFighter";
 import {IFChatLib} from "fchatlib/dist/src/Interfaces/IFChatLib";
 import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
@@ -397,6 +397,7 @@ export class BaseCommandHandler {
             }
 
             try {
+                //TODO fix this
                 let newFighter = new RWFighter(new FeatureFactory());
                 newFighter.name = data.character;
                 newFighter.restat(arrParam);
@@ -423,7 +424,7 @@ export class BaseCommandHandler {
             try {
                 if (fighterReceiving != null) {
                     let amount:number = parsedArgs.amount;
-                    fighterReceiving.giveTokens(amount, TransactionType.DonationFromAelith, data.character);
+                    fighterReceiving.giveTokens(amount, TransactionType.DonationFromAdmin, data.character);
                     await FighterRepository.persist(fighterReceiving);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${amount} tokens.[/color]`, data.character);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${amount} tokens from ${data.character} ![/color]`, fighterReceiving.name);

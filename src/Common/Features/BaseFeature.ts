@@ -15,7 +15,7 @@ export abstract class BaseFeature{
     updatedAt:Date;
     deletedAt:Date;
 
-    constructor(featureType:string, receiver:BaseFighter, id?:string) {
+    constructor(featureType:string, receiver:BaseFighter, uses:number, id?:string) {
         if(id){
             this.id = id;
         }

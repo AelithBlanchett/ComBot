@@ -1,7 +1,5 @@
 import {CommandHandler} from "./CommandHandler";
 import {IFChatLib} from "fchatlib/dist/src/Interfaces/IFChatLib";
-import * as BaseConstants from "../Common/BaseConstants";
-import {Model} from "../Common/Utils/Model";
 import {GameSettings} from "../Common/Configuration/GameSettings";
 import * as RWGameSettings from "./Configuration/RWGameSettings.json"
 

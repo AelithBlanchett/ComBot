@@ -1,7 +1,6 @@
-import {IAchievement} from "../../Achievements/IAchievement";
+import {IAchievement} from "../Achievements/IAchievement";
 import {BaseFeature} from "../Features/BaseFeature";
 import {FightTier, FightTierWinRequirements, TransactionType} from "../BaseConstants";
-import {FeatureFactory} from "../../FightSystem/Features/FeatureFactory";
 import {Teams} from "../Constants/Teams";
 import {IFeatureFactory} from "../Features/IFeatureFactory";
 import {BaseFight} from "./BaseFight";

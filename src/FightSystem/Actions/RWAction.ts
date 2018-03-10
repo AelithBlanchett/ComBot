@@ -7,6 +7,8 @@ import {ActionRepository} from "../Repositories/ActionRepository";
 import {Modifier} from "../Modifiers/Modifier";
 import * as Constants from "../RWConstants"
 import {TierDifficulty, Tiers} from "../Constants/Tiers";
+import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
+import {BaseFight} from "../../Common/Fight/BaseFight";
 
 export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> {
 
@@ -253,7 +255,7 @@ export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> 
                         for (let mod of defender.modifiers) {
                             //we updated the children and parent's damage and turns
                             if (mod.idModifier == idOfFormerHold) {
-                                mod.type = this.appliedModifiers[indexOfNewHold].type;
+                                mod.name = this.appliedModifiers[indexOfNewHold].name;
                                 mod.event = this.appliedModifiers[indexOfNewHold].event;
                                 mod.uses += this.appliedModifiers[indexOfNewHold].uses;
                                 mod.hpDamage += this.appliedModifiers[indexOfNewHold].hpDamage;
@@ -312,8 +314,8 @@ export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> 
 
 export class EmptyAction extends RWAction {
 
-    constructor(){
-        super(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    constructor(fight:any, attacker:any, defender:any){
+        super(fight, attacker, [defender], "actionName", -1, false, false, false, true, true, false, true, false, true, false, true, false, true, false, false, true, false, true, false, false, true, "no explanation", 1);
     }
 
     make(): void {

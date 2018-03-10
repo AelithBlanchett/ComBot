@@ -1,4 +1,4 @@
-import {Model} from "../../Common/Utils/Model";
+import {Database} from "../../Common/Utils/Model";
 import {Utils} from "../../Common/Utils/Utils";
 import {Modifier} from "../Modifiers/Modifier";
 import * as BaseConstants from "../../Common/BaseConstants";
@@ -12,14 +12,14 @@ export class ModifierRepository{
         {
             if(!await ModifierRepository.exists(modifier.idModifier)){
                 modifier.createdAt = new Date();
-                await Model.db(BaseConstants.SQL.modifiersTableName).insert(
+                await Database.get(BaseConstants.SQL.modifiersTableName).insert(
                     {
                         idModifier: modifier.idModifier,
-                        idFight: modifier.idFight,
-                        idReceiver: modifier.idReceiver,
-                        idApplier: modifier.idApplier,
+                        idFight: modifier.fight.idFight,
+                        idReceiver: modifier.receiver.name,
+                        idApplier: modifier.applier.name,
                         tier: modifier.tier,
-                        type: modifier.type,
+                        type: modifier.name,
                         focusDamage: modifier.focusDamage,
                         hpDamage: modifier.hpDamage,
                         lustDamage: modifier.lustDamage,
@@ -35,13 +35,13 @@ export class ModifierRepository{
             }
             else{
                 modifier.updatedAt = new Date();
-                await Model.db(BaseConstants.SQL.modifiersTableName).where({idModifier: modifier.idModifier}).update(
+                await Database.get(BaseConstants.SQL.modifiersTableName).where({idModifier: modifier.idModifier}).update(
                     {
-                        idFight: modifier.idFight,
-                        idReceiver: modifier.idReceiver,
-                        idApplier: modifier.idApplier,
+                        idFight: modifier.fight.idFight,
+                        idReceiver: modifier.receiver.name,
+                        idApplier: modifier.applier.name,
                         tier: modifier.tier,
-                        type: modifier.type,
+                        type: modifier.name,
                         focusDamage: modifier.focusDamage,
                         hpDamage: modifier.hpDamage,
                         lustDamage: modifier.lustDamage,
@@ -67,10 +67,10 @@ export class ModifierRepository{
 
         try
         {
-            let loadedData = await Model.db(BaseConstants.SQL.modifiersTableName).where({idFight: idFight, idReceiver: idFighter}).and.whereNull('deletedAt').select();
+            let loadedData = await Database.get(BaseConstants.SQL.modifiersTableName).where({idFight: idFight, idReceiver: idFighter}).and.whereNull('deletedAt').select();
 
             for(let data of loadedData){
-                let modifier = ModifierFactory.getModifier(ModifierType.DummyModifier, null, null);
+                let modifier = ModifierFactory.getModifier(ModifierType.DummyModifier, null, null, null);
                 Utils.mergeFromTo(data, modifier);
                 modifier.idParentActions = [];
                 if(data.idParentActions != null){
@@ -90,13 +90,13 @@ export class ModifierRepository{
     }
 
     public static async exists(idModifier:string):Promise<boolean>{
-        let loadedData = await Model.db(BaseConstants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').select();
+        let loadedData = await Database.get(BaseConstants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').select();
         return (loadedData.length > 0);
     }
 
     public static async delete(idModifier:string):Promise<void>{
         try{
-            await Model.db(BaseConstants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').update({
+            await Database.get(BaseConstants.SQL.modifiersTableName).where({idModifier: idModifier}).and.whereNull('deletedAt').update({
                 deletedAt: new Date()
             });
         }
@@ -107,7 +107,7 @@ export class ModifierRepository{
 
     public static async deleteFromFight(idFight:string):Promise<void>{
         try{
-            await Model.db(BaseConstants.SQL.modifiersTableName).where({idFight: idFight}).and.whereNull('deletedAt').update({
+            await Database.get(BaseConstants.SQL.modifiersTableName).where({idFight: idFight}).and.whereNull('deletedAt').update({
                 deletedAt: new Date()
             });
         }

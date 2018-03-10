@@ -8,17 +8,14 @@ import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
 
 export abstract class BaseModifier implements IBaseModifier{
     idModifier: string;
-    idFight:string;
     tier:number;
-    type:string;
-    idApplier:string;
-    idReceiver:string;
+    name:string;
 
     areDamageMultipliers: boolean = false;
     diceRoll: number;
     escapeRoll: number;
     uses: number;
-    event:string;
+    event:Trigger;
     timeToTrigger:TriggerMoment;
     idParentActions:Array<string>;
 
@@ -30,27 +27,23 @@ export abstract class BaseModifier implements IBaseModifier{
     updatedAt: Date;
     deletedAt: Date;
 
-    constructor(receiver:string, applier:string, tier:number, modType:string, diceRoll:number, escapeRoll:number, uses:number,
-                timeToTrigger:TriggerMoment, event:string, parentActionIds:Array<string>, areMultipliers:boolean){
+    constructor(name:string, fight:BaseFight, receiver:BaseActiveFighter, applier:BaseActiveFighter,  tier:number, uses:number, timeToTrigger:TriggerMoment, event:Trigger, parentActionIds?:Array<string>){
         this.idModifier = Utils.generateUUID();
-        this.idReceiver = receiver;
-        this.idApplier = applier;
+        this.receiver = receiver;
+        this.applier = applier;
+        this.fight = fight;
         this.tier = tier;
-        this.type = modType;
-        this.diceRoll = diceRoll;
-        this.escapeRoll = escapeRoll; //unused
+        this.name = name;
         this.uses = uses;
         this.event = event;
         this.timeToTrigger = timeToTrigger;
         this.idParentActions = parentActionIds;
-        this.areDamageMultipliers = areMultipliers;
+        this.initialize();
     }
 
-    build(receiver:BaseActiveFighter, applier:BaseActiveFighter, fight:BaseFight){
-        this.receiver = receiver;
-        this.applier = applier;
-        this.fight = fight;
-        this.idFight = fight.idFight;
+    initialize(){
+        this.areDamageMultipliers = false;
+        this.diceRoll = 0;
     }
 
     isOver():boolean{
@@ -97,52 +90,12 @@ export abstract class BaseModifier implements IBaseModifier{
 
     }
 
-    static willTriggerForEvent(checkedMoment: TriggerMoment, searchedMoment:TriggerMoment, checkedEvent:string, searchedEvent:string):boolean{
-        let canPass = false;
-
-        let checkedEventNumber:number = parseInt(checkedEvent);
-        let searchedEventNumber:number = parseInt(searchedEvent);
-        let isNumber = (!isNaN(checkedEventNumber) && !isNaN(searchedEventNumber));
-
-        if(!isNumber){
-            let checkedEventNumberConverted = checkedEventNumber;
-            let searchedEventNumberConverted = searchedEventNumber;
-            if(isNaN(checkedEventNumber)){
-                checkedEventNumberConverted = Trigger[checkedEvent];
-            }
-            if(isNaN(searchedEventNumber)){
-                searchedEventNumberConverted = Trigger[searchedEvent];
-            }
-            if((!isNaN(checkedEventNumberConverted) && !isNaN(searchedEventNumberConverted))){
-                isNumber = true;
-                checkedEventNumber = checkedEventNumberConverted;
-                searchedEventNumber = searchedEventNumberConverted;
-            }
-        }
-
-        if(isNumber){
-            if(checkedEventNumber & searchedEventNumber){
-                if(checkedMoment & searchedMoment){
-                    canPass = true;
-                }
-            }
-        }
-        else {
-            if (checkedEvent == searchedEvent) {
-                if (checkedMoment == searchedMoment) {
-                    canPass = true;
-                }
-            }
-        }
-        return canPass;
-    }
-
-    trigger(moment: TriggerMoment, event:string, objFightAction?:any):string{
+    trigger(moment: TriggerMoment, event:Trigger, objFightAction?:any):string{
         let messageAboutModifier:string = "";
 
-        if(BaseModifier.willTriggerForEvent(this.timeToTrigger, moment, this.event, event)){
+        if(Utils.willTriggerForEvent(this.timeToTrigger, moment, this.event, event)){
             this.uses--;
-            messageAboutModifier = `${this.receiver.getStylizedName()} is affected by the ${this.type}, `;
+            messageAboutModifier = `${this.receiver.getStylizedName()} is affected by the ${this.name}, `;
             if(!objFightAction){
                 messageAboutModifier += this.applyModifierOnReceiver(moment, event);
             }
@@ -166,8 +119,8 @@ export abstract class BaseModifier implements IBaseModifier{
         return messageAboutModifier;
     }
 
-    abstract applyModifierOnReceiver(moment: TriggerMoment, event:string);
-    abstract applyModifierOnAction(moment: TriggerMoment, event:string, objFightAction:any);
+    abstract applyModifierOnReceiver(moment: TriggerMoment, event:Trigger);
+    abstract applyModifierOnAction(moment: TriggerMoment, event:Trigger, objFightAction:any);
     abstract isAHold():boolean;
 
 }

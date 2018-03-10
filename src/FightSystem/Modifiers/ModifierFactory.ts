@@ -91,21 +91,13 @@ export class ModifierFactory{
         let indexOfSearchedModifier = (<any>modifiersList).findIndex(x => x.name.toLowerCase() == realModifierName.toLowerCase());
         if(indexOfSearchedModifier != -1){
             inputParameters = ModifierFactory.checkAndInitializeDefaultValues(indexOfSearchedModifier, realModifierName, inputParameters);
-            modifier = new Modifier(receiver.name,
-                                    (applier != null ? applier.name : null),
-                                    inputParameters.tier,
-                                    inputParameters.type,
-                                    inputParameters.hpDamage,
-                                    inputParameters.lustDamage,
-                                    inputParameters.focusDamage,
-                                    inputParameters.diceRoll,
-                                    inputParameters.escapeRoll,
-                                    inputParameters.uses,
-                                    inputParameters.timeToTrigger,
-                                    inputParameters.event,
-                                    inputParameters.parentIds,
-                                    inputParameters.areDamageMultipliers);
-            modifier.build(receiver, applier, fight);
+            modifier = new Modifier(modifierName, fight, receiver, applier , inputParameters.tier, inputParameters.uses, inputParameters.timeToTrigger, inputParameters.event, inputParameters.parentIds);
+            modifier.hpDamage = inputParameters.hpDamage;
+            modifier.lustDamage = inputParameters.lustDamage;
+            modifier.areDamageMultipliers = inputParameters.focusDamage;
+            modifier.diceRoll = inputParameters.diceRoll;
+            modifier.escapeRoll = inputParameters.escapeRoll;
+            modifier.areDamageMultipliers = inputParameters.areDamageMultipliers;
         }
 
         if(modifier == null){

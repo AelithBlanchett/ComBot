@@ -1,10 +1,10 @@
 import {IAchievement} from "./IAchievement";
-import * as BaseConstants from "../Common/BaseConstants";
-import {TransactionType} from "../Common/BaseConstants";
-import {BaseFighter} from "../Common/Fight/BaseFighter";
-import {BaseActiveFighter} from "../Common/Fight/BaseActiveFighter";
-import {BaseFight} from "../Common/Fight/BaseFight";
-import {GameSettings} from "../Common/Configuration/GameSettings";
+import * as BaseConstants from "../BaseConstants";
+import {TransactionType} from "../BaseConstants";
+import {BaseFighter} from "../Fight/BaseFighter";
+import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {BaseFight} from "../Fight/BaseFight";
+import {GameSettings} from "../Configuration/GameSettings";
 
 export class AchievementManager {
 

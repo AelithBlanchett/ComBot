@@ -18,8 +18,8 @@
     "es6-promise": "^4.2.4",
     "express": "^4.16.2",
     "fchatlib": "^1.2.0",
-    "inversify": "^4.10.0",
-    "jasmine": "2.2",
+    "inversify": "^4.11.1",
+    "jasmine": "^2.2.0",
     "jasmine-es6": "^0.4.3",
     "knex": "^0.12.9",
     "lodash": "^4.17.5",
@@ -41,7 +41,7 @@
     "@types/mysql": "0.0.29",
     "@types/node": "^4.2.23",
     "copyfiles": "^1.2.0",
-    "webpack": "^4.0.0"
+    "webpack": "^4.1.0"
   },
   "scripts": {
     "test": "cd bin/tests && node tests.js",

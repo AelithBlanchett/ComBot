@@ -1,56 +1,33 @@
-import {Utils} from "../../Common/Utils/Utils";
+import {FeatureType} from "../RWConstants";
 import {BaseFeature} from "../../Common/Features/BaseFeature";
 import {Feature} from "./Features";
-import {FeatureType} from "../RWConstants";
-import {BaseFighter} from "../../Common/Fight/BaseFighter";
-import * as featuresList from "./features.json";
+import KickStart = Feature.KickStart;
+import BondageBunny = Feature.BondageBunny;
+import {ActiveFighter} from "../Fight/ActiveFighter";
+import {IFeatureFactory} from "../../Common/Features/IFeatureFactory";
+import {RWFight} from "../Fight/RWFight";
+import {RWFighter} from "../Fight/RWFighter";
 
-export class FeatureFactory{
+export class FeatureFactory implements IFeatureFactory<RWFight, RWFighter>{
 
-    checkAndInitializeDefaultValues(indexOfSearchedFeature:number, featureName:string, feature:BaseFeature){
-        if(FeatureType[featureName] == null) {
-            throw new Error("This feature doesn't exist in the FeatureType list.");
-        }
-
-        //Merges the properties found in the json config file with our custom parameters object
-        Utils.mergeFromTo(featuresList[indexOfSearchedFeature], feature);
-
-        return feature;
-    }
-
-    getFeature(featureName:string, receiver:BaseFighter, uses:number, id?:string){
+    getFeature(featureName:string, receiver:ActiveFighter, uses:number, id?:string):BaseFeature{
         let feature:BaseFeature = null;
 
-        let featureTypes = Utils.getStringEnumList(FeatureType);
-        let realFeatureName = "";
-
-        for(let simpleName of featureTypes){
-            if(FeatureType[simpleName] == featureName){
-                realFeatureName = simpleName;
+        switch(featureName){
+            case FeatureType.KickStart:
+                feature = new KickStart(receiver, uses, id);
                 break;
-            }
-        }
-
-        if(realFeatureName == ""){
-            throw new Error("This feature wasn't found in the FeatureType list.");
-        }
-
-        let indexOfSearchedFeature = (<any>featuresList).findIndex(x => x.name.toLowerCase() == realFeatureName.toLowerCase());
-        if(indexOfSearchedFeature != -1){
-            feature = new Feature[realFeatureName]();
-            feature = this.checkAndInitializeDefaultValues(indexOfSearchedFeature, realFeatureName, feature);
+            case FeatureType.BondageBunny:
+                feature = new BondageBunny(receiver, uses, id);
+                break;
+            default:
+                feature = null;
+                break;
         }
 
         if(feature == null){
-            throw new Error(`The feature ${realFeatureName} couldn't be initialized. The ${realFeatureName} could be missing in Features.js and/or the ${realFeatureName} isn't present in the features.json file.`)
+            throw new Error(`The feature ${featureName} couldn't be initialized. The ${featureName} could be missing in Features.js and/or the ${featureName} isn't present in the features.json file.`)
         }
-
-        if(id != null){
-            feature.id = id;
-        }
-        feature.receiver = receiver;
-        feature.uses = uses;
-
         return feature;
     }
 }

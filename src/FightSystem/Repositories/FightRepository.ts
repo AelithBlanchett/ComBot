@@ -1,5 +1,5 @@
 import {RWFight} from "../Fight/RWFight";
-import {Model} from "../../Common/Utils/Model";
+import {Database} from "../../Common/Utils/Model";
 import {ActionRepository} from "./ActionRepository";
 import {Utils} from "../../Common/Utils/Utils";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
@@ -13,11 +13,11 @@ export class FightRepository{
     public static async persist(fight:RWFight):Promise<void>{
         try
         {
-            let currentSeason = await Model.db(BaseConstants.SQL.constantsTableName).where({key: BaseConstants.SQL.currentSeasonKeyName}).first();
+            let currentSeason = await Database.get(BaseConstants.SQL.constantsTableName).where({key: BaseConstants.SQL.currentSeasonKeyName}).first();
 
             if(!await FightRepository.exists(fight.idFight)){
                 fight.createdAt = new Date();
-                await Model.db(BaseConstants.SQL.fightTableName).insert({
+                await Database.get(BaseConstants.SQL.fightTableName).insert({
                     idFight: fight.idFight,
                     fightType: fight.fightType,
                     stage: fight.stage,
@@ -32,7 +32,7 @@ export class FightRepository{
             }
             else{
                 fight.updatedAt = new Date();
-                await Model.db(BaseConstants.SQL.fightTableName).where({idFight: fight.idFight, season: currentSeason.value}).update({
+                await Database.get(BaseConstants.SQL.fightTableName).where({idFight: fight.idFight, season: currentSeason.value}).update({
                     fightType: fight.fightType,
                     stage: fight.stage,
                     currentTurn: fight.currentTurn,
@@ -61,10 +61,10 @@ export class FightRepository{
     public static async exists(idFight:string, notFinished?:boolean):Promise<boolean>{
         let loadedData;
         if(notFinished){
-            loadedData = await Model.db(BaseConstants.SQL.fightTableName).where({idFight: idFight, hasStarted: true, hasEnded: false}).and.whereNull('deletedAt').select();
+            loadedData = await Database.get(BaseConstants.SQL.fightTableName).where({idFight: idFight, hasStarted: true, hasEnded: false}).and.whereNull('deletedAt').select();
         }
         else{
-            loadedData = await Model.db(BaseConstants.SQL.fightTableName).where({idFight: idFight}).and.whereNull('deletedAt').select();
+            loadedData = await Database.get(BaseConstants.SQL.fightTableName).where({idFight: idFight}).and.whereNull('deletedAt').select();
         }
         return (loadedData.length > 0);
     }
@@ -76,7 +76,7 @@ export class FightRepository{
             return null;
         }
 
-        let latestIdFightInvolvingFighter = await Model.db(BaseConstants.SQL.activeFightersTableName).where({idFighter: idFighter, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
+        let latestIdFightInvolvingFighter = await Database.get(BaseConstants.SQL.activeFightersTableName).where({idFighter: idFighter, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
 
         if(latestIdFightInvolvingFighter != null && !await FightRepository.exists(latestIdFightInvolvingFighter.idFight, true)){
             return null;
@@ -102,7 +102,7 @@ export class FightRepository{
 
         try
         {
-            let loadedData = await Model.db(BaseConstants.SQL.fightTableName).where({idFight: idFight, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
+            let loadedData = await Database.get(BaseConstants.SQL.fightTableName).where({idFight: idFight, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
             let data = loadedData[0];
 
             Utils.mergeFromTo(data, loadedFight);
@@ -142,7 +142,7 @@ export class FightRepository{
 
 
     public static async delete(idFight:string):Promise<void>{
-        await Model.db(BaseConstants.SQL.fightTableName).where({idFight: idFight}).update({
+        await Database.get(BaseConstants.SQL.fightTableName).where({idFight: idFight}).update({
             deletedAt: new Date()
         });
     }

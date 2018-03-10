@@ -1,17 +1,17 @@
-import {Utils} from "../../src/Common/Utils/Utils";
-import {ActiveFighter} from "../../src/FightSystem/Fight/ActiveFighter";
-import {ActiveFighterRepository} from "../../src/FightSystem/Repositories/ActiveFighterRepository";
-import {Model} from "../../src/Common/Utils/Model";
-import {FightStatus} from "../../src/Common/Fight/BaseFight";
-import {Teams} from "../../src/Common/Constants/Teams";
-import {FeatureFactory} from "../../src/FightSystem/Features/FeatureFactory";
+import {Utils} from "../../../src/Common/Utils/Utils";
+import {ActiveFighter} from "../../../src/FightSystem/Fight/ActiveFighter";
+import {ActiveFighterRepository} from "../../../src/FightSystem/Repositories/ActiveFighterRepository";
+import {Database} from "../../../src/Common/Utils/Model";
+import {FightStatus} from "../../../src/Common/Fight/BaseFight";
+import {Teams} from "../../../src/Common/Constants/Teams";
+import {FeatureFactory} from "../../../src/FightSystem/Features/FeatureFactory";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
 
 describe("The Active Fighter Repository", () => {
 
     beforeEach(async () =>{
-        await Model.db('nsfw_activefighters').del();
+        await Database.get('nsfw_activefighters').del();
     });
 
     it("should do nothing. lol.", async function (done) {

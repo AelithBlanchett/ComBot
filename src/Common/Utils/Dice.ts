@@ -64,7 +64,7 @@ export class Dice {
     // ------------------------------------------------------------------------
     addMod(mod) {
         if (isNaN(mod)) {
-            throw new Error('Invalid mod type.');
+            throw new Error('Invalid mod name.');
         }
 
         this.mods.push(mod);
@@ -73,7 +73,7 @@ export class Dice {
 
     removeMod(mod) {
         if (isNaN(mod)) {
-            throw new Error('Invalid mod type.');
+            throw new Error('Invalid mod name.');
         }
 
         this.mods.splice(this.mods.indexOf(mod), 1);

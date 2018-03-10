@@ -67,7 +67,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Bondage, false, false, args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -76,7 +76,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Brawl, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -85,7 +85,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Degradation, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -94,7 +94,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Escape, false, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -103,7 +103,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.ReleaseHold, false, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -112,7 +112,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.ForcedWorship, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -121,7 +121,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.HighRisk, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -130,7 +130,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.RiskyLewd, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -139,7 +139,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.HumHold, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -148,7 +148,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.ItemPickup, false, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -157,7 +157,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Rest, false, false, args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -166,7 +166,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Tease, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -175,7 +175,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.SexHold, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -184,7 +184,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.SubHold, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -193,7 +193,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.StrapToy, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -202,7 +202,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.SextoyPickup, false, false, args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -211,7 +211,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Stun, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -220,7 +220,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Tag, false, true, args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -229,7 +229,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Submit, false, false, args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -238,7 +238,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Finisher, false, false, args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -247,7 +247,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Masturbate, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -256,7 +256,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.SelfDebase, true, false, Utils.stringToEnum(Tiers, args));
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 
@@ -265,7 +265,7 @@ export class CommandHandler extends BaseCommandHandler {
             await this.fight.prepareAction(data.character, ActionType.Pass, false, false, args);
         }
         catch (ex) {
-            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
     };
 }

@@ -66,14 +66,14 @@ export class Messages {
     static setDiceLessFail = "Couldn't drop the dice for this fight, it is already started, or it's already over.";
     static setFightLength = "The fight's pace has been set to %s";
     static setFightLengthFail = "Couldn't change the pace for this fight, it is already started, or it's already over.";
-    static setFightTypeClassic = "RWFight type successfully set to Classic.";
-    static setFightTypeTag = "RWFight type successfully set to Tag-Team.";
-    static setFightTypeLMS = "RWFight type successfully set to Last Man Standing.";
-    static setFightTypeHMatch = "RWFight type successfully set to Humiliation Match.";
-    static setFightTypeSexFight = "RWFight type successfully set to SexFight.";
-    static setFightTypeBondageMatch = "RWFight type successfully set to Bondage Match.";
-    static setFightTypeNotFound = "Type not found. RWFight type reset to Classic.";
-    static setFightTypeFail = "Can't change the fight type if the fight has already started or is already finished.";
+    static setFightTypeClassic = "RWFight name successfully set to Classic.";
+    static setFightTypeTag = "RWFight name successfully set to Tag-Team.";
+    static setFightTypeLMS = "RWFight name successfully set to Last Man Standing.";
+    static setFightTypeHMatch = "RWFight name successfully set to Humiliation Match.";
+    static setFightTypeSexFight = "RWFight name successfully set to SexFight.";
+    static setFightTypeBondageMatch = "RWFight name successfully set to Bondage Match.";
+    static setFightTypeNotFound = "Type not found. RWFight name reset to Classic.";
+    static setFightTypeFail = "Can't change the fight name if the fight has already started or is already finished.";
 
     static startMatchAnnounce = "[color=green]Everyone's ready, let's start the match![/color] (Match ID: %s Keep it somewhere if you want to resume it later!)";
     static startMatchStageAnnounce = "The fighters will meet in the... [color=red][b]%s![/b][/color]";
@@ -107,7 +107,7 @@ export class Messages {
     static targetMustBeInHold = "Your target(s) must be held in a hold.";
     static targetMustNotBeInHold = "Your target(s) must not be held in a hold.";
 
-    static cantAddFeatureAlreadyHaveIt = "You already have this feature. You have to wait for it to expire before adding another of the same type.";
+    static cantAddFeatureAlreadyHaveIt = "You already have this feature. You have to wait for it to expire before adding another of the same name.";
 
     static checkAttackRequirementsNotInSexualHold = `You cannot do that since your target is not in a sexual hold.`;
 
@@ -136,6 +136,7 @@ export class Messages {
     static wrongMatchTypeForAction = "You can't %s in a %s match.";
 
     static commandError = "[color=red]An error happened: %s[/color]";
+    static commandErrorWithStack = "[color=red]An error happened: %s\n%s[/color]";
 
     static statChangeSuccessful = "[color=green]You've successfully changed your stats![/color]";
     static registerWelcomeMessage = "[color=green]You are now registered! Welcome! Don't forget to read the quickstart guide AND the two collapses under Core Mechanics on [user]Rendezvous Wrestling[/user]'s profile.[/color]";
@@ -148,4 +149,5 @@ export class Messages {
     static errorRecipientOrSenderNotFound = `[color=red]Either you or the receiver wasn't found in the fighter database.[/color]`;
     static errorNotEnoughMoney = `[color=red]You don't have enough money. Required: %s[/color]`;
     static errorAlreadyRegistered = "[color=red]You are already registered.[/color]";
+    static errorTooManyDefendersForThisCall = "Wrong function call: there are too many targets, this function can only return one.";
 }

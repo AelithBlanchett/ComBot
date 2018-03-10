@@ -69,12 +69,12 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         this.fightLength = FightLength.Long;
         this.gameSettings = new GameSettings();
         this.actionFactory = actionFactory;
+        this.message = new FightMessage();
     }
 
     build(fChatLibInstance:IFChatLib, channel:string){
         this.fChatLibInstance = fChatLibInstance;
         this.channel = channel;
-        this.message = new FightMessage();
     }
 
     sendFightMessage():void{
@@ -434,7 +434,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     rollAllDice(event:Trigger):Array<ActiveFighter> {
         let arrSortedFightersByInitiative = [];
         for (let player of this.getAlivePlayers()) {
-            player.lastDiceRoll = player.roll(10, event.toString());
+            player.lastDiceRoll = player.roll(10, event);
             arrSortedFightersByInitiative.push(player);
             this.message.addHint(Utils.strFormat(Messages.rollAllDiceEchoRoll, [player.getStylizedName(), player.lastDiceRoll.toString()]));
         }

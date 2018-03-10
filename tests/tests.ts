@@ -9,12 +9,12 @@ import {ActionRepository} from "../src/FightSystem/Repositories/ActionRepository
 import {FightRepository} from "../src/FightSystem/Repositories/FightRepository";
 import {Dice} from "../src/Common/Utils/Dice";
 import {ModifierRepository} from "../src/FightSystem/Repositories/ModifierRepository";
-import {FeatureFactory} from "../src/FightSystem/Features/FeatureFactory";
 import {ActionType} from "../src/FightSystem/Actions/RWAction";
 import {FeatureType, ModifierType} from "../src/FightSystem/RWConstants";
 import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
 import {Messages} from "../src/Common/Constants/Messages";
 import {GameSettings} from "../src/Common/Configuration/GameSettings";
+import {FeatureFactory} from "../src/FightSystem/Features/FeatureFactory";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -293,7 +293,7 @@ describe("Before the fight", () => {
 
         debug = false;
 
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
     it("should check if a joining fighter exists", async function (done) { //4
@@ -511,7 +511,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-        if (wasHealthHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.SubHold) != -1) {
+        if (wasHealthHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == ModifierType.SubHold) != -1) {
             done();
         }
         else {
@@ -624,7 +624,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-            let indexOfSubHoldModifier = cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.SubHold);
+            let indexOfSubHoldModifier = cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == ModifierType.SubHold);
             if (indexOfSubHoldModifier == -1) {
                 done.fail(new Error("Did not find the correct subhold modifier in the defender's list."));
             }
@@ -652,7 +652,7 @@ describe("Before the fight, the player(s)", () => {
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "sexhold", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (wasLustHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.SexHold) != -1) {
+        if (wasLustHit(cmd, "Aelith Blanchette") && cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == ModifierType.SexHold) != -1) {
             done();
         }
         else {
@@ -687,7 +687,7 @@ describe("Before the fight, the player(s)", () => {
         refillHPLPFP(cmd, "Aelith Blanchette");
         await doAction(cmd, "humhold", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.type == ModifierType.HumHold) != -1) {
+        if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.findIndex(x => x.name == ModifierType.HumHold) != -1) {
             done();
         }
         else {
@@ -735,7 +735,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.nextTurn();
         await doAction(cmd, "tease", "Light");
         await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.getFighterByName("TheTinaArmstrong").modifiers.findIndex((x) => x.type == ModifierType.SextoyPickupBonus) != -1) {
+        if (cmd.fight.getFighterByName("TheTinaArmstrong").modifiers.findIndex((x) => x.name == ModifierType.SextoyPickupBonus) != -1) {
             done();
         }
         else {
@@ -842,7 +842,24 @@ describe("Before the fight, the player(s)", () => {
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await cmd.fight.waitUntilWaitingForAction();
         if (cmd.fight.getFighterByName("TheTinaArmstrong").modifiers.length == 1
-            && cmd.fight.getFighterByName("TheTinaArmstrong").modifiers[0].type == ModifierType.ItemPickupBonus) {
+            && cmd.fight.getFighterByName("TheTinaArmstrong").modifiers[0].name == ModifierType.ItemPickupBonus) {
+            done();
+        }
+        else {
+            done.fail(new Error("Didn't create the itemPickup modifier"));
+        }
+    }, DEFAULT_TIMEOUT_UNIT_TEST);
+
+    it("should grant the itemPickupModifier bonus for the BondageBunny feature", async function (done) {
+        let cmd = new RendezVousWrestling(fChatLibInstance, "here");
+        createFighter("TheTinaArmstrong").features.push(new FeatureFactory().getFeature(FeatureType.KickStart, createFighter("TheTinaArmstrong"),  1));
+        await initiateMatchSettings1vs1(cmd);
+
+        await cmd.fight.waitUntilWaitingForAction();
+        cmd.fight.setCurrentPlayer("TheTinaArmstrong");
+        await cmd.fight.waitUntilWaitingForAction();
+        if (cmd.fight.getFighterByName("TheTinaArmstrong").modifiers.length == 1
+            && cmd.fight.getFighterByName("TheTinaArmstrong").modifiers[0].name == ModifierType.ItemPickupBonus) {
             done();
         }
         else {
@@ -858,7 +875,7 @@ describe("Before the fight, the player(s)", () => {
         await doAction(cmd, "stun", "Light");
         await cmd.fight.waitUntilWaitingForAction();
         if (cmd.fight.getFighterByName("Aelith Blanchette").modifiers.length > 0 &&
-            cmd.fight.getFighterByName("Aelith Blanchette").modifiers[0].type == ModifierType.Stun) {
+            cmd.fight.getFighterByName("Aelith Blanchette").modifiers[0].name == ModifierType.Stun) {
             done();
         }
         else {
