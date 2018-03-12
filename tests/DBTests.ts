@@ -5,6 +5,7 @@ import {Utils} from "../src/Common/Utils/Utils";
 import {ActiveFighter} from "../src/FightSystem/Fight/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
 import {FeatureFactory} from "../src/FightSystem/Features/FeatureFactory";
+import {RWFight} from "../src/FightSystem/Fight/RWFight";
 let waitUntil = require('wait-until');
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -80,7 +81,7 @@ describe("The database(s)", () => {
     });
 
     xit("should load Aelith Blanchette", async function (done) {
-        let fighter = await FighterRepository.load("Aelith Blanchette");
+        let fighter = await FighterRepository.load("Aelith Blanchette", new RWFighter());
         expect(fighter.name).toBe("Aelith Blanchette");
         done();
     });
@@ -100,7 +101,7 @@ describe("The database(s)", () => {
     // },500000);
 
     xit("should say test1 is already there", function (done) {
-        FighterRepository.load("test1").then(x => {
+        FighterRepository.load("test1", new RWFighter()).then(x => {
             if (x.name == "test1") {
                 done();
             }
@@ -113,7 +114,7 @@ describe("The database(s)", () => {
     },5000);
 
     xit("should say Test2 is already there", function (done) {
-        FighterRepository.load("test2").then(x => {
+        FighterRepository.load("test2", new RWFighter()).then(x => {
             if(x.name == "test2"){
                 done();
             }
@@ -126,7 +127,7 @@ describe("The database(s)", () => {
     },5000);
 
     xit("should say Tewefwefwfwst2 doesn't exist", function (done) {
-        FighterRepository.load("Tewefwefwfwst2").then(x => {
+        FighterRepository.load("Tewefwefwfwst2", new RWFighter()).then(x => {
             if(x == undefined){
                 done();
             }
@@ -139,7 +140,7 @@ describe("The database(s)", () => {
     },5000);
 
     xit("should update Test2's power to something else", function (done) {
-        FighterRepository.load("test2").then(x => {
+        FighterRepository.load("test2", new RWFighter()).then(x => {
             let randomId = -1;
             do{
                 randomId = Utils.getRandomInt(1,6);
@@ -182,7 +183,7 @@ describe("The database(s)", () => {
 
     xit("should tag successfully with Aelith", async function (done) {
         debug = true;
-        var cmd = new CommandHandler(fChatLibInstance, "here");
+        var cmd = new CommandHandler(RWFight, RWFighter, fChatLibInstance, "here");
         await initiateMatchSettings2vs2TagForDb(cmd);
         waitUntil().interval(10).times(50).condition(() => {
             return cmd.fight.fighters.findIndex(x => x.name == "test1") != -1;

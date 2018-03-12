@@ -6,33 +6,17 @@ import * as Constants from "../../Common/BaseConstants";
 import {Utils} from "../../Common/Utils/Utils";
 import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
 import {IRWFighter} from "./IRWFighter";
-import {Commands} from "../../Common/Utils/Parser";
+import {Parser} from "../../Common/Utils/Parser";
 import {Modifier} from "../Modifiers/Modifier";
 import {FeatureType, ModifierType} from "../RWConstants";
 import {GameSettings} from "../../Common/Configuration/GameSettings";
 import {IFeatureFactory} from "../../Common/Features/IFeatureFactory";
 import {RWFight} from "./RWFight";
 import {RWFighter} from "./RWFighter";
+import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
+import {FighterRepository} from "../Repositories/FighterRepository";
 
 export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
-
-    //TODO
-    restat(statArray: number[]) {
-        throw new Error("Method not implemented.");
-    }
-
-    outputStats(): string {
-        throw new Error("Method not implemented.");
-    }
-
-    save(): Promise<void> {
-        return undefined;
-    }
-
-    saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
-        return undefined;
-    }
-
 
     hp:number = 0;
     lust:number = 0;
@@ -276,7 +260,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
     validateStats():string{
         let statsInString = this.getStatsInString();
-        return Commands.checkIfValidStats(statsInString, GameSettings.numberOfRequiredStatPoints, GameSettings.numberOfDifferentStats, GameSettings.minStatLimit, GameSettings.maxStatLimit);
+        return Parser.checkIfValidStats(statsInString, GameSettings.numberOfRequiredStatPoints, GameSettings.numberOfDifferentStats, GameSettings.minStatLimit, GameSettings.maxStatLimit);
     }
 
     get currentPower():number{
@@ -570,5 +554,29 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         let targetLine = `  [color=red]target(s): ` + ((this.targets != null && this.targets.length > 0) ? `${this.targets.map(x => x.name).toString()}` : "None set yet! (!targets charactername)") + `[/color]`;
 
         return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${(this.getListOfActiveModifiers().length > 0 ? modifiersLine : "")} ${targetLine}`;
+    }
+
+    async save(): Promise<void> {
+        await ActiveFighterRepository.persist(this);
+    }
+
+    async saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
+        await FighterRepository.logTransaction(idFighter, amount, transactionType, fromFighter);
+    }
+
+    restat(statArray: number[]) {
+        throw new Error("Method not implemented voluntarily.");
+    }
+
+    outputStats(): string {
+        throw new Error("Method not implemented voluntarily.");
+    }
+
+    exists(name: string): Promise<boolean> {
+        throw new Error("Method not implemented voluntarily.");
+    }
+
+    load(name: string): Promise<void> {
+        throw new Error("Method not implemented voluntarily.");
     }
 }

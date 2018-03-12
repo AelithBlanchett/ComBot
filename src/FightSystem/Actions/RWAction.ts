@@ -9,6 +9,7 @@ import * as Constants from "../RWConstants"
 import {TierDifficulty, Tiers} from "../Constants/Tiers";
 import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
 import {BaseFight} from "../../Common/Fight/BaseFight";
+import {Trigger} from "../../Common/BaseConstants";
 
 export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> {
 
@@ -30,6 +31,42 @@ export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> 
     diceScoreBonusPoints: number;
 
     appliedModifiers: Modifier[] = [];
+
+    get avgHpDamageToDefs():number{
+        if(this.hpDamageToDefs != null && this.hpDamageToDefs.length == 1){
+            return this.hpDamageToDefs[0];
+        }
+        else if(this.hpDamageToDefs != null && this.hpDamageToDefs.length > 1){
+            return this.hpDamageToDefs.reduce((a, b) => a + b, 0);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    get avgLpDamageToDefs():number{
+        if(this.lpDamageToDefs != null && this.lpDamageToDefs.length == 1){
+            return this.lpDamageToDefs[0];
+        }
+        else if(this.lpDamageToDefs != null && this.lpDamageToDefs.length > 1){
+            return this.lpDamageToDefs.reduce((a, b) => a + b, 0);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    get avgFpDamageToDefs():number{
+        if(this.fpDamageToDefs != null && this.fpDamageToDefs.length == 1){
+            return this.fpDamageToDefs[0];
+        }
+        else if(this.fpDamageToDefs != null && this.fpDamageToDefs.length > 1){
+            return this.fpDamageToDefs.reduce((a, b) => a + b, 0);
+        }
+        else{
+            return 0;
+        }
+    }
 
     get hpDamageToDef():number{
         if(this.hpDamageToDefs != null && this.hpDamageToDefs.length == 1){
@@ -168,16 +205,9 @@ export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> 
         return scoreRequired;
     }
 
-    onHit():void{
-        this.make();
-        this.applyDamage();
-    }
-
     onMiss():void{
         this.attacker.hitFP(FocusDamageOnMiss[Tiers[this.tier]]);
     }
-
-    abstract make():void;
 
     applyDamage():void{
         if (this.hpDamageToDefs.length > 0) {
@@ -315,10 +345,10 @@ export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> 
 export class EmptyAction extends RWAction {
 
     constructor(fight:any, attacker:any, defender:any){
-        super(fight, attacker, [defender], "actionName", -1, false, false, false, true, true, false, true, false, true, false, true, false, true, false, false, true, false, true, false, false, true, "no explanation", 1);
+        super(fight, attacker, [defender], "actionName", -1, false, false, false, true, true, false, true, false, true, false, true, false, true, false, false, true, false, true, false, false, true, Trigger.None, "no explanation", 1);
     }
 
-    make(): void {
+    onHit(): void {
 
     }
 }

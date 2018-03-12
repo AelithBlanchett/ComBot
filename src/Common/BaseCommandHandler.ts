@@ -1,36 +1,34 @@
-import {RWFighter} from "../FightSystem/Fight/RWFighter";
-import * as Parser from "./Utils/Parser";
-import {RWFight} from "../FightSystem/Fight/RWFight";
-import * as BaseConstants from "./BaseConstants";
 import {Utils} from "./Utils/Utils";
 import {FightType} from "./BaseConstants";
-import {FighterRepository} from "../FightSystem/Repositories/FighterRepository";
-import {FightRepository} from "../FightSystem/Repositories/FightRepository";
 import {TransactionType} from "./BaseConstants";
 import {FightLength} from "./BaseConstants";
-import {Database} from "./Utils/Model";
 import {BaseFighter} from "./Fight/BaseFighter";
 import {IFChatLib} from "fchatlib/dist/src/Interfaces/IFChatLib";
 import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
 import {Messages} from "./Constants/Messages";
 import {Teams} from "./Constants/Teams";
 import {GameSettings} from "./Configuration/GameSettings";
-import {FeatureFactory} from "../FightSystem/Features/FeatureFactory";
+import {Parser} from "./Utils/Parser";
+import {BaseFight} from "./Fight/BaseFight";
 
-export class BaseCommandHandler {
+export class BaseCommandHandler<TFight extends BaseFight, TFighter extends BaseFighter> {
+    Fight:new () => TFight;
+    Fighter:new () => TFighter;
+
     fChatLibInstance:IFChatLib;
     channel:string;
-    fight:RWFight;
+    fight:TFight;
+
 
     blnAutofight:boolean = false;
     debugImpersonatedCharacter:string = "Tina Armstrong";
 
-    gameSettings:GameSettings;
-
-    constructor(fChatLib:IFChatLib, chan:string) {
+    constructor(fight: { new (...args: any[]): TFight }, fighter: { new (...args: any[]): TFighter }, fChatLib:IFChatLib, chan:string) {
+        this.Fight = fight;
+        this.Fighter = fighter;
         this.fChatLibInstance = fChatLib;
         this.channel = chan;
-        this.fight = new RWFight();
+        this.fight = new this.Fight();
         this.fight.build(fChatLib, chan);
         //this.fChatLibInstance.addPrivateMessageListener(privMsgEventHandler);
     }
@@ -53,46 +51,53 @@ export class BaseCommandHandler {
         }
     }
 
-    //TODO FIX FEATURES
-    // async addfeature(args:string, data:IMsgEvent) {
-    //     let parsedFeatureArgs = {message: null, featureType: null, turns: null};
-    //     parsedFeatureArgs = Parser.Commands.getFeatureType(args);
-    //     if (parsedFeatureArgs.message != null) {
-    //         this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedFeatureArgs.message + "\nExample: !addFeature featurename  OR !addFeature featurename 2  (with 2 being the number of fights you want)." , data.character);
-    //         return;
-    //     }
-    //
-    //     let fighter:BaseFighter = await FighterRepository.load(data.character);
-    //     if (fighter != undefined) {
-    //         try {
-    //             let cost = fighter.addFeature(parsedFeatureArgs.featureType, parsedFeatureArgs.turns);
-    //             await fighter.removeTokens(cost, TransactionType.Feature);
-    //             await fighter.save();
-    //             this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully added the ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
-    //         }
-    //         catch (ex) {
-    //             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), fighter.name);
-    //         }
-    //     }
-    //     else {
-    //         this.fChatLibInstance.sendPrivMessage(Messages.errorNotRegistered, data.character);
-    //     }
-    // };
+    async addfeature(args:string, data:IMsgEvent) {
+        let parsedFeatureArgs = Parser.parseArgs(2, [typeof("").toString(), typeof(1).toString()], args);
 
-    //TODO FIX FEATURES
-    // async getfeatureslist(args:string, data:IMsgEvent) {
-    //     this.fChatLibInstance.sendPrivMessage("Usage: !addFeature myFeature OR !addFeature myFeature 2  (with 2 being the number of fights you want)." +
-    //         "\n[/color]Available features: " + EnumEx.getNames(FeatureType).join(", "), data.character);
-    // };
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
+        if (fighter != undefined) {
+            try {
+                let cost = fighter.addFeature(parsedFeatureArgs[0], parsedFeatureArgs[1]);
+                await fighter.removeTokens(cost, TransactionType.Feature);
+                await fighter.save();
+                this.fChatLibInstance.sendPrivMessage(`[color=green]Success! Feature added.[/color]`, fighter.name);
+            }
+            catch (ex) {
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), fighter.name);
+            }
+        }
+        else {
+            this.fChatLibInstance.sendPrivMessage(Messages.errorNotRegistered, data.character);
+        }
+    };
+
+    async getfeatureslist(args:string, data:IMsgEvent) {
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
+        if (fighter != undefined) {
+            try {
+                this.fChatLibInstance.sendPrivMessage("Usage: !addFeature myFeature OR !addFeature myFeature 2 (with 2 being the number of fights you want)." +
+                    "\n[/color]Available features: " + fighter.featureFactory.getExistingFeatures().join(", "), data.character);
+            }
+            catch (ex) {
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), fighter.name);
+            }
+        }
+        else {
+            this.fChatLibInstance.sendPrivMessage(Messages.errorNotRegistered, data.character);
+        }
+
+    };
 
     async restat(args:string, data:IMsgEvent) {
-        //TODO fix this, check if the stats are valid
-        let parserPassed = ""; //Parser.Commands.checkIfValidStats(args);
+        let parserPassed = Parser.checkIfValidStats(args, GameSettings.numberOfRequiredStatPoints, GameSettings.numberOfDifferentStats, GameSettings.minStatLimit, GameSettings.maxStatLimit);
         if(parserPassed != ""){
             this.fChatLibInstance.sendPrivMessage(`[color=red]${parserPassed}[/color]`, data.character);
             return;
         }
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != undefined) {
             if(fighter.canPayAmount(GameSettings.restatCostInTokens)) {
                 try {
@@ -126,7 +131,9 @@ export class BaseCommandHandler {
     };
 
     async clearfeatures(args:string, data:IMsgEvent) {
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
+
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
@@ -159,44 +166,6 @@ export class BaseCommandHandler {
         }
     }
 
-    resetdmg(args:string, data:IMsgEvent) {
-        if (this.fChatLibInstance.isUserMaster(data.character) && this.fight.hasStarted && this.fight.debug) {
-            for(let fighter of this.fight.fighters){
-                fighter.livesRemaining = fighter.maxLives(); //to prevent ending the fight this way
-                fighter.consecutiveTurnsWithoutFocus = 0; //to prevent ending the fight this way
-                fighter.focus = fighter.initialFocus();
-            }
-
-            this.fChatLibInstance.sendPrivMessage(`Successfully resplenished ${args}'s HP, LP and FP.`, data.character);
-        }
-    }
-
-    sethp(args:string, data:IMsgEvent) {
-        if (this.fChatLibInstance.isUserMaster(data.character) && this.fight.hasStarted && this.fight.debug) {
-            let splitted = args.split(",");
-            try{
-                this.fight.getFighterByName(splitted[0]).hp = parseInt(splitted[1]);
-                this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s hp to ${splitted[1]}`, data.character);
-            }
-            catch(ex){
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
-            }
-        }
-    }
-
-    setlp(args:string, data:IMsgEvent) {
-        if (this.fChatLibInstance.isUserMaster(data.character) && this.fight.hasStarted && this.fight.debug) {
-            let splitted = args.split(",");
-            try{
-                this.fight.getFighterByName(splitted[0]).lust = parseInt(splitted[1]);
-                this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s lp to ${splitted[1]}`, data.character);
-            }
-            catch(ex){
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
-            }
-        }
-    }
-
     exec(args:string, data:IMsgEvent) {
         if (this.fChatLibInstance.isUserMaster(data.character)) {
             try{
@@ -211,7 +180,7 @@ export class BaseCommandHandler {
     pause(args:string, data:IMsgEvent) {
         if (this.fChatLibInstance.isUserMaster(data.character)) {
             if (this.fight != undefined && !this.fight.hasEnded && this.fight.hasStarted) {
-                this.fight = new RWFight();
+                this.fight = new this.Fight();
                 this.fight.build(this.fChatLibInstance, this.channel);
                 this.fChatLibInstance.sendMessage(`Successfully saved and stored the match for later. The ring is available now!`, this.channel);
             }
@@ -238,7 +207,8 @@ export class BaseCommandHandler {
             args = data.character;
         }
 
-        let fighter:BaseFighter = await FighterRepository.load(args);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
 
         if (fighter != undefined && (fighter.name == data.character || (fighter.name == data.character && !fighter.areStatsPrivate) || this.fChatLibInstance.isUserChatOP(data.character, data.channel))) {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), data.character);
@@ -249,7 +219,8 @@ export class BaseCommandHandler {
     };
 
     async hidemystats(args:string, data:IMsgEvent) {
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != undefined) {
             fighter.areStatsPrivate = false;
             try {
@@ -271,10 +242,10 @@ export class BaseCommandHandler {
 
     async join(args:string, data:IMsgEvent) {
         if (this.fight == undefined || this.fight.hasEnded) {
-            this.fight = new RWFight();
+            this.fight = new this.Fight();
             this.fight.build(this.fChatLibInstance, this.channel);
         }
-        let chosenTeam = Parser.Commands.join(args);
+        let chosenTeam = Parser.join(args);
         try {
             let assignedTeam:number = await this.fight.join(data.character, chosenTeam);
             this.fChatLibInstance.sendMessage(`[color=green]${data.character} stepped into the ring for the [color=${Teams[assignedTeam]}]${Teams[assignedTeam]}[/color] team! Waiting for everyone to be !ready.[/color]`, this.channel);
@@ -293,7 +264,8 @@ export class BaseCommandHandler {
             this.fChatLibInstance.sendMessage("[color=red]There is already a fight in progress. You must either do !forfeit or !draw to leave the fight.[/color]", this.channel);
             return false;
         }
-        let fighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != undefined) {
             if (this.fight.leave(data.character)) { //else, the match starts!
                 this.fChatLibInstance.sendMessage("[color=green]You are now out of the fight.[/color]", this.channel);
@@ -311,7 +283,8 @@ export class BaseCommandHandler {
         if (this.fight == undefined || this.fight.hasEnded || !this.fight.hasStarted) {
             try {
                 if (args) {
-                    let theFight = await FightRepository.loadLatestInvolvingFighter(args);
+                    let theFight = new this.Fight();
+                    await theFight.load(data.character);
                     if(theFight != null){
                         this.fight = theFight;
                         this.fight.build(this.fChatLibInstance, this.channel);
@@ -338,14 +311,15 @@ export class BaseCommandHandler {
         if (this.fight == undefined || this.fight.hasEnded || !this.fight.hasStarted) {
             try {
                 if (args) {
-                    let theFight = await FightRepository.load(args);
+                    let theFight = new this.Fight();
+                    await theFight.load(args);
                     if(theFight != null && (this.fChatLibInstance.isUserChatOP(data.character, data.channel) || theFight.fighters.findIndex(x => x.name == data.character) != -1)){
                         this.fight = theFight;
                         this.fight.build(this.fChatLibInstance, this.channel);
                         this.fight.outputStatus();
                     }
                     else{
-                        this.fChatLibInstance.sendMessage("[color=red]No fight is associated with this idAction, or you don't have the rights to access it.[/color]", this.channel);
+                        this.fChatLibInstance.sendMessage("[color=red]No fight is associated with this idAction/fighter, or you don't have the rights to access it.[/color]", this.channel);
                     }
                 }
                 else {
@@ -367,7 +341,7 @@ export class BaseCommandHandler {
             return false;
         }
         if (this.fight == undefined || this.fight.hasEnded) {
-            this.fight = new RWFight();
+            this.fight = new this.Fight();
             this.fight.build(this.fChatLibInstance, this.channel);
         }
 
@@ -383,9 +357,11 @@ export class BaseCommandHandler {
     };
 
     async register(args:string, data:IMsgEvent) {
-        let doesFighterExist = await FighterRepository.exists(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        let doesFighterExist = await fighter.exists(data.character);
+
         if (!doesFighterExist) {
-            let parserPassed = Parser.Commands.checkIfValidStats(args, GameSettings.numberOfRequiredStatPoints, GameSettings.numberOfDifferentStats, GameSettings.minStatLimit, GameSettings.maxStatLimit);
+            let parserPassed = Parser.checkIfValidStats(args, GameSettings.numberOfRequiredStatPoints, GameSettings.numberOfDifferentStats, GameSettings.minStatLimit, GameSettings.maxStatLimit);
             if(parserPassed != ""){
                 this.fChatLibInstance.sendPrivMessage(`[color=red]${parserPassed}[/color]`, data.character);
                 return;
@@ -397,11 +373,10 @@ export class BaseCommandHandler {
             }
 
             try {
-                //TODO fix this
-                let newFighter = new RWFighter(new FeatureFactory());
+                let newFighter = new this.Fighter();
                 newFighter.name = data.character;
                 newFighter.restat(arrParam);
-                await FighterRepository.persist(newFighter);
+                await newFighter.save();
                 this.fChatLibInstance.sendPrivMessage(Messages.registerWelcomeMessage, data.character);
             }
             catch (ex) {
@@ -415,17 +390,18 @@ export class BaseCommandHandler {
 
     async givetokens(args:string, data:IMsgEvent) {
         if (this.fChatLibInstance.isUserMaster(data.character)) {
-            let parsedArgs = Parser.Commands.tipPlayer(args);
+            let parsedArgs = Parser.tipPlayer(args);
             if (parsedArgs.message != null) {
                 this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedArgs.message + "\nExample: !tip character 10[/color]", data.character);
                 return;
             }
-            let fighterReceiving = await FighterRepository.load(parsedArgs.player);
+            let fighterReceiving:BaseFighter = new this.Fighter();
+            await fighterReceiving.load(parsedArgs.player);
             try {
                 if (fighterReceiving != null) {
                     let amount:number = parsedArgs.amount;
-                    fighterReceiving.giveTokens(amount, TransactionType.DonationFromAdmin, data.character);
-                    await FighterRepository.persist(fighterReceiving);
+                    await fighterReceiving.giveTokens(amount, TransactionType.DonationFromAdmin, data.character);
+                    await fighterReceiving.save();
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${amount} tokens.[/color]`, data.character);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${amount} tokens from ${data.character} ![/color]`, fighterReceiving.name);
                 }
@@ -440,34 +416,24 @@ export class BaseCommandHandler {
 
     };
 
-    async givetokenstoplayersregisteredbeforenow(args:string, data:IMsgEvent) {
-        if (this.fChatLibInstance.isUserMaster(data.character)) {
-            try {
-                await FighterRepository.GiveTokensToPlayersRegisteredBeforeNow(parseInt(args));
-            }
-            catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
-            }
-        }
-
-    };
-
     async tip(args:string, data:IMsgEvent) {
-        let parsedArgs = Parser.Commands.tipPlayer(args);
+        let parsedArgs = Parser.tipPlayer(args);
         if (parsedArgs.message != null) {
             this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedArgs.message + "\nExample: !tip character 10[/color]", data.character);
             return;
         }
-        let fighterGiving = await FighterRepository.load(data.character);
-        let fighterReceiving = await FighterRepository.load(parsedArgs.player);
+        let fighterGiving:BaseFighter = new this.Fighter();
+        await fighterGiving.load(data.character);
+        let fighterReceiving:BaseFighter = new this.Fighter();
+        await fighterReceiving.load(parsedArgs.player);
         try {
             if (fighterGiving != null && fighterReceiving != null) {
                 let amount:number = parsedArgs.amount;
                 if(fighterGiving.canPayAmount(amount)){
-                    fighterGiving.removeTokens(amount, TransactionType.Tip);
-                    fighterReceiving.giveTokens(amount, TransactionType.Tip, fighterGiving.name);
-                    await FighterRepository.persist(fighterGiving);
-                    await FighterRepository.persist(fighterReceiving);
+                    await fighterGiving.removeTokens(amount, TransactionType.Tip);
+                    await fighterReceiving.giveTokens(amount, TransactionType.Tip, fighterGiving.name);
+                    await fighterGiving.save();
+                    await fighterReceiving.save();
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You have successfully given ${fighterReceiving.name} ${amount} tokens.[/color]`, data.character);
                     this.fChatLibInstance.sendPrivMessage(`[color=green]You've just received ${amount} tokens from ${fighterGiving.name} for your... services.[/color]`, fighterReceiving.name);
                     if(fighterReceiving.name == "Miss_Spencer"){
@@ -492,29 +458,26 @@ export class BaseCommandHandler {
         }
     };
 
-    //TODO FIX FEATURES
-    // async removefeature(args:string, data:IMsgEvent) {
-    //     let parsedFeatureArgs = Parser.Commands.getFeatureType(args);
-    //     if (parsedFeatureArgs.message != null) {
-    //         this.fChatLibInstance.sendPrivMessage("[color=red]The parameters for this command are wrong. " + parsedFeatureArgs.message + "\nExample: !removeFeature KickStart" +
-    //             "\nAvailable features: " + EnumEx.getNames(FeatureType).join(", ") + "[/color]", data.character);
-    //         return;
-    //     }
-    //     let fighter = await FighterRepository.load(data.character);
-    //     try {
-    //         if (fighter != null) {
-    //             fighter.removeFeature(parsedFeatureArgs.featureType);
-    //             await FighterRepository.persist(fighter);
-    //             this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed your ${FeatureType[parsedFeatureArgs.featureType]} feature.[/color]`, fighter.name);
-    //         }
-    //     }
-    //     catch (ex) {
-    //         this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
-    //     }
-    // };
+    async removefeature(args:string, data:IMsgEvent) {
+        let parsedFeatureArgs = Parser.parseArgs(1, [typeof("").toString()], args);
+
+        try {
+            let fighter:BaseFighter = new this.Fighter();
+            await fighter.load(data.character);
+            if (fighter != null) {
+                fighter.removeFeature(parsedFeatureArgs[0]);
+                await fighter.save();
+                this.fChatLibInstance.sendPrivMessage(`[color=green]You successfully removed that feature.[/color]`, fighter.name);
+            }
+        }
+        catch (ex) {
+            this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+        }
+    };
 
     async stats(args:string, data:IMsgEvent) {
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != null) {
             this.fChatLibInstance.sendPrivMessage(fighter.outputStats(), fighter.name);
         }
@@ -524,7 +487,8 @@ export class BaseCommandHandler {
     };
 
     async statsforprofile(args:string, data:IMsgEvent) {
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != null) {
             this.fChatLibInstance.sendPrivMessage(`[noparse]${fighter.outputStats()}[/noparse]`, fighter.name);
         }
@@ -534,13 +498,14 @@ export class BaseCommandHandler {
     };
 
     async fighttype(args:string, data:IMsgEvent) {
-        let parsedFT:FightType = Parser.Commands.setFightType(args);
+        let parsedFT:FightType = Parser.setFightType(args);
         if (parsedFT == -1) {
             let fightTypes = Utils.getEnumList(FightType);
             this.fChatLibInstance.sendMessage(`[color=red]Fight Type not found. Types: ${fightTypes.join(", ")}. Example: !fighttype classic[/color]`, this.channel);
             return;
         }
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != null) {
             this.fight.setFightType(args);
         }
@@ -550,13 +515,14 @@ export class BaseCommandHandler {
     };
 
     async fightlength(args:string, data:IMsgEvent) {
-        let parsedFD:FightLength = Parser.Commands.setFightLength(args);
+        let parsedFD:FightLength = Parser.setFightLength(args);
         if (parsedFD == -1) {
             let fightDurations = Utils.getEnumList(FightLength);
             this.fChatLibInstance.sendMessage(`[color=red]Fight Length not found. Types: ${fightDurations.join(", ")}. Example: !fightlength Long[/color]`, this.channel);
             return;
         }
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != null) {
             this.fight.setFightLength(parsedFD);
         }
@@ -571,7 +537,8 @@ export class BaseCommandHandler {
             this.fight.setDiceLess(flag);
             return;
         }
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != null) {
             let flag = (args.toLowerCase().indexOf("no") != -1);
             this.fight.setDiceLess(flag);
@@ -582,12 +549,13 @@ export class BaseCommandHandler {
     };
 
     async teamscount(args:string, data:IMsgEvent) {
-        let parsedTeams:number = Parser.Commands.setTeamsCount(args);
+        let parsedTeams:number = Parser.setTeamsCount(args);
         if (parsedTeams <= 1) {
             this.fChatLibInstance.sendMessage("[color=red]The number of teams involved must be a numeral higher than 1 and lower or equal than 10.[/color]", this.channel);
             return;
         }
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != null) {
             this.fight.setTeamsCount(parsedTeams);
         }
@@ -597,7 +565,8 @@ export class BaseCommandHandler {
     };
 
     async unhidemystats(args:string, data:IMsgEvent) {
-        let fighter:BaseFighter = await FighterRepository.load(data.character);
+        let fighter:BaseFighter = new this.Fighter();
+        await fighter.load(data.character);
         if (fighter != null) {
             fighter.areStatsPrivate = false;
             try {
@@ -618,9 +587,9 @@ export class BaseCommandHandler {
     async resetfight(args:string, data:IMsgEvent) {
         if (this.fChatLibInstance.isUserChatOP(data.character, data.channel)) {
             if(this.fight && this.fight.idFight){
-                await FightRepository.delete(this.fight.idFight);
+                await this.fight.delete();
             }
-            this.fight = new RWFight();
+            this.fight = new this.Fight();
             this.fight.build(this.fChatLibInstance, this.channel);
             this.fChatLibInstance.sendMessage("The fight has been ended.", data.channel);
         }
@@ -643,7 +612,7 @@ export class BaseCommandHandler {
         }
 
         try {
-            this.fight.forfeit(args);
+            await this.fight.forfeit(args);
         }
         catch (ex) {
             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
@@ -657,7 +626,7 @@ export class BaseCommandHandler {
         }
         try {
             this.fight.requestDraw(data.character);
-            this.fight.checkForDraw();
+            await this.fight.checkForDraw();
         }
         catch (ex) {
             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);

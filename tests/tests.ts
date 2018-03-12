@@ -24,7 +24,7 @@ let mockedClasses = [];
 let usedIndexes = [];
 let usedFighters = [];
 
-const DEFAULT_TIMEOUT_UNIT_TEST = 50;
+const DEFAULT_TIMEOUT_UNIT_TEST = 500;
 
 function getMock(mockedClass) {
     if (mockedClasses.indexOf(mockedClass) != -1) {
@@ -63,6 +63,10 @@ function abstractDatabase() {
     };
 
     FighterRepository.persist = async function () {
+        return;
+    };
+
+    ActiveFighterRepository.persist = async function () {
         return;
     };
 
@@ -503,7 +507,7 @@ describe("Before the fight, the player(s)", () => {
         else {
             done.fail(new Error(`Player was still alive after ${BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`));
         }
-    }, DEFAULT_TIMEOUT_UNIT_TEST);
+    }, DEFAULT_TIMEOUT_UNIT_TEST + 10000);
 
     it("should do a subhold and tick", async function (done) {
         let cmd = new RendezVousWrestling(fChatLibInstance, "here");
@@ -852,18 +856,18 @@ describe("Before the fight, the player(s)", () => {
 
     it("should grant the itemPickupModifier bonus for the BondageBunny feature", async function (done) {
         let cmd = new RendezVousWrestling(fChatLibInstance, "here");
-        createFighter("TheTinaArmstrong").features.push(new FeatureFactory().getFeature(FeatureType.KickStart, createFighter("TheTinaArmstrong"),  1));
+        createFighter("TheTinaArmstrong").features.push(new FeatureFactory().getFeature(FeatureType.BondageBunny, createFighter("TheTinaArmstrong"),  1));
         await initiateMatchSettings1vs1(cmd);
 
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await cmd.fight.waitUntilWaitingForAction();
-        if (cmd.fight.getFighterByName("TheTinaArmstrong").modifiers.length == 1
-            && cmd.fight.getFighterByName("TheTinaArmstrong").modifiers[0].name == ModifierType.ItemPickupBonus) {
+        if (cmd.fight.getFighterByName("TheTinaArmstrong").features.length == 1
+            && cmd.fight.getFighterByName("TheTinaArmstrong").features[0].type == FeatureType.BondageBunny) {
             done();
         }
         else {
-            done.fail(new Error("Didn't create the itemPickup modifier"));
+            done.fail(new Error("Didn't create the BondageBunny feature"));
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 

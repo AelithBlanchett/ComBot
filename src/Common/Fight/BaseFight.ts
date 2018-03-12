@@ -208,7 +208,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
                 this.message.addInfo(Utils.strFormat(Messages.Ready, [fighterInFight.getStylizedName(), listOfFightTypes, this.requiredTeams.toString(), listOfFightDurations]));
                 this.sendFightMessage();
                 if (this.canStart()) {
-                    this.start();
+                    await this.start();
                 }
                 return true;
             }
@@ -915,6 +915,10 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     }
 
     abstract async save():Promise<void>;
+
+    abstract async load(fightId:string):Promise<void>;
+
+    abstract async delete():Promise<void>;
 
     abstract deleteFighterFromFight(idFighter:string, idFight:string);
 

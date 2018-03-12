@@ -16,4 +16,12 @@ export class TestFight extends BaseFight {
     loadFighter(idFighter: string): Promise<TestActiveFighter> {
         return;
     }
+
+    load(fightId: string): Promise<void> {
+        return undefined;
+    }
+
+    delete(): Promise<void> {
+        return undefined;
+    }
 }

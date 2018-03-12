@@ -4,6 +4,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {FailedHighRiskMultipliers, FocusDamageOnHit, FocusHealOnHit, HighRiskMultipliers} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionRiskyLewd extends RWAction {
 
@@ -34,6 +35,7 @@ export class ActionRiskyLewd extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.MagicalAttack,
             ActionExplanation[ActionType.RiskyLewd]);
     }
 
@@ -41,7 +43,7 @@ export class ActionRiskyLewd extends RWAction {
         return Math.ceil(this.attacker.currentSensuality / 10);
     }
 
-    make():void {
+    onHit(): void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
         this.lpDamageToDef += Math.floor(this.attackFormula(this.tier, this.attacker.currentSensuality, this.defender.currentEndurance, this.diceScore) * HighRiskMultipliers[Tiers[this.tier]]);

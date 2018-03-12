@@ -7,4 +7,8 @@ export class TestFeatureFactory implements IFeatureFactory<TestFight, TestFighte
     getFeature(featureName: string, receiver: TestFighter, uses: number, id?: string): BaseFeature {
         return;
     }
+
+    getExistingFeatures(): string[] {
+        return [];
+    }
 }

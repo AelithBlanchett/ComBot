@@ -4,6 +4,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionDegradation extends RWAction {
 
@@ -34,6 +35,7 @@ export class ActionDegradation extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.SpecialAttack,
             ActionExplanation[ActionType.Degradation]);
     }
 
@@ -41,7 +43,7 @@ export class ActionDegradation extends RWAction {
         return Math.ceil(this.attacker.currentSensuality / 10);
     }
 
-    make():void {
+    onHit():void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]] * Constants.Fight.Action.Globals.degradationFocusMultiplier;
     }

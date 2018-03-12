@@ -5,6 +5,7 @@ import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionSubHold extends RWAction {
 
@@ -35,6 +36,7 @@ export class ActionSubHold extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.PhysicalAttack,
             ActionExplanation[ActionType.SubHold]);
     }
 
@@ -42,7 +44,7 @@ export class ActionSubHold extends RWAction {
         return Math.ceil(this.attacker.currentDexterity / 10);
     }
 
-    make():void {
+    onHit(): void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
         let hpDamage = Math.floor(this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.holdDamageMultiplier);

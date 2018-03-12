@@ -2,6 +2,7 @@ import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionReleaseHold extends RWAction {
 
@@ -32,10 +33,11 @@ export class ActionReleaseHold extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.Pass,
             ActionExplanation[ActionType.ReleaseHold]);
     }
 
-    make(): void {
+    onHit(): void {
         if(this.attacker.isApplyingHold()){
             this.attacker.releaseHoldsApplied();
         }

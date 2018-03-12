@@ -84,10 +84,9 @@ export class ActionRepository{
             let loadedData = await Database.get(BaseConstants.SQL.actionTableName).where({idFight: idFight}).select();
 
             for(let data of loadedData){
-                //TODO FIX THIS
-                // let action = new EmptyAction();
-                // Utils.mergeFromTo(data, action);
-                // loadedActions.push(action);
+                let action = new EmptyAction(null, null, null);
+                Utils.mergeFromTo(data, action);
+                loadedActions.push(action);
             }
 
         }

@@ -4,6 +4,7 @@ import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionBondage extends RWAction {
 
@@ -34,6 +35,7 @@ export class ActionBondage extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.SpecialAttack,
             ActionExplanation[ActionType.Bondage]);
     }
 
@@ -48,7 +50,7 @@ export class ActionBondage extends RWAction {
         return super.requiredDiceScore;
     }
 
-    make(): void {
+    onHit(): void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[Tiers.Heavy]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[Tiers.Heavy]];
         let bdModifier = ModifierFactory.getModifier(ModifierType.Bondage, this.fight, this.defender, this.attacker);

@@ -179,21 +179,23 @@ export enum Trigger {
     MagicalAttack = 1 << 12,
     RangedAttack = 1 << 13,
     GrapplingHold = 1 << 14,
+    SpecialAttack = 1 << 15,
     Attack = PhysicalAttack | Stun | MagicalAttack | RangedAttack | GrapplingHold,
 
-    Tag = 1 << 15,
-    Escape = 1 << 16,
-    Rest = 1 << 17,
-    Submit = 1 << 18,
-    PassiveAction = Tag | Escape | Rest,
+    Tag = 1 << 16,
+    Escape = 1 << 17,
+    Rest = 1 << 18,
+    Pass = 1 << 19,
+    Submit = 1 << 20,
+    PassiveAction = Tag | Escape | Rest | Pass,
     AnyAction = PassiveAction | Attack,
 
-    BonusPickup = 1 << 19,
+    BonusPickup = 1 << 21,
 
-    TurnChange = 1 << 20,
-    None = 1 << 21,
+    TurnChange = 1 << 22,
+    None = 1 << 23,
 
-    FinishingMove = 1 << 22
+    FinishingMove = 1 << 24
 
-    //There's still room for 9 more triggers, but choose them with precaution!
+    //There's still room for 8 more triggers, but choose them with precaution!
 }

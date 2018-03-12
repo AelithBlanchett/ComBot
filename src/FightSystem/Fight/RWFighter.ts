@@ -2,15 +2,10 @@ import {BaseFighter} from "../../Common/Fight/BaseFighter";
 import {IRWFighter} from "./IRWFighter";
 import {TransactionType} from "../../Common/BaseConstants";
 import {Stats} from "../Constants/Stats";
+import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
+import {FighterRepository} from "../Repositories/FighterRepository";
 
 export class RWFighter extends BaseFighter implements IRWFighter {
-    save(): Promise<void> {
-        return undefined;
-    }
-
-    saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
-        return undefined;
-    }
 
     dexterity:number = 1;
     power:number = 1;
@@ -61,5 +56,19 @@ export class RWFighter extends BaseFighter implements IRWFighter {
             `[b][color=white]Fun stats[/color][/b]: [sub]Avg. roll: ${this.averageDiceRoll}, Fav. tag partner: ${(this.favoriteTagPartner != null && this.favoriteTagPartner != "" ? this.favoriteTagPartner : "None!")}, Moves done: ${this.actionsCount}, Nemesis: ${this.nemesis} [/sub]`;
     }
 
+    async save(): Promise<void> {
+        await FighterRepository.persist(this);
+    }
 
+    async saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
+        await FighterRepository.logTransaction(idFighter, amount, transactionType, fromFighter);
+    }
+
+    async exists(name: string): Promise<boolean> {
+        return await FighterRepository.exists(name);
+    }
+
+    async load(name: string): Promise<void> {
+        await FighterRepository.load(name, this);
+    }
 }

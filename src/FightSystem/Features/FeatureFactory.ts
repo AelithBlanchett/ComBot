@@ -7,6 +7,8 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {IFeatureFactory} from "../../Common/Features/IFeatureFactory";
 import {RWFight} from "../Fight/RWFight";
 import {RWFighter} from "../Fight/RWFighter";
+import CumSlut = Feature.CumSlut;
+import RyonaEnthusiast = Feature.RyonaEnthusiast;
 
 export class FeatureFactory implements IFeatureFactory<RWFight, RWFighter>{
 
@@ -20,6 +22,12 @@ export class FeatureFactory implements IFeatureFactory<RWFight, RWFighter>{
             case FeatureType.BondageBunny:
                 feature = new BondageBunny(receiver, uses, id);
                 break;
+            case FeatureType.CumSlut:
+                feature = new CumSlut(receiver, uses, id);
+                break;
+            case FeatureType.RyonaEnthusiast:
+                feature = new RyonaEnthusiast(receiver, uses, id);
+                break;
             default:
                 feature = null;
                 break;
@@ -29,5 +37,9 @@ export class FeatureFactory implements IFeatureFactory<RWFight, RWFighter>{
             throw new Error(`The feature ${featureName} couldn't be initialized. The ${featureName} could be missing in Features.js and/or the ${featureName} isn't present in the features.json file.`)
         }
         return feature;
+    }
+
+    getExistingFeatures():string[]{
+        return [FeatureType.KickStart, FeatureType.RyonaEnthusiast, FeatureType.CumSlut, FeatureType.BondageBunny];
     }
 }

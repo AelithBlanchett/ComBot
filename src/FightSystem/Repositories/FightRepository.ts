@@ -69,32 +69,31 @@ export class FightRepository{
         return (loadedData.length > 0);
     }
 
-    public static async loadLatestInvolvingFighter(idFighter:string):Promise<RWFight>{
-        let loadedFight:RWFight = new RWFight();
+    // public static async loadLatestInvolvingFighter(idFighter:string):Promise<RWFight>{
+    //     let loadedFight:RWFight = new RWFight();
+    //
+    //     if(!await FighterRepository.exists(idFighter)){
+    //         return null;
+    //     }
+    //
+    //     let latestIdFightInvolvingFighter = await Database.get(BaseConstants.SQL.activeFightersTableName).where({idFighter: idFighter, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
+    //
+    //     if(latestIdFightInvolvingFighter != null && !await FightRepository.exists(latestIdFightInvolvingFighter.idFight, true)){
+    //         return null;
+    //     }
+    //
+    //     try
+    //     {
+    //         loadedFight = await FightRepository.load(latestIdFightInvolvingFighter);
+    //     }
+    //     catch(ex){
+    //         throw ex;
+    //     }
+    //
+    //     return loadedFight;
+    // }
 
-        if(!await FighterRepository.exists(idFighter)){
-            return null;
-        }
-
-        let latestIdFightInvolvingFighter = await Database.get(BaseConstants.SQL.activeFightersTableName).where({idFighter: idFighter, hasEnded: false, hasStarted: true}).and.whereNull('deletedAt').select();
-
-        if(latestIdFightInvolvingFighter != null && !await FightRepository.exists(latestIdFightInvolvingFighter.idFight, true)){
-            return null;
-        }
-
-        try
-        {
-            loadedFight = await FightRepository.load(latestIdFightInvolvingFighter);
-        }
-        catch(ex){
-            throw ex;
-        }
-
-        return loadedFight;
-    }
-
-    public static async load(idFight:string):Promise<RWFight>{
-        let loadedFight:RWFight = new RWFight();
+    public static async load(idFight:string, loadedFight:RWFight):Promise<RWFight>{
 
         if(!await FightRepository.exists(idFight, true)){
             return null;

@@ -102,7 +102,7 @@ export class ActiveFighterRepository{
             return null;
         }
 
-        let loadedFighter = await FighterRepository.load(idFighter);
+        let loadedFighter = await FighterRepository.load(idFighter, loadedActiveFighter);
         Utils.mergeFromTo(loadedFighter, loadedActiveFighter);
 
         loadedActiveFighter.initialize();

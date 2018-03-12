@@ -3,6 +3,7 @@ import * as Constants from "../../Common/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionTag extends RWAction {
 
@@ -33,6 +34,7 @@ export class ActionTag extends RWAction {
             false, //usableOnSelf
             true,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.Tag,
             ActionExplanation[ActionType.Tag]);
     }
 
@@ -40,7 +42,7 @@ export class ActionTag extends RWAction {
         return Constants.Fight.Action.RequiredScore.Tag;
     }
 
-    make(): void {
+    onHit(): void {
         this.attacker.lastTagTurn = this.atTurn;
         this.defenders[0].lastTagTurn = this.atTurn;
         this.attacker.isInTheRing = false;

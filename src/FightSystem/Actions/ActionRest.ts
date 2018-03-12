@@ -3,6 +3,7 @@ import * as Constants from "../../Common/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionRest extends RWAction {
 
@@ -33,6 +34,7 @@ export class ActionRest extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.Rest,
             ActionExplanation[ActionType.Rest]);
     }
 
@@ -44,7 +46,7 @@ export class ActionRest extends RWAction {
         return Math.ceil(this.attacker.currentDexterity / 10);
     }
 
-    make(): void {
+    onHit(): void {
         this.hpHealToAtk += this.attacker.hpPerHeart() * Constants.Fight.Action.Globals.hpPercentageToHealOnRest;
         this.lpHealToAtk += this.attacker.lustPerOrgasm() * Constants.Fight.Action.Globals.lpPercentageToHealOnRest;
         this.fpHealToAtk += this.attacker.maxFocus() * Constants.Fight.Action.Globals.fpPercentageToHealOnRest;

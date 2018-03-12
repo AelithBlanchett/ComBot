@@ -149,9 +149,7 @@ export class FighterRepository{
         return (loadedData.length > 0);
     }
 
-    public static async load(name:string):Promise<IRWFighter>{
-        let loadedFighter:RWFighter = new RWFighter(new FeatureFactory());
-
+    public static async load(name:string, loadedFighter:IRWFighter):Promise<IRWFighter>{
         if(!await FighterRepository.exists(name)){
             return null;
         }
@@ -175,12 +173,12 @@ export class FighterRepository{
         return loadedFighter;
     }
 
-    public static async loadActiveFighter(name:string):Promise<ActiveFighter>{
-        let baseFighter = await FighterRepository.load(name);
-        let activeFighter = new ActiveFighter(new FeatureFactory());
-        Utils.mergeFromTo(baseFighter, activeFighter);
-        return activeFighter;
-    }
+    // public static async loadActiveFighter(name:string):Promise<ActiveFighter>{
+    //     let baseFighter = await FighterRepository.load(name);
+    //     let activeFighter = new ActiveFighter(new FeatureFactory());
+    //     Utils.mergeFromTo(baseFighter, activeFighter);
+    //     return activeFighter;
+    // }
 
     static async loadAllAchievements(fighterName:string):Promise<IAchievement[]>{
         let result;

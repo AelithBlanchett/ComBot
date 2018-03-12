@@ -44,7 +44,7 @@ export abstract class BaseFeature{
         let messageAboutFeature:string = "";
 
         if(wasFeatureTriggered){
-            messageAboutFeature = `${this.receiver} is affected by the ${this.type}, ${triggeredFeatureMessage}`;
+            messageAboutFeature = `${this.receiver.name} is affected by the ${this.type}, ${triggeredFeatureMessage}`;
         }
 
         return messageAboutFeature;

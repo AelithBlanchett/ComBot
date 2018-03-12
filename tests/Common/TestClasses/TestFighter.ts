@@ -14,4 +14,12 @@ export class TestFighter extends BaseFighter {
     saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
         return;
     }
+
+    exists(name: string): Promise<boolean> {
+        return undefined;
+    }
+
+    load(name: string): Promise<void> {
+        return undefined;
+    }
 }

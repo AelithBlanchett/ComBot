@@ -12,7 +12,6 @@ import {Messages} from "../../Common/Constants/Messages";
 
 export class RWFight extends BaseFight<ActiveFighter>{
 
-    //TODO dependency injection?
     public constructor() {
         super(new RWActionFactory());
     }
@@ -50,6 +49,10 @@ export class RWFight extends BaseFight<ActiveFighter>{
         await FightRepository.persist(this);
     }
 
+    async load(fightId:string): Promise<void> {
+        await FightRepository.load(fightId, this);
+    }
+
     async deleteFighterFromFight(idFighter:string, idFight:string){
         try {
             if(await ActiveFighterRepository.exists(idFighter, idFight)){
@@ -60,6 +63,10 @@ export class RWFight extends BaseFight<ActiveFighter>{
             this.message.addError(Utils.strFormat(Messages.commandError, ex.message));
             this.sendFightMessage();
         }
+    }
+
+    async delete(): Promise<void> {
+        await FightRepository.delete(this.idFight);
     }
 
 }

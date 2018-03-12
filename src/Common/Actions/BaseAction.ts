@@ -1,4 +1,5 @@
 import {Utils} from "../Utils/Utils";
+import {Trigger} from "../BaseConstants";
 
 export abstract class BaseAction{
 
@@ -35,6 +36,8 @@ export abstract class BaseAction{
     usableOnAllies:boolean;
     usableOnEnemies:boolean;
 
+    trigger:Trigger;
+
     createdAt:Date;
     updatedAt:Date;
 
@@ -61,6 +64,7 @@ export abstract class BaseAction{
                 usableOnSelf:boolean,
                 usableOnAllies:boolean,
                 usableOnEnemies:boolean,
+                trigger:Trigger,
                 explanation?:string,
                 maxTargets?:number){
         this.idAction = Utils.generateUUID();
@@ -87,6 +91,7 @@ export abstract class BaseAction{
         this.usableOnSelf = usableOnSelf;
         this.usableOnAllies = usableOnAllies;
         this.usableOnEnemies = usableOnEnemies;
+        this.trigger = trigger;
         this.explanation = explanation;
         this.maxTargets = maxTargets;
         this.createdAt = new Date();

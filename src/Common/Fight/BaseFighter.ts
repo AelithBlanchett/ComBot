@@ -55,7 +55,7 @@ export abstract class BaseFighter{
 
     featureFactory:IFeatureFactory<BaseFight, BaseFighter>;
 
-    constructor(featureFactory:IFeatureFactory<BaseFight, BaseFighter>){
+    constructor(featureFactory:IFeatureFactory<BaseFight, BaseFighter> = null){
         this.featureFactory = featureFactory;
     }
 
@@ -107,6 +107,15 @@ export abstract class BaseFighter{
 
     addFeature(type:string, matches:number):number{
         let feature:any = this.featureFactory.getFeature(type, this, matches);
+
+        if(feature == null){
+            throw new Error(`Feature not found. These are the existing features: ${this.featureFactory.getExistingFeatures().join(',')}`);
+        }
+
+        if(feature.getCost() > 0 && matches == 0){
+            throw new Error(`A paid feature requires a specific number of matches.`);
+        }
+
         let amountToRemove:number = feature.getCost() * matches;
 
         if(this.tokens - amountToRemove >= 0){
@@ -166,5 +175,7 @@ export abstract class BaseFighter{
     }
     abstract outputStats():string;
     abstract async save():Promise<void>;
+    abstract async load(name:string):Promise<void>;
+    abstract async exists(name:string):Promise<boolean>;
     abstract async saveTokenTransaction(idFighter:string, amount:number, transactionType:TransactionType, fromFighter?:string):Promise<void>;
 }

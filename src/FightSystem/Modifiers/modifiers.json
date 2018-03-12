@@ -65,7 +65,7 @@
         "name":"Stun",
         "uses":2,
         "sTimeToTrigger":"Before",
-        "sEvent":"Attack"
+        "sEvent":"AnyAction"
     },
     {
         "name":"DummyModifier"

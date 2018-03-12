@@ -4,6 +4,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionBrawl extends RWAction {
 
@@ -34,6 +35,7 @@ export class ActionBrawl extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.PhysicalAttack,
             ActionExplanation[ActionType.Brawl]);
     }
 
@@ -41,9 +43,10 @@ export class ActionBrawl extends RWAction {
         return Math.ceil(this.attacker.currentDexterity / 10);
     }
 
-    make(): void {
+    onHit(): void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
         this.hpDamageToDef += this.attackFormula(this.tier, this.attacker.currentPower, this.defender.currentToughness, this.diceScore);
     }
+
 }

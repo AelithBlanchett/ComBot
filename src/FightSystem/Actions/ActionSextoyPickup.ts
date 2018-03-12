@@ -4,6 +4,7 @@ import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionSextoyPickup extends RWAction {
 
@@ -34,10 +35,11 @@ export class ActionSextoyPickup extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.BonusPickup,
             ActionExplanation[ActionType.SextoyPickup]);
     }
 
-    make(): void {
+    onHit(): void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[Tiers.Light]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[Tiers.Light]];
         let itemPickupModifier = ModifierFactory.getModifier(ModifierType.SextoyPickupBonus, this.fight, this.attacker, null);

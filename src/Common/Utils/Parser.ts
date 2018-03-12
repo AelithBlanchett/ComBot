@@ -5,7 +5,42 @@ import {FightLength} from "../BaseConstants";
 import {Teams} from "../Constants/Teams";
 import {GameSettings} from "../Configuration/GameSettings";
 
-export class Commands{
+export class Parser{
+
+    public static parseArgs(nberAwaitedArgs:number, awaitedTypes:any[], args:string):any[]{
+        let returnedArgs = [];
+        let error = false;
+
+        if(nberAwaitedArgs == 1){
+            if(typeof(args) != typeof(awaitedTypes[0])){
+                error = true;
+            }
+            else{
+                returnedArgs.push("");
+            }
+            return ;
+        }
+        else if(nberAwaitedArgs > 1){
+            let splits = args.split(" ");
+            let finalArgs:string[] = [];
+            for(let i = 0; i < nberAwaitedArgs; i++){
+                finalArgs.push(splits[0]);
+                splits.shift();
+            }
+
+            let otherArgs = splits.join(" ");
+            finalArgs.push(otherArgs);
+            return finalArgs;
+        }
+
+        if(error){
+            let concatenatedTypes = "";
+            for(let i = 0; i < nberAwaitedArgs; i++){
+                concatenatedTypes += " " + typeof(awaitedTypes[i]).toString().toUpperCase();
+            }
+            throw new Error(`The command you executed received the wrong number of parameters, and/or the wrong type of parameters. Correct syntax is: '!command${concatenatedTypes}'`)
+        }
+    }
 
     public static join(args){
         let teams = Utils.getEnumList(Teams);
@@ -44,7 +79,7 @@ export class Commands{
         if (arrParam.length != numberOfDifferentStats) {
            return `The number of parameters was incorrect. Example: !register ${exampleStats}`;
         }
-        else if (!arrParam.every(arg => Commands.isInt(arg))) {
+        else if (!arrParam.every(arg => Parser.isInt(arg))) {
             return `All the parameters aren't integers. Example: !register ${exampleStats}`;
         }
         else {
@@ -94,45 +129,7 @@ export class Commands{
         return result;
     }
 
-    //TODO FIX THIS FOR FEATURES
-    // public static getFeatureType(args, onlyType:boolean = false){
-    //     let result = {featureType: null, turns: -1, message: null};
-    //     let splittedArgs = args.split(` `);
-    //     let typeToSearch = splittedArgs[0];
-    //
-    //     if(splittedArgs.length > 1 && !onlyType){
-    //         if(isNaN(splittedArgs[1]) || splittedArgs[1] <= GameSettings.featuresMinMatchesDurationCount || splittedArgs[1] > GameSettings.featuresMaxMatchesDurationCount){
-    //             result.message = `The number of fights specified is invalid. It must be a number > ${GameSettings.featuresMinMatchesDurationCount} and <= ${GameSettings.featuresMaxMatchesDurationCount}`;
-    //             return result;
-    //         }
-    //         else{
-    //             result.turns = splittedArgs[1];
-    //         }
-    //     }
-    //     else{
-    //         result.turns = 0;
-    //     }
-    //
-    //     let featTypes = Utils.getEnumList(FeatureType);
-    //     for(let featTypeId in featTypes){
-    //         featTypes[featTypeId] = featTypes[featTypeId].toLowerCase();
-    //     }
-    //     let indexOfFeatType = featTypes.indexOf(typeToSearch.toLowerCase());
-    //     if(indexOfFeatType != -1){
-    //         result.featureType =  FeatureType[FeatureType[indexOfFeatType]];
-    //     }
-    //     else{
-    //         result.message = `This feature doesn't exist.`;
-    //     }
-    //
-    //     if(result.featureType == FeatureType[FeatureType.SexyKickStart] || result.featureType == FeatureType[FeatureType.KickStart]){
-    //         result.message = `You did not specify a number of fights, and features requiring payment cannot be permanent.`;
-    //     }
-    //
-    //     return result;
-    // }
-
-    public static setFightType(args){
+    public static setFightType(args):FightType{
         let fightTypes = Utils.getEnumList(FightType);
         for(let fightTypeId in fightTypes){
             fightTypes[fightTypeId] = fightTypes[fightTypeId].toLowerCase();
@@ -144,7 +141,7 @@ export class Commands{
         return -1;
     }
 
-    public static setFightLength(args){
+    public static setFightLength(args):FightLength{
         let fightDurations = Utils.getEnumList(FightLength);
         for(let fightTypeId in fightDurations){
             fightDurations[fightTypeId] = fightDurations[fightTypeId].toLowerCase();
@@ -156,7 +153,7 @@ export class Commands{
         return -1;
     }
 
-    public static setTeamsCount(args){
+    public static setTeamsCount(args):number{
         if(isNaN(args)){
             return -1;
         }

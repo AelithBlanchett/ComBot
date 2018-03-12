@@ -6,6 +6,7 @@ import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Messages} from "../../Common/Constants/Messages";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionStun extends RWAction {
 
@@ -36,6 +37,7 @@ export class ActionStun extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.Stun,
             ActionExplanation[ActionType.Stun]);
     }
 
@@ -50,7 +52,7 @@ export class ActionStun extends RWAction {
         }
     }
 
-    make(): void {
+    onHit(): void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
         this.hpDamageToDef = Math.floor(this.attackFormula(this.tier, Math.floor(this.attacker.currentPower), this.defender.currentToughness, this.diceScore) * Constants.Fight.Action.Globals.stunHPDamageMultiplier);

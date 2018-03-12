@@ -6,8 +6,10 @@ import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
 import {RWFight} from "./Fight/RWFight";
 import {Messages} from "../Common/Constants/Messages";
 import {Tiers} from "./Constants/Tiers";
+import {RWFighter} from "./Fight/RWFighter";
+import {FighterRepository} from "./Repositories/FighterRepository";
 
-export class CommandHandler extends BaseCommandHandler {
+export class CommandHandler extends BaseCommandHandler<RWFight, RWFighter> {
 
     private wait(ms){
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -267,5 +269,55 @@ export class CommandHandler extends BaseCommandHandler {
         catch (ex) {
             this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandErrorWithStack, [ex.message, ex.stack]), data.character);
         }
+    };
+
+    resetdmg(args:string, data:IMsgEvent) {
+        if (this.fChatLibInstance.isUserMaster(data.character) && this.fight.hasStarted && this.fight.debug) {
+            for(let fighter of this.fight.fighters){
+                fighter.livesRemaining = fighter.maxLives(); //to prevent ending the fight this way
+                fighter.consecutiveTurnsWithoutFocus = 0; //to prevent ending the fight this way
+                fighter.focus = fighter.initialFocus();
+            }
+
+            this.fChatLibInstance.sendPrivMessage(`Successfully resplenished ${args}'s HP, LP and FP.`, data.character);
+        }
+    }
+
+    sethp(args:string, data:IMsgEvent) {
+        if (this.fChatLibInstance.isUserMaster(data.character) && this.fight.hasStarted && this.fight.debug) {
+            let splitted = args.split(",");
+            try{
+                this.fight.getFighterByName(splitted[0]).hp = parseInt(splitted[1]);
+                this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s hp to ${splitted[1]}`, data.character);
+            }
+            catch(ex){
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            }
+        }
+    }
+
+    setlp(args:string, data:IMsgEvent) {
+        if (this.fChatLibInstance.isUserMaster(data.character) && this.fight.hasStarted && this.fight.debug) {
+            let splitted = args.split(",");
+            try{
+                this.fight.getFighterByName(splitted[0]).lust = parseInt(splitted[1]);
+                this.fChatLibInstance.sendPrivMessage(`Successfully set ${splitted[0]}'s lp to ${splitted[1]}`, data.character);
+            }
+            catch(ex){
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            }
+        }
+    }
+
+    async givetokenstoplayersregisteredbeforenow(args:string, data:IMsgEvent) {
+        if (this.fChatLibInstance.isUserMaster(data.character)) {
+            try {
+                await FighterRepository.GiveTokensToPlayersRegisteredBeforeNow(parseInt(args));
+            }
+            catch (ex) {
+                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
+            }
+        }
+
     };
 }

@@ -4,6 +4,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {SelfDebaseFpDamage} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionSelfDebase extends RWAction {
 
@@ -34,10 +35,11 @@ export class ActionSelfDebase extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.Pass,
             ActionExplanation[ActionType.SelfDebase]);
     }
 
-    make(): void {
+    onHit(): void {
         this.fpDamageToAtk = SelfDebaseFpDamage[Tiers[this.tier]];
     }
 }

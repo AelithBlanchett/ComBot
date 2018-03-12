@@ -5,6 +5,7 @@ import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionHumHold extends RWAction {
 
@@ -35,6 +36,7 @@ export class ActionHumHold extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.SpecialAttack,
             ActionExplanation[ActionType.HumHold]);
     }
 
@@ -42,7 +44,7 @@ export class ActionHumHold extends RWAction {
         return Math.ceil(this.attacker.currentDexterity / 10);
     }
 
-    make():void {
+    onHit(): void {
         this.missed = false;
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         let focusDamage = Math.floor(FocusDamageOnHit[Tiers[this.tier]]);

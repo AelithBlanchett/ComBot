@@ -4,6 +4,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionEscape extends RWAction {
 
@@ -34,6 +35,7 @@ export class ActionEscape extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.Escape,
             ActionExplanation[ActionType.Escape]);
     }
 
@@ -41,7 +43,7 @@ export class ActionEscape extends RWAction {
         return Math.ceil(this.attacker.currentDexterity / 10);
     }
 
-    make(): void {
+    onHit(): void {
         this.attacker.escapeHolds();
     }
 

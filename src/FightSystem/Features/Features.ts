@@ -61,43 +61,73 @@ export namespace Feature{
 
         applyFeature(moment: TriggerMoment, event:Trigger, parameters?:FeatureParameter):string{
             if(Utils.willTriggerForEvent(moment, TriggerMoment.After, event, Trigger.Attack)){
-                let hpDamageDealt = parameters.action;
-                return `multiplying their damage by ${this.lpDamageFromHpMultiplier}!`
+                if(parameters.action.attacker.name == this.receiver.name && parameters.action.avgHpDamageToDefs > 0){
+                    parameters.action.lpDamageToAtk = Math.floor(parameters.action.avgHpDamageToDefs * this.lpDamageFromHpMultiplier);
+                    return `returning some of the HP damage dealt for a total of ${this.lpDamageFromHpMultiplier}LP!`
+                }
+
+            }
+            return "";
+        }
+    }
+
+    export class CumSlut extends BaseFeature{
+
+        readonly additionalLPDamage:number = 3;
+
+        constructor(receiver:ActiveFighter, uses:number, id?:string){
+            super(FeatureType.CumSlut, receiver, uses, id);
+        }
+
+        getCost():number{
+            return this.uses * 5;
+        }
+
+        applyFeature(moment: TriggerMoment, event:Trigger, parameters?:FeatureParameter):string{
+            if(Utils.willTriggerForEvent(moment, TriggerMoment.After, event, Trigger.Attack)){
+                if(parameters.action.attacker.name == this.receiver.name && parameters.action.lpDamageToAtk > 0){
+                    parameters.action.lpDamageToAtk += this.additionalLPDamage;
+                    return `dealing more LP Damage (+${this.additionalLPDamage}LP)`;
+                }
+                else if(parameters.action.avgLpDamageToDefs > 0){
+                    let defenderIndex = parameters.action.defenders.findIndex(x => x.name == this.receiver.name);
+                    if(defenderIndex != -1){
+                        parameters.action.lpDamageToDefs[defenderIndex] += this.additionalLPDamage;
+                    }
+                    return `dealing more LP Damage (+${this.additionalLPDamage}LP)`;
+                }
+
+            }
+            return "";
+        }
+    }
+
+    export class RyonaEnthusiast extends BaseFeature{
+
+        readonly lpDamageFromHpMultiplier:number = 0.5;
+
+        constructor(receiver:ActiveFighter, uses:number, id?:string){
+            super(FeatureType.RyonaEnthusiast, receiver, uses, id);
+        }
+
+        getCost():number{
+            return this.uses * 5;
+        }
+
+        applyFeature(moment: TriggerMoment, event:Trigger, parameters?:FeatureParameter):string{
+            if(Utils.willTriggerForEvent(moment, TriggerMoment.After, event, Trigger.Attack)){
+                if(parameters.action.avgHpDamageToDefs > 0){
+                    let addedLPs = 0;
+                    let defenderIndex = parameters.action.defenders.findIndex(x => x.name == this.receiver.name);
+                    if(defenderIndex != -1){
+                        addedLPs = (parameters.action.hpDamageToDefs[defenderIndex] * this.lpDamageFromHpMultiplier);
+                        parameters.action.lpDamageToDefs[defenderIndex] += addedLPs;
+                    }
+                    return `converting some of the HP damage to LP! (+${addedLPs}LP)`;
+                }
+
             }
             return "";
         }
     }
 }
-
-//TODO Re-implement features with the new way
-//In action:
-
-// if(this.attacker.hasFeature(Constants.FeatureType.Sadist)){
-//     this.lpDamageToAtk += Math.floor(this.hpDamageToDef / 2);
-// }
-// if(this.attacker.hasFeature(Constants.FeatureType.CumSlut)){
-//     if(this.lpDamageToAtk > 0){
-//         this.lpDamageToAtk += 3;
-//     }
-// }
-// if(this.attacker.hasFeature(Constants.FeatureType.RyonaEnthusiast)){
-//     if(this.hpDamageToAtk > 0){
-//         this.lpDamageToAtk += Math.floor(this.hpDamageToAtk / 2);
-//     }
-// }
-
-//if(defender)
-// if(this.defender.hasFeature(Constants.FeatureType.Sadist)){
-//     this.lpDamageToDef += Math.floor(this.hpDamageToAtk / 2);
-// }
-// if(this.defender.hasFeature(Constants.FeatureType.CumSlut)){
-//     if(this.lpDamageToDef > 0){
-//         this.lpDamageToDef += 3;
-//     }
-// }
-// if(this.defender.hasFeature(Constants.FeatureType.RyonaEnthusiast)){
-//     if(this.hpDamageToDef > 0){
-//         this.lpDamageToDef += Math.floor(this.hpDamageToDef / 2);
-//     }
-// }
-

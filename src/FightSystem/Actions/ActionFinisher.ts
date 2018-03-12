@@ -6,6 +6,7 @@ import {FocusDamageOnHit, FocusDamageOnMiss, FocusHealOnHit} from "../RWConstant
 import {Utils} from "../../Common/Utils/Utils";
 import {Messages} from "../../Common/Constants/Messages";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionFinisher extends RWAction {
 
@@ -36,6 +37,7 @@ export class ActionFinisher extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.FinishingMove,
             ActionExplanation[ActionType.Finisher]);
     }
 
@@ -54,7 +56,7 @@ export class ActionFinisher extends RWAction {
         }
     }
 
-    make(): void {
+    onHit(): void {
         this.defender.triggerPermanentOutsideRing();
         this.fight.message.addHit(Utils.strFormat(Messages.finishMessage, [this.defender.getStylizedName()]));
     }

@@ -3,6 +3,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {MasturbateLpDamage} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionMasturbate extends RWAction {
 
@@ -33,10 +34,11 @@ export class ActionMasturbate extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.Pass,
             ActionExplanation[ActionType.Masturbate]);
     }
 
-    make(): void {
+    onHit(): void {
         this.lpDamageToAtk = MasturbateLpDamage[Tiers[this.tier]];
     }
 }

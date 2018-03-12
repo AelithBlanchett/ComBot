@@ -3,6 +3,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionForcedWorship extends RWAction {
 
@@ -33,6 +34,7 @@ export class ActionForcedWorship extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.MagicalAttack,
             ActionExplanation[ActionType.ForcedWorship]);
     }
 
@@ -40,7 +42,7 @@ export class ActionForcedWorship extends RWAction {
         return Math.ceil(this.attacker.currentDexterity / 10);
     }
 
-    make():void {
+    onHit(): void {
         this.lpDamageToAtk += (this.tier+1) * 5;
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]] * 2;

@@ -3,7 +3,7 @@ import * as Constants from "../../Common/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Utils} from "../../Common/Utils/Utils";
-import {FightType} from "../../Common/BaseConstants";
+import {FightType, Trigger} from "../../Common/BaseConstants";
 import {Messages} from "../../Common/Constants/Messages";
 import {Tiers} from "../Constants/Tiers";
 
@@ -36,6 +36,7 @@ export class ActionSubmit extends RWAction {
             true, //usableOnSelf
             false,  //usableOnAllies
             false, //usableOnEnemies
+            Trigger.Submit,
             ActionExplanation[ActionType.Submit]);
     }
 
@@ -49,7 +50,7 @@ export class ActionSubmit extends RWAction {
         }
     }
 
-    make(): void {
+    onHit(): void {
         this.attacker.triggerPermanentOutsideRing();
         this.fight.message.addHit(Utils.strFormat(Messages.tapoutMessage, [this.attacker.getStylizedName()]));
     }

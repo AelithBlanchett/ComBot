@@ -5,6 +5,7 @@ import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType, StrapToyDiceRollPenalty, StrapToyLPDamagePerTurn} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/BaseConstants";
 
 export class ActionStrapToy extends RWAction {
 
@@ -35,6 +36,7 @@ export class ActionStrapToy extends RWAction {
             false, //usableOnSelf
             false,  //usableOnAllies
             true, //usableOnEnemies
+            Trigger.BonusPickup,
             ActionExplanation[ActionType.StrapToy]);
     }
 
@@ -42,7 +44,7 @@ export class ActionStrapToy extends RWAction {
         return Math.ceil(this.attacker.currentSensuality / 10);
     }
 
-    make():void {
+    onHit(): void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
         this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]];
         let nbOfTurnsWearingToy = this.tier + 1;

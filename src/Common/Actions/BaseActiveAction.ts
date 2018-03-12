@@ -29,6 +29,8 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
 
     appliedModifiers:BaseModifier[] = [];
 
+    trigger:Trigger;
+
     temporaryIdAttacker:string;
     temporaryIdDefenders:string[];
     temporaryIdFight:string;
@@ -59,6 +61,7 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
                 usableOnSelf:boolean,
                 usableOnAllies:boolean,
                 usableOnEnemies:boolean,
+                trigger:Trigger,
                 explanation?:string,
                 maxTargets?:number){
         super(name,
@@ -84,6 +87,7 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
               usableOnSelf,
               usableOnAllies,
               usableOnEnemies,
+              trigger,
               explanation,
               maxTargets);
         this.fight = fight;
@@ -130,7 +134,10 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
             this.onMiss();
         }
         this.triggerAfterEvent();
+        this.applyDamage();
     }
+
+    abstract applyDamage():void;
 
     roll():number{
         this.diceRollRawValue = this.attacker.roll(1);
@@ -262,18 +269,26 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
     }
 
     triggerBeforeEvent():void{
-        this.attacker.triggerMods(TriggerMoment.Before, Trigger.AnyAction);
-        this.attacker.triggerFeatures(TriggerMoment.Before, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
+        this.attacker.triggerMods(TriggerMoment.Before, this.trigger);
+        this.attacker.triggerFeatures(TriggerMoment.Before, this.trigger, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
         if(this.defender){
-            this.defender.triggerFeatures(TriggerMoment.Before, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
+            this.defender.triggerFeatures(TriggerMoment.Before, this.trigger, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
         }
     }
 
     triggerAfterEvent():void{
-        this.attacker.triggerMods(TriggerMoment.After, Trigger.AnyAction);
-        this.attacker.triggerFeatures(TriggerMoment.After, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
+        this.attacker.triggerMods(TriggerMoment.After, this.trigger);
+        this.attacker.triggerFeatures(TriggerMoment.After, this.trigger, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
         if(this.defender){
-            this.defender.triggerFeatures(TriggerMoment.After, Trigger.AnyAction, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
+            this.defender.triggerFeatures(TriggerMoment.After, this.trigger, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
+        }
+
+        if(this.isHold){
+            this.attacker.triggerMods(TriggerMoment.After, Trigger.GrapplingHold);
+            this.attacker.triggerFeatures(TriggerMoment.After, Trigger.GrapplingHold, new BaseFeatureParameter(this.fight, this.attacker, this.defender, this));
+            if(this.defender){
+                this.defender.triggerFeatures(TriggerMoment.After, Trigger.GrapplingHold, new BaseFeatureParameter(this.fight, this.defender, this.attacker, this));
+            }
         }
     }
 
