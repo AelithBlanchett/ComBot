@@ -4,7 +4,7 @@ import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
 
 export class ActionItemPickup extends RWAction {
 

@@ -1,5 +1,6 @@
 import {Utils} from "../Utils/Utils";
-import {Trigger, TriggerMoment} from "../BaseConstants";
+import {Trigger} from "../Constants/Trigger";
+import {TriggerMoment} from "../Constants/TriggerMoment";
 import {BaseFighter} from "../Fight/BaseFighter";
 import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
 

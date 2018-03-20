@@ -1,9 +1,10 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {GameSettings} from "../../Common/Configuration/GameSettings";
 
 export class ActionTag extends RWAction {
 
@@ -39,7 +40,7 @@ export class ActionTag extends RWAction {
     }
 
     get requiredDiceScore():number{
-        return Constants.Fight.Action.RequiredScore.Tag;
+        return GameSettings.requiredScoreTag;
     }
 
     onHit(): void {
@@ -52,7 +53,7 @@ export class ActionTag extends RWAction {
     checkRequirements():void{
         super.checkRequirements();
         let turnsSinceLastTag = (this.attacker.lastTagTurn - this.fight.currentTurn);
-        let turnsToWait = (Constants.Fight.Action.Globals.turnsToWaitBetweenTwoTags * 2) - turnsSinceLastTag; // *2 because there are two fighters
+        let turnsToWait = (GameSettings.turnsToWaitBetweenTwoTags * this.fight.getAlivePlayers().filter(x => x.assignedTeam == this.attacker.assignedTeam).length) - turnsSinceLastTag;
         if(turnsToWait > 0){
             throw new Error(`[b][color=red]You can't tag yet. Turns left: ${turnsToWait}[/color][/b]`);
         }

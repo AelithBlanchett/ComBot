@@ -3,7 +3,7 @@ import {RWFighter} from "../../../src/FightSystem/Fight/RWFighter";
 import {FighterRepository} from "../../../src/FightSystem/Repositories/FighterRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as BaseConstants from "../../../src/Common/BaseConstants";
+import * as BaseConstants from "../../../src/Common/Constants/BaseConstants";
 import {FeatureFactory} from "../../../src/FightSystem/Features/FeatureFactory";
 
 describe("The RWFighter Repository", () => {

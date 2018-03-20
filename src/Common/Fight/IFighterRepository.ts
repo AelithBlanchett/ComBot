@@ -1,7 +1,7 @@
 import {BaseFighter} from "./BaseFighter";
-import {TransactionType} from "../BaseConstants";
 import {IAchievement} from "../Achievements/IAchievement";
 import {BaseFeature} from "../Features/BaseFeature";
+import {TransactionType} from "../Constants/TransactionType";
 
 export interface IFighterRepository{
 

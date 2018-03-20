@@ -4,7 +4,7 @@ import {ActionRepository} from "./ActionRepository";
 import {Utils} from "../../Common/Utils/Utils";
 import {ActiveFighterRepository} from "./ActiveFighterRepository";
 import {FighterRepository} from "./FighterRepository";
-import * as BaseConstants from "../../Common/BaseConstants";
+import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {ModifierRepository} from "./ModifierRepository";
 import {RWAction} from "../Actions/RWAction";
 

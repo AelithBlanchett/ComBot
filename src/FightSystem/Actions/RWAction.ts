@@ -7,9 +7,7 @@ import {ActionRepository} from "../Repositories/ActionRepository";
 import {Modifier} from "../Modifiers/Modifier";
 import * as Constants from "../RWConstants"
 import {TierDifficulty, Tiers} from "../Constants/Tiers";
-import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
-import {BaseFight} from "../../Common/Fight/BaseFight";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
 
 export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> {
 

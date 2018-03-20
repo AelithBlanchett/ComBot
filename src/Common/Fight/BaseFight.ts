@@ -1,24 +1,24 @@
 import {Utils} from "../Utils/Utils";
 import {Dictionary} from "../Utils/Dictionary";
-import * as BaseConstants from "../BaseConstants";
-import FightTier = BaseConstants.FightTier;
-import TokensPerWin = BaseConstants.TokensPerWin;
-import Trigger = BaseConstants.Trigger;
-import TriggerMoment = BaseConstants.TriggerMoment;
-import FightType =  BaseConstants.FightType;
-import FightLength =  BaseConstants.FightLength;
+import * as BaseConstants from "../Constants/BaseConstants";
 import {FightMessage} from "./FightMessage";
 import {BaseFeatureParameter} from "../Features/BaseFeatureParameter";
 import {BaseActiveFighter} from "./BaseActiveFighter";
-import {TransactionType} from "../BaseConstants";
 import {BaseActiveAction} from "../Actions/BaseActiveAction";
 import {IActionFactory} from "../Actions/IActionFactory";
 import {IFChatLib} from "fchatlib/dist/src/IFChatLib";
 import {FightingStages} from "../Constants/FightingStages";
 import {FightFinishers} from "../Constants/FightFinishers";
 import {Messages} from "../Constants/Messages";
-import {Teams} from "../Constants/Teams";
+import {Team} from "../Constants/Team";
 import {GameSettings} from "../Configuration/GameSettings";
+import {FightType} from "../Constants/FightType";
+import {FightLength} from "../Constants/FightLength";
+import {FightTier} from "../Constants/FightTier";
+import {TokensPerWin} from "../Constants/TokensPerWin";
+import {TransactionType} from "../Constants/TransactionType";
+import {Trigger} from "../Constants/Trigger";
+import {TriggerMoment} from "../Constants/TriggerMoment";
 
 let EloRating = require('elo-rating');
 
@@ -32,7 +32,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     currentTurn:number;
     fightType:FightType;
     pastActions:Array<BaseActiveAction>;
-    winnerTeam:Teams;
+    winnerTeam:Team;
     season:number;
     waitingForAction:boolean = true;
     fightLength:FightLength = FightLength.Long;
@@ -51,23 +51,18 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     forcedDiceRoll:number = 0;
     diceLess:boolean = false;
 
-    gameSettings:GameSettings;
-
-    isUsingDatabase:boolean = true;
-
     public constructor(actionFactory:IActionFactory<BaseFight, BaseActiveFighter>) {
         this.idFight = Utils.generateUUID();
         this.fighters = [];
         this.stage = FightingStages.pick();
         this.fightType = FightType.Classic;
         this.pastActions = [];
-        this.winnerTeam = Teams.Unknown;
+        this.winnerTeam = Team.Unknown;
         this.currentTurn = 0;
         this.season = GameSettings.currentSeason;
         this.requiredTeams = 2;
         this.diceLess = false;
         this.fightLength = FightLength.Long;
-        this.gameSettings = new GameSettings();
         this.actionFactory = actionFactory;
         this.message = new FightMessage();
     }
@@ -154,15 +149,15 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
     }
 
-    async join(fighterName:string, team:Teams):Promise<number> {
+    async join(fighterName:string, team:Team):Promise<number> {
         if(!this.hasStarted){
             if (!this.getFighterByName(fighterName)) { //find fighter by its name property instead of comparing objects, which doesn't work.
                 let activeFighter:ActiveFighter = await this.loadFighter(fighterName);
                 if(activeFighter == null){
                     throw new Error(Messages.errorNotRegistered);
                 }
-                if(!activeFighter.canPayAmount(BaseConstants.Fight.Globals.tokensCostToFight)){
-                    throw new Error(Utils.strFormat(Messages.errorNotEnoughMoney, [BaseConstants.Fight.Globals.tokensCostToFight.toString()]));
+                if(!activeFighter.canPayAmount(GameSettings.tokensCostToFight)){
+                    throw new Error(Utils.strFormat(Messages.errorNotEnoughMoney, [GameSettings.tokensCostToFight.toString()]));
                 }
                 let areStatsValid = activeFighter.validateStats();
                 if(areStatsValid != ""){
@@ -171,7 +166,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
                 activeFighter.assignFight(this);
                 activeFighter.initialize();
                 activeFighter.fightStatus = FightStatus.Joined;
-                if(team != Teams.Unknown){
+                if(team != Team.Unknown){
                     activeFighter.assignedTeam = team;
                 }
                 else{
@@ -193,7 +188,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     async setFighterReady(fighterName:string) {
         if(!this.hasStarted){
             if (!this.getFighterByName(fighterName)) {
-                await this.join(fighterName, Teams.Unknown);
+                await this.join(fighterName, Team.Unknown);
             }
             let fighterInFight:ActiveFighter = this.getFighterByName(fighterName);
             if(fighterInFight && !fighterInFight.isReady){ //find fighter by its name property instead of comparing objects, which doesn't work.
@@ -231,7 +226,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
         this.message.addInfo(Utils.strFormat(Messages.startMatchStageAnnounce, [this.stage]));
 
-        for (let i = 0; i < this.maxPlayersPerTeam; i++) { //Prints as much names as there are Teams
+        for (let i = 0; i < this.maxPlayersPerTeam; i++) { //Prints as much names as there are Team
             let fullStringVS = "[b]";
             for (let j of this.getTeamsStillInGame()) {
                 let theFighter = this.getTeam(j)[i];
@@ -248,12 +243,12 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         this.reorderFightersByInitiative(this.rollAllDice(Trigger.InitiationRoll));
         this.message.addInfo(Utils.strFormat(Messages.startMatchFirstPlayer, [this.currentPlayer.getStylizedName(), this.currentTeamName.toLowerCase(), this.currentTeamName]));
         for (let i = 1; i < this.fighters.length; i++) {
-            this.message.addInfo(Utils.strFormat(Messages.startMatchFollowedBy, [this.fighters[i].getStylizedName(), Teams[this.fighters[i].assignedTeam].toLowerCase(), Teams[this.fighters[i].assignedTeam]]));
+            this.message.addInfo(Utils.strFormat(Messages.startMatchFollowedBy, [this.fighters[i].getStylizedName(), Team[this.fighters[i].assignedTeam].toLowerCase(), Team[this.fighters[i].assignedTeam]]));
             if(this.fightType == FightType.Tag) {
                 this.fighters[i].isInTheRing = false;
             }
         }
-        if(this.fightType == FightType.Tag){ //if it's a tag match, only allow the first player of the next Teams
+        if(this.fightType == FightType.Tag){ //if it's a tag match, only allow the first player of the next Team
             for (let i = 1; i < this.fighters.length; i++) {
                 if (this.currentPlayer.assignedTeam != this.fighters[i].assignedTeam) {
                     this.fighters[i].isInTheRing = true;
@@ -264,7 +259,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
         for (let i = 0; i < this.fighters.length; i++) {
             this.fighters[i].fightStatus = FightStatus.Playing;
-            let fightCost:number = BaseConstants.Fight.Globals.tokensCostToFight;
+            let fightCost:number = GameSettings.tokensCostToFight;
             await this.fighters[i].removeTokens(fightCost, TransactionType.FightStart);
             this.fighters[i].triggerFeatures(TriggerMoment.After, Trigger.InitiationRoll, new BaseFeatureParameter(this, this.fighters[i]));
         }
@@ -310,7 +305,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         this.currentTurn++;
 
         for(let fighter of this.fighters){
-            let strAchievements = fighter.checkAchievements(fighter, this);
+            let strAchievements = await fighter.checkAchievements(fighter, this);
             if(strAchievements != ""){
                 this.message.addSpecial(strAchievements);
             }
@@ -318,7 +313,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
         if (this.isOver()) { //Check for the ending
             let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]];
-            let tokensToGiveToLosers:number = tokensToGiveToWinners*BaseConstants.Fight.Globals.tokensPerLossMultiplier;
+            let tokensToGiveToLosers:number = tokensToGiveToWinners * GameSettings.tokensPerLossMultiplier;
             if(this.isDraw()){
                 this.message.addHit(`DOUBLE KO! Everyone is out! It's over!`);
                 tokensToGiveToLosers = tokensToGiveToWinners;
@@ -357,7 +352,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     outputStatus(){
         this.message.addInfo(Utils.strFormat(Messages.outputStatusInfo, [this.currentTurn.toString(), this.currentTeamName.toLowerCase(), this.currentTeamName, this.currentPlayer.getStylizedName()]));
 
-        for (let i = 0; i < this.fighters.length; i++) { //Prints as much names as there are Teams
+        for (let i = 0; i < this.fighters.length; i++) { //Prints as much names as there are Team
             let theFighter = this.fighters[i];
             if(theFighter != null){
                 this.message.addStatus(theFighter.outputStatus());
@@ -367,11 +362,11 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         this.sendFightMessage();
     }
 
-    get currentTeam():Teams{
+    get currentTeam():Team{
         return this.getAlivePlayers()[(this.currentTurn - 1) % this.aliveFighterCount].assignedTeam;
     }
 
-    get nextTeamToPlay():Teams{
+    get nextTeamToPlay():Team{
         return this.getAlivePlayers()[this.currentTurn % this.aliveFighterCount].assignedTeam;
     }
 
@@ -413,7 +408,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
     //RWFight helpers
     get currentTeamName():string{
-        return Teams[this.currentTeam];
+        return Team[this.currentTeam];
     }
 
     get currentTarget():BaseActiveFighter[] {
@@ -542,7 +537,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
     async onMatchEnding(){
         let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]];
-        let tokensToGiveToLosers:number = tokensToGiveToWinners * BaseConstants.Fight.Globals.tokensPerLossMultiplier;
+        let tokensToGiveToLosers:number = tokensToGiveToWinners * GameSettings.tokensPerLossMultiplier;
         if(this.isDraw()){
             this.message.addHit(`DOUBLE KO! Everyone is out! It's over!`);
             tokensToGiveToLosers = tokensToGiveToWinners;
@@ -608,7 +603,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
         this.sendFightMessage();
         if (this.isOver()) {
-            let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]] * BaseConstants.Fight.Globals.tokensForWinnerByForfeitMultiplier;
+            let tokensToGiveToWinners:number = TokensPerWin[FightTier[this.getFightTier(this.winnerTeam)]] * GameSettings.tokensForWinnerByForfeitMultiplier;
             await this.endFight(tokensToGiveToWinners, 0);
         }
         else{
@@ -631,7 +626,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
             if(tokensToGive > parseInt(TokensPerWin[FightTier.Bronze])){
                 tokensToGive = parseInt(TokensPerWin[FightTier.Bronze]);
             }
-            await this.endFight(0,tokensToGive, Teams.Unknown); //0 because there isn't a winning Teams
+            await this.endFight(0,tokensToGive, Team.Unknown); //0 because there isn't a winning Team
         }
         else{
             this.message.addInfo(Messages.checkForDrawWaiting);
@@ -639,7 +634,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
     }
 
-    async endFight(tokensToGiveToWinners:number, tokensToGiveToLosers:number, forceWinner?:Teams){
+    async endFight(tokensToGiveToWinners:number, tokensToGiveToLosers:number, forceWinner?:Team){
         this.hasEnded = true;
         this.hasStarted = false;
 
@@ -649,8 +644,8 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         else{
             this.winnerTeam = forceWinner;
         }
-        if(this.winnerTeam != Teams.Unknown){
-            this.message.addInfo(Utils.strFormat(Messages.endFightAnnounce, [Teams[this.winnerTeam]]));
+        if(this.winnerTeam != Team.Unknown){
+            this.message.addInfo(Utils.strFormat(Messages.endFightAnnounce, [Team[this.winnerTeam]]));
             this.message.addHit("Finisher suggestion: " + FightFinishers.pick());
             this.sendFightMessage();
         }
@@ -689,7 +684,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
                 fighter.eloRating += eloPointsChangeToWinners;
             }
             else {
-                if (this.winnerTeam != Teams.Unknown) {
+                if (this.winnerTeam != Team.Unknown) {
                     fighter.fightStatus = FightStatus.Lost;
                     fighter.losses++;
                     fighter.lossesSeason++;
@@ -698,7 +693,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
                 this.message.addInfo(`Awarded ${tokensToGiveToLosers} ${GameSettings.currencyName} to ${fighter.getStylizedName()}`);
                 await fighter.giveTokens(tokensToGiveToLosers, TransactionType.FightReward, GameSettings.botName);
             }
-            this.message.addInfo(fighter.checkAchievements(fighter, this));
+            this.message.addInfo(await fighter.checkAchievements(fighter, this));
             await fighter.save();
         }
 
@@ -748,7 +743,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return index;
     }
 
-    getFirstPlayerIDAliveInTeam(Teams:Teams, afterIndex:number = 0):number {
+    getFirstPlayerIDAliveInTeam(Teams:Team, afterIndex:number = 0):number {
         let fullTeam = this.getTeam(Teams);
         let index = -1;
         for (let i = afterIndex; i < fullTeam.length; i++) {
@@ -768,7 +763,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
     }
 
-    getTeam(Teams:Teams):Array<ActiveFighter> {
+    getTeam(Teams:Team):Array<ActiveFighter> {
         let teamList = [];
         for (let player of this.fighters) {
             if (player.assignedTeam == Teams) {
@@ -778,13 +773,13 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return teamList;
     }
 
-    getNumberOfPlayersInTeam(Teams:Teams):number {
+    getNumberOfPlayersInTeam(Teams:Team):number {
         let fullTeamCount = this.getTeam(Teams);
         return fullTeamCount.length;
     }
 
-    getAllOccupiedTeams():Array<Teams> {
-        let usedTeams:Array<Teams> = [];
+    getAllOccupiedTeams():Array<Team> {
+        let usedTeams:Array<Team> = [];
         for (let player of this.fighters) {
             if (usedTeams.indexOf(player.assignedTeam) == -1) {
                 usedTeams.push(player.assignedTeam);
@@ -793,12 +788,12 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return usedTeams;
     }
 
-    getAllUsedTeams():Array<Teams> {
-        let usedTeams:Array<Teams> = this.getAllOccupiedTeams();
+    getAllUsedTeams():Array<Team> {
+        let usedTeams:Array<Team> = this.getAllOccupiedTeams();
 
         let teamIndex = 0;
         while (usedTeams.length < this.requiredTeams) {
-            let teamToAdd = Teams[Teams[teamIndex]];
+            let teamToAdd = Team[Team[teamIndex]];
             if (usedTeams.indexOf(teamToAdd) == -1) {
                 usedTeams.push(teamToAdd);
             }
@@ -807,8 +802,8 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return usedTeams;
     }
 
-    getTeamsStillInGame():Array<Teams> {
-        let usedTeams:Array<Teams> = [];
+    getTeamsStillInGame():Array<Team> {
+        let usedTeams:Array<Team> = [];
         for (let player of this.getAlivePlayers()) {
             if (usedTeams.indexOf(player.assignedTeam) == -1) {
                 usedTeams.push(player.assignedTeam);
@@ -819,7 +814,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
 
     getTeamsIdList():Array<number> {
         let arrResult = [];
-        for (let enumMember in Teams) {
+        for (let enumMember in Team) {
             let isValueProperty = parseInt(enumMember, 10) >= 0;
             if (isValueProperty) {
                 arrResult.push(enumMember);
@@ -828,7 +823,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return arrResult;
     }
 
-    getRandomTeam():Teams {
+    getRandomTeam():Team {
         return this.getTeamsStillInGame()[Utils.getRandomInt(0, this.numberOfTeamsInvolved)];
     }
 
@@ -869,12 +864,12 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return isEveryoneReady;
     }
 
-    getAvailableTeam():Teams {
-        let teamToUse:Teams = Teams.Blue;
-        let arrPlayersCount = new Dictionary<Teams, number>();
+    getAvailableTeam():Team {
+        let teamToUse:Team = Team.Blue;
+        let arrPlayersCount = new Dictionary<Team, number>();
         let usedTeams = this.getAllUsedTeams();
         for (let teamId of usedTeams) {
-            arrPlayersCount.add(teamId as Teams, this.getNumberOfPlayersInTeam(Teams[Teams[teamId]]));
+            arrPlayersCount.add(teamId as Team, this.getNumberOfPlayersInTeam(Team[Team[teamId]]));
         }
 
         let mostPlayersInTeam = Math.max(...arrPlayersCount.values());
@@ -882,10 +877,10 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         let indexOfFirstEmptiestTeam = arrPlayersCount.values().indexOf(leastPlayersInTeam);
 
         if (mostPlayersInTeam == leastPlayersInTeam || mostPlayersInTeam == -Infinity || leastPlayersInTeam == Infinity) {
-            teamToUse = Teams.Blue;
+            teamToUse = Team.Blue;
         }
         else {
-            teamToUse = Teams[Teams[indexOfFirstEmptiestTeam]];
+            teamToUse = Team[Team[indexOfFirstEmptiestTeam]];
         }
 
         return teamToUse;
@@ -895,7 +890,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return this.getAlivePlayers()[Utils.getRandomInt(0, this.getAlivePlayers().length)];
     }
 
-    getRandomFighterNotInTeam(Teams:Teams):ActiveFighter {
+    getRandomFighterNotInTeam(Teams:Team):ActiveFighter {
         let tries = 0;
         let fighter:ActiveFighter;
         while (tries < 99 && (fighter == null || fighter.assignedTeam == null || fighter.assignedTeam == Teams)) {

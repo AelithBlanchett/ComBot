@@ -1,10 +1,11 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionDegradation extends RWAction {
 
@@ -45,6 +46,6 @@ export class ActionDegradation extends RWAction {
 
     onHit():void {
         this.fpHealToAtk += FocusHealOnHit[Tiers[this.tier]];
-        this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]] * Constants.Fight.Action.Globals.degradationFocusMultiplier;
+        this.fpDamageToDef += FocusDamageOnHit[Tiers[this.tier]] * RWGameSettings.degradationFocusMultiplier;
     }
 }

@@ -1,14 +1,12 @@
 import {Database} from "../../Common/Utils/Model";
-import {RWFighter} from "../Fight/RWFighter";
 import {Utils} from "../../Common/Utils/Utils";
 import {IAchievement} from "../../Common/Achievements/IAchievement";
 import {AchievementManager} from "../../Common/Achievements/AchievementManager";
-import {TransactionType} from "../../Common/BaseConstants";
-import * as BaseConstants from "../../Common/BaseConstants";
+import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {BaseFeature} from "../../Common/Features/BaseFeature";
 import {IRWFighter} from "../Fight/IRWFighter";
-import {ActiveFighter} from "../Fight/ActiveFighter";
 import {FeatureFactory} from "../Features/FeatureFactory";
+import {TransactionType} from "../../Common/Constants/TransactionType";
 
 export class FighterRepository{
 

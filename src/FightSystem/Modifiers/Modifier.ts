@@ -1,12 +1,12 @@
-import * as BaseConstants from "../../Common/BaseConstants";
-import TriggerMoment = BaseConstants.TriggerMoment;
+import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {BaseModifier} from "../../Common/Modifiers/BaseModifier";
 import {IModifier} from "./IModifier";
 import {ModifierType} from "../RWConstants";
 import {Utils} from "../../Common/Utils/Utils";
-import {Trigger} from "../../Common/BaseConstants";
+import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
+import {Trigger} from "../../Common/Constants/Trigger";
 
 export class Modifier extends BaseModifier implements IModifier{
 
@@ -29,32 +29,32 @@ export class Modifier extends BaseModifier implements IModifier{
     applyModifierOnReceiver(moment: TriggerMoment, event:Trigger){
         let messageAboutModifier = "";
         if(this.hpDamage > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.MainBarDamage, event))
+            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.MainBarDamage, event))
             messageAboutModifier += ` losing ${this.hpDamage} HP,`;
             this.receiver.hitHP(this.hpDamage, flagTriggerMods);
         }
         if(this.lustDamage > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.SecondaryBarDamage, event));
+            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.SecondaryBarDamage, event));
             messageAboutModifier += ` losing ${this.lustDamage} LP,`;
             this.receiver.hitLP(this.lustDamage, flagTriggerMods);
         }
         if(this.focusDamage > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.UtilitaryBarDamage, event));
+            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.UtilitaryBarDamage, event));
             messageAboutModifier += ` losing ${this.focusDamage} FP,`;
             this.receiver.hitFP(this.focusDamage, flagTriggerMods);
         }
         if(this.hpHeal > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.MainBarHealing, event));
+            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.MainBarHealing, event));
             messageAboutModifier += ` gaining ${this.hpHeal} HP,`;
             this.receiver.healHP(this.hpHeal, flagTriggerMods);
         }
         if(this.lustHeal > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.SecondaryBarHealing, event));
+            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.SecondaryBarHealing, event));
             messageAboutModifier += ` gaining ${this.lustHeal} LP,`;
             this.receiver.healLP(this.lustHeal, flagTriggerMods);
         }
         if(this.focusHeal > 0){
-            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.UtilitaryBarHealing, event));
+            let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.UtilitaryBarHealing, event));
             messageAboutModifier += ` gaining ${this.focusHeal} FP,`;
             this.receiver.healFP(this.focusHeal, flagTriggerMods);
         }
@@ -79,7 +79,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their attack's HP damage by ${this.hpDamage},`;
             }
             else{
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.MainBarDamage, event));
+                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.MainBarDamage, event));
                 messageAboutModifier += ` losing ${this.hpDamage} HP,`;
                 this.receiver.hitHP(this.hpDamage, flagTriggerMods);
             }
@@ -90,7 +90,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their attack's LP damage by ${this.lustDamage},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.SecondaryBarDamage, event));
+                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.SecondaryBarDamage, event));
                 messageAboutModifier += ` losing ${this.lustDamage} LP,`;
                 this.receiver.hitLP(this.lustDamage, flagTriggerMods);
             }
@@ -101,7 +101,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their attack's FP damage by ${this.focusDamage},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.UtilitaryBarDamage, event));
+                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.UtilitaryBarDamage, event));
                 messageAboutModifier += ` losing ${this.focusDamage} LP,`;
                 this.receiver.hitFP(this.focusDamage, flagTriggerMods);
             }
@@ -112,7 +112,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their action's HP healing by ${this.hpHeal},`;
             }
             else{
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.MainBarHealing, event));
+                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.MainBarHealing, event));
                 messageAboutModifier += ` gaining ${this.hpHeal} HP,`;
                 this.receiver.healHP(this.hpHeal, flagTriggerMods);
             }
@@ -123,7 +123,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their action's LP healing by ${this.lustHeal},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.SecondaryBarHealing, event));
+                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.SecondaryBarHealing, event));
                 messageAboutModifier += ` gaining ${this.lustHeal} LP,`;
                 this.receiver.healLP(this.lustHeal, flagTriggerMods);
             }
@@ -134,7 +134,7 @@ export class Modifier extends BaseModifier implements IModifier{
                 messageAboutModifier += ` multiplying their action's FP healing by ${this.focusHeal},`;
             }
             else {
-                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, BaseConstants.Trigger.UtilitaryBarHealing, event));
+                let flagTriggerMods = !(Utils.willTriggerForEvent(TriggerMoment.Any, TriggerMoment.Any, Trigger.UtilitaryBarHealing, event));
                 messageAboutModifier += ` gaining ${this.focusHeal} LP,`;
                 this.receiver.healFP(this.focusHeal, flagTriggerMods);
             }

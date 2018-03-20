@@ -1,4 +1,5 @@
-import {Trigger, TriggerMoment} from "../BaseConstants";
+import {TriggerMoment} from "../Constants/TriggerMoment";
+import {Trigger} from "../Constants/Trigger";
 
 let vsprintf = require('sprintf-js').vsprintf;
 

@@ -1,10 +1,10 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {SelfDebaseFpDamage} from "../RWConstants";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
 
 export class ActionSelfDebase extends RWAction {
 

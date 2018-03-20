@@ -1,9 +1,10 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionPass extends RWAction {
 
@@ -39,6 +40,6 @@ export class ActionPass extends RWAction {
     }
 
     onHit(): void {
-        this.fpDamageToAtk = Constants.Fight.Action.Globals.passFpDamage;
+        this.fpDamageToAtk = RWGameSettings.passFpDamage;
     }
 }

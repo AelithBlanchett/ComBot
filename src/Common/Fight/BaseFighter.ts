@@ -1,10 +1,12 @@
 import {IAchievement} from "../Achievements/IAchievement";
 import {BaseFeature} from "../Features/BaseFeature";
-import {FightTier, FightTierWinRequirements, TransactionType} from "../BaseConstants";
-import {Teams} from "../Constants/Teams";
+import {Team} from "../Constants/Team";
 import {IFeatureFactory} from "../Features/IFeatureFactory";
 import {BaseFight} from "./BaseFight";
 import {Messages} from "../Constants/Messages";
+import {FightTierWinRequirements} from "../Constants/FightTierWinRequirements";
+import {FightTier} from "../Constants/FightTier";
+import {TransactionType} from "../Constants/TransactionType";
 
 export abstract class BaseFighter{
 
@@ -28,7 +30,7 @@ export abstract class BaseFighter{
     fightsPendingStartSeason:number;
     fightsPendingDraw:number;
     fightsPendingDrawSeason:number;
-    favoriteTeam:Teams;
+    favoriteTeam:Team;
     favoriteTagPartner:string;
     timesFoughtWithFavoriteTagPartner:number;
     nemesis:string;

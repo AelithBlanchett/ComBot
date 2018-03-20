@@ -1,4 +1,4 @@
-export enum Teams {
+export enum Team {
     White = null,
     Unknown = -1,
     Blue = 0,

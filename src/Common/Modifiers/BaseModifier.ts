@@ -1,10 +1,10 @@
-import * as BaseConstants from "../BaseConstants";
-import Trigger = BaseConstants.Trigger;
-import TriggerMoment = BaseConstants.TriggerMoment;
 import {IBaseModifier} from "./IBaseModifier";
 import {Utils} from "../Utils/Utils";
 import {BaseFight} from "../Fight/BaseFight";
 import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {Trigger} from "../Constants/Trigger";
+import {TriggerMoment} from "../Constants/TriggerMoment";
+
 
 export abstract class BaseModifier implements IBaseModifier{
     idModifier: string;

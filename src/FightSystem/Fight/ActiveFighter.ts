@@ -1,8 +1,4 @@
-import {FightLength, TransactionType} from "../../Common/BaseConstants";
-import {Trigger} from "../../Common/BaseConstants";
-import {TriggerMoment} from "../../Common/BaseConstants";
-import {FightType} from "../../Common/BaseConstants";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {Utils} from "../../Common/Utils/Utils";
 import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
 import {IRWFighter} from "./IRWFighter";
@@ -15,6 +11,12 @@ import {RWFight} from "./RWFight";
 import {RWFighter} from "./RWFighter";
 import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
 import {FighterRepository} from "../Repositories/FighterRepository";
+import {FightLength} from "../../Common/Constants/FightLength";
+import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {FightType} from "../../Common/Constants/FightType";
+import {TransactionType} from "../../Common/Constants/TransactionType";
+import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
@@ -494,7 +496,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
     }
 
     isBroken(displayMessage:boolean = false):boolean {
-        let condition = (this.consecutiveTurnsWithoutFocus >= Constants.Fight.Action.Globals.maxTurnsWithoutFocus);
+        let condition = (this.consecutiveTurnsWithoutFocus >= RWGameSettings.maxTurnsWithoutFocus);
         if(condition && displayMessage){
             this.fight.message.addHit(`${this.getStylizedName()} completely lost their focus! They're out!`);
         }
@@ -548,8 +550,8 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         let lpLine = `  [color=pink]lust points: ${this.lust}${((this.lpDamageLastRound > 0 || this.lpHealLastRound > 0) ? `${(((-this.lpDamageLastRound + this.lpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(this.lpDamageLastRound - this.lpHealLastRound)})[/color]` : "")}|${this.lustPerOrgasm()}[/color] `;
         let livesLine = `  [color=red]lives: ${this.displayRemainingLives}${((this.orgasmsDamageLastRound > 0 || this.orgasmsHealLastRound > 0) ? `${(((-this.orgasmsDamageLastRound + this.orgasmsHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.orgasmsDamageLastRound + this.orgasmsHealLastRound)} orgasm(s))[/color]` : "")}${((this.heartsDamageLastRound > 0 || this.heartsHealLastRound > 0) ? `${(((-this.heartsDamageLastRound + this.heartsHealLastRound) < 0) ? "[color=red]" : "[color=green]")}  (${Utils.getSignedNumber(-this.heartsDamageLastRound + this.heartsHealLastRound)} heart(s))[/color]` : "")}(${this.livesRemaining}|${this.maxLives()})[/color] `;
         let focusLine = `  [color=orange]${this.hasFeature(FeatureType.DomSubLover) ? "submissiveness" : "focus"}:[/color] [b][color=${(this.focus <= 0 ? "red" : "orange")}]${this.focus}[/color][/b]${(((this.fpDamageLastRound > 0 || this.fpHealLastRound > 0) && (this.fpDamageLastRound - this.fpHealLastRound != 0)) ? `${(((-this.fpDamageLastRound + this.fpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.fpDamageLastRound + this.fpHealLastRound)})[/color]` : "")}|[color=green]${this.maxFocus()}[/color] `;
-        let turnsFocusLine = `  [color=orange]turns ${this.hasFeature(FeatureType.DomSubLover) ? "being too submissive" : "without focus"}: ${this.consecutiveTurnsWithoutFocus}|${Constants.Fight.Action.Globals.maxTurnsWithoutFocus}[/color] `;
-        let bondageLine = `  [color=purple]bondage items ${this.bondageItemsOnSelf()}|${Constants.Fight.Action.Globals.maxBondageItemsOnSelf}[/color] `;
+        let turnsFocusLine = `  [color=orange]turns ${this.hasFeature(FeatureType.DomSubLover) ? "being too submissive" : "without focus"}: ${this.consecutiveTurnsWithoutFocus}|${RWGameSettings.maxTurnsWithoutFocus}[/color] `;
+        let bondageLine = `  [color=purple]bondage items ${this.bondageItemsOnSelf()}|${RWGameSettings.maxBondageItemsOnSelf}[/color] `;
         let modifiersLine = `  [color=cyan]affected by: ${this.getListOfActiveModifiers()}[/color] `;
         let targetLine = `  [color=red]target(s): ` + ((this.targets != null && this.targets.length > 0) ? `${this.targets.map(x => x.name).toString()}` : "None set yet! (!targets charactername)") + `[/color]`;
 

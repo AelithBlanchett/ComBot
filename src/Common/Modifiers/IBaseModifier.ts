@@ -1,6 +1,7 @@
-import {Trigger, TriggerMoment} from "../BaseConstants";
+import {Trigger} from "../Constants/Trigger";
 import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
 import {BaseFight} from "../Fight/BaseFight";
+import {TriggerMoment} from "../Constants/TriggerMoment";
 
 export interface IBaseModifier{
     idModifier: string;

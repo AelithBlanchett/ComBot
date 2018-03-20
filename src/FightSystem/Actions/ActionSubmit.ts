@@ -1,11 +1,13 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Utils} from "../../Common/Utils/Utils";
-import {FightType, Trigger} from "../../Common/BaseConstants";
 import {Messages} from "../../Common/Constants/Messages";
 import {Tiers} from "../Constants/Tiers";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {FightType} from "../../Common/Constants/FightType";
+import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionSubmit extends RWAction {
 
@@ -42,8 +44,8 @@ export class ActionSubmit extends RWAction {
 
     checkRequirements():void{
         super.checkRequirements();
-        if (this.fight.currentTurn <= Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber) {
-            throw new Error(Utils.strFormat(Messages.tapoutTooEarly, [Constants.Fight.Action.Globals.tapoutOnlyAfterTurnNumber.toLocaleString()]));
+        if (this.fight.currentTurn <= RWGameSettings.tapoutOnlyAfterTurnNumber) {
+            throw new Error(Utils.strFormat(Messages.tapoutTooEarly, [RWGameSettings.tapoutOnlyAfterTurnNumber.toLocaleString()]));
         }
         if (this.fight.fightType == FightType.LastManStanding) {
             throw new Error(Utils.strFormat(Messages.wrongMatchTypeForAction, ["submit", "Last Man Standing"]));

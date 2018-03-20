@@ -1,15 +1,15 @@
 import {Utils} from "./Utils/Utils";
-import {FightType} from "./BaseConstants";
-import {TransactionType} from "./BaseConstants";
-import {FightLength} from "./BaseConstants";
 import {BaseFighter} from "./Fight/BaseFighter";
 import {IFChatLib} from "fchatlib/dist/src/Interfaces/IFChatLib";
 import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
 import {Messages} from "./Constants/Messages";
-import {Teams} from "./Constants/Teams";
+import {Team} from "./Constants/Team";
 import {GameSettings} from "./Configuration/GameSettings";
 import {Parser} from "./Utils/Parser";
 import {BaseFight} from "./Fight/BaseFight";
+import {FightLength} from "./Constants/FightLength";
+import {FightType} from "./Constants/FightType";
+import {TransactionType} from "./Constants/TransactionType";
 
 export class BaseCommandHandler<TFight extends BaseFight, TFighter extends BaseFighter> {
     Fight:new () => TFight;
@@ -248,7 +248,7 @@ export class BaseCommandHandler<TFight extends BaseFight, TFighter extends BaseF
         let chosenTeam = Parser.join(args);
         try {
             let assignedTeam:number = await this.fight.join(data.character, chosenTeam);
-            this.fChatLibInstance.sendMessage(`[color=green]${data.character} stepped into the ring for the [color=${Teams[assignedTeam]}]${Teams[assignedTeam]}[/color] team! Waiting for everyone to be !ready.[/color]`, this.channel);
+            this.fChatLibInstance.sendMessage(`[color=green]${data.character} stepped into the ring for the [color=${Team[assignedTeam]}]${Team[assignedTeam]}[/color] team! Waiting for everyone to be !ready.[/color]`, this.channel);
         }
         catch (err) {
             this.fChatLibInstance.sendMessage("[color=red]" + err.message + "[/color]", this.channel);

@@ -2,7 +2,7 @@ import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
 
 export class ActionReleaseHold extends RWAction {
 

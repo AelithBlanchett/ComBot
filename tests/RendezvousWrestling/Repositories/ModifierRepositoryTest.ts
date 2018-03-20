@@ -2,7 +2,7 @@ import {Database} from "../../../src/Common/Utils/Model";
 import {ModifierRepository} from "../../../src/FightSystem/Repositories/ModifierRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as Constants from "../../../src/Common/BaseConstants";
+import * as Constants from "../../../src/Common/Constants/BaseConstants";
 import {ModifierFactory} from "../../../src/FightSystem/Modifiers/ModifierFactory";
 import {ModifierType} from "../../../src/FightSystem/RWConstants";
 

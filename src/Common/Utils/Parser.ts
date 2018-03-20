@@ -1,9 +1,8 @@
 import {Utils} from "./Utils";
-import * as BaseConstants from "../BaseConstants";
-import {FightType} from "../BaseConstants";
-import {FightLength} from "../BaseConstants";
-import {Teams} from "../Constants/Teams";
+import {Team} from "../Constants/Team";
 import {GameSettings} from "../Configuration/GameSettings";
+import {FightType} from "../Constants/FightType";
+import {FightLength} from "../Constants/FightLength";
 
 export class Parser{
 
@@ -43,13 +42,13 @@ export class Parser{
     }
 
     public static join(args){
-        let teams = Utils.getEnumList(Teams);
+        let teams = Utils.getEnumList(Team);
         for(let teamId in teams){
             teams[teamId] = teams[teamId].toLowerCase();
         }
         let indexOfTeam = teams.indexOf(args.toLowerCase());
         if(indexOfTeam != -1){
-            return Teams[Teams[indexOfTeam]];
+            return Team[Team[indexOfTeam]];
         }
         return -1;
     }

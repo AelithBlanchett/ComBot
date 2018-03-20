@@ -1,5 +1,5 @@
 import {BaseActiveAction} from "../../../src/Common/Actions/BaseActiveAction";
-import {Trigger} from "../../../src/Common/BaseConstants";
+import {Trigger} from "../../../src/Common/Constants/Trigger";
 
 export class TestActiveAction extends BaseActiveAction {
     save(): Promise<void> {

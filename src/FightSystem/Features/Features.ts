@@ -1,4 +1,3 @@
-import {Trigger, TriggerMoment} from "../../Common/BaseConstants";
 import {BaseFeature} from "../../Common/Features/BaseFeature";
 import {BaseFeatureParameter} from "../../Common/Features/BaseFeatureParameter";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
@@ -6,6 +5,8 @@ import {FeatureType, ModifierType} from "../RWConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {Utils} from "../../Common/Utils/Utils";
 import {FeatureParameter} from "./FeatureParameter";
+import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
+import {Trigger} from "../../Common/Constants/Trigger";
 
 export namespace Feature{
     export class BondageBunny extends BaseFeature{

@@ -1,10 +1,11 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
-import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
+import {FeatureType, FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionBondage extends RWAction {
 
@@ -46,6 +47,9 @@ export class ActionBondage extends RWAction {
     get requiredDiceScore():number{
         if(this.defender.isInHold()){
             this.requiresRoll = false;
+        }
+        if(this.defender.hasFeature(FeatureType.BondageBunny)){
+            return RWGameSettings.RequiredScoreForBondageAgainstBondageBunny;
         }
         return super.requiredDiceScore;
     }

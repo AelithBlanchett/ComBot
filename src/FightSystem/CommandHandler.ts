@@ -1,6 +1,6 @@
 import {BaseCommandHandler} from "../Common/BaseCommandHandler";
 import {Utils} from "../Common/Utils/Utils";
-import * as BaseConstants from "../Common/BaseConstants";
+import * as BaseConstants from "../Common/Constants/BaseConstants";
 import {ActionType} from "./Actions/RWAction";
 import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
 import {RWFight} from "./Fight/RWFight";

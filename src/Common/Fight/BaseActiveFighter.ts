@@ -1,22 +1,22 @@
 import {Dice} from "../Utils/Dice";
 import {BaseFight, FightStatus} from "./BaseFight";
-import {FightLength} from "../BaseConstants";
-import {Trigger} from "../BaseConstants";
-import {TriggerMoment} from "../BaseConstants";
-import * as BaseConstants from "../BaseConstants";
+import {Trigger} from "../Constants/Trigger";
+import {TriggerMoment} from "../Constants/TriggerMoment";
+import * as BaseConstants from "../Constants/BaseConstants";
 import {AchievementManager} from "../Achievements/AchievementManager";
 import {BaseFighter} from "./BaseFighter";
 import {BaseModifier} from "../Modifiers/BaseModifier";
-import {Teams} from "../Constants/Teams";
+import {Team} from "../Constants/Team";
 import {GameSettings} from "../Configuration/GameSettings";
 import {IFeatureFactory} from "../Features/IFeatureFactory";
+import {FightLength} from "../Constants/FightLength";
 
 export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModifier> extends BaseFighter {
 
     fight:BaseFight;
     idFight:string;
     season:number = GameSettings.currentSeason;
-    assignedTeam:Teams = Teams.Unknown;
+    assignedTeam:Team = Team.Unknown;
     targets:BaseActiveFighter[];
     isReady:boolean = false;
     lastDiceRoll:number;
@@ -34,7 +34,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     constructor(featureFactory:IFeatureFactory<BaseFight, BaseFighter>){
         super(featureFactory);
 
-        this.assignedTeam = Teams.Unknown;
+        this.assignedTeam = Team.Unknown;
         this.targets = null;
         this.isReady = false;
 
@@ -57,9 +57,9 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         this.idFight = fight.idFight;
     }
 
-    checkAchievements(activeFighter?:BaseActiveFighter, fight?:BaseFight){
+    async checkAchievements(activeFighter?:BaseActiveFighter, fight?:BaseFight){
         let strBase = `[color=yellow][b]Achievements unlocked for ${this.name}![/b][/color]\n`;
-        let added = AchievementManager.checkAll(this, activeFighter, fight);
+        let added = await AchievementManager.checkAll(this, activeFighter, fight);
 
         if(added.length > 0){
             strBase += added.join("\n");
@@ -301,13 +301,13 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
             modifierBeginning = `[i]`;
             modifierEnding = `[/i]`;
         }
-        return `${modifierBeginning}[b][color=${Teams[this.assignedTeam].toLowerCase()}]${this.name}[/color][/b]${modifierEnding}`;
+        return `${modifierBeginning}[b][color=${Team[this.assignedTeam].toLowerCase()}]${this.name}[/color][/b]${modifierEnding}`;
     }
 
     isInRange(targets:BaseActiveFighter[]):boolean{
         let result = true;
         for(let target of targets){
-            if((target.distanceFromRingCenter - this.distanceFromRingCenter) > BaseConstants.Fight.Globals.maximumDistanceToBeConsideredInRange){
+            if((target.distanceFromRingCenter - this.distanceFromRingCenter) > GameSettings.maximumDistanceToBeConsideredInRange){
                 result = false;
             }
         }

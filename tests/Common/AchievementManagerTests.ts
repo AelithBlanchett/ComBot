@@ -61,19 +61,19 @@ describe("The AchievementManager", () => {
         expect(AchievementManager.getAll().length).toBe(0);
     });
 
-    it("should grant the ExampleAchievement to the test fighter", function () {
+    it("should grant the ExampleAchievement to the test fighter", async function () {
         AchievementManager.EnabledAchievements.push(new ExampleAchievement());
         let fighter = new TestFighter(new TestFeatureFactory());
         fighter.name = testFighterName;
-        AchievementManager.checkAll(fighter, null);
+        await AchievementManager.checkAll(fighter, null);
         expect(fighter.achievements.length).toBe(1);
     });
 
-    it("should say that it granted the ExampleAchievement", function () {
+    it("should say that it granted the ExampleAchievement", async function () {
         AchievementManager.EnabledAchievements.push(new ExampleAchievement());
         let fighter = new TestFighter(new TestFeatureFactory());
         fighter.name = testFighterName;
-        let result = AchievementManager.checkAll(fighter, null);
+        let result = await AchievementManager.checkAll(fighter, null);
         expect(result.length).toBe(1);
         expect(result[0]).toContain(testDescription);
     });

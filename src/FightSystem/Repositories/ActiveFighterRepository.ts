@@ -3,7 +3,7 @@ import {ActiveFighter} from "../Fight/ActiveFighter";
 import {FighterRepository} from "./FighterRepository";
 import {Utils} from "../../Common/Utils/Utils";
 import {ModifierRepository} from "./ModifierRepository";
-import * as BaseConstants from "../../Common/BaseConstants";
+import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {FeatureFactory} from "../Features/FeatureFactory";
 
 export class ActiveFighterRepository{

@@ -1,10 +1,9 @@
 import {IAchievement} from "./IAchievement";
-import * as BaseConstants from "../BaseConstants";
-import {TransactionType} from "../BaseConstants";
 import {BaseFighter} from "../Fight/BaseFighter";
 import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
 import {BaseFight} from "../Fight/BaseFight";
 import {GameSettings} from "../Configuration/GameSettings";
+import {TransactionType} from "../Constants/TransactionType";
 
 export class AchievementManager {
 
@@ -18,7 +17,7 @@ export class AchievementManager {
         return AchievementManager.getAll().find(x => x.getName() == name);
     }
 
-    static checkAll(fighter:BaseFighter, activeFighter:BaseActiveFighter, fight?:BaseFight<BaseActiveFighter>):string[]{
+    static async checkAll(fighter:BaseFighter, activeFighter:BaseActiveFighter, fight?:BaseFight<BaseActiveFighter>):Promise<string[]>{
         let addedInfo = [];
         let achievements = AchievementManager.getAll();
 
@@ -27,7 +26,7 @@ export class AchievementManager {
                 achievement.createdAt = new Date();
                 fighter.achievements.push(achievement);
                 let amount:number = achievement.getReward();
-                fighter.giveTokens(amount, TransactionType.AchievementReward, GameSettings.botName);
+                await fighter.giveTokens(amount, TransactionType.AchievementReward, GameSettings.botName);
                 addedInfo.push(`${achievement.getDetailedDescription()}  Reward: ${achievement.getReward()} ${GameSettings.currencyName}`);
             }
         }

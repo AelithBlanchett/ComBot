@@ -1,7 +1,7 @@
 import {Database} from "../../Common/Utils/Model";
 import {Utils} from "../../Common/Utils/Utils";
 import {Modifier} from "../Modifiers/Modifier";
-import * as BaseConstants from "../../Common/BaseConstants";
+import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {ModifierType} from "../RWConstants";
 

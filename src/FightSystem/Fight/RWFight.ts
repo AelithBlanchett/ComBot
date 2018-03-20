@@ -1,5 +1,5 @@
 import {Utils} from "../../Common/Utils/Utils";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "./ActiveFighter";
 import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
 import {FightRepository} from "../Repositories/FightRepository";
@@ -7,8 +7,9 @@ import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {BaseFight} from "../../Common/Fight/BaseFight";
 import {RWActionFactory} from "../Actions/RWActionFactory";
 import {ModifierType} from "../RWConstants";
-import {Trigger, TriggerMoment} from "../../Common/BaseConstants";
 import {Messages} from "../../Common/Constants/Messages";
+import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
+import {Trigger} from "../../Common/Constants/Trigger";
 
 export class RWFight extends BaseFight<ActiveFighter>{
 

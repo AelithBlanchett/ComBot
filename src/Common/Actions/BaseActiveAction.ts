@@ -1,13 +1,14 @@
-import {Trigger, TriggerMoment} from "../BaseConstants";
+import {Trigger} from "../Constants/Trigger";
 import {BaseAction} from "./BaseAction";
 import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
 import {BaseFight} from "../Fight/BaseFight";
 import {Utils} from "../Utils/Utils";
-import * as BaseConstants from "../BaseConstants";
+import * as BaseConstants from "../Constants/BaseConstants";
 import {BaseModifier} from "../Modifiers/BaseModifier";
 import {Messages} from "../Constants/Messages";
 import {GameSettings} from "../Configuration/GameSettings";
 import {BaseFeatureParameter} from "../Features/BaseFeatureParameter";
+import {TriggerMoment} from "../Constants/TriggerMoment";
 
 
 export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, ActiveFighter extends BaseActiveFighter = BaseActiveFighter> extends BaseAction{

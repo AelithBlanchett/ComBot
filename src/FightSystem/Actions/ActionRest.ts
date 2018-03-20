@@ -1,9 +1,10 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionRest extends RWAction {
 
@@ -39,7 +40,7 @@ export class ActionRest extends RWAction {
     }
 
     get requiredDiceScore():number{
-        return Constants.Fight.Action.RequiredScore.Rest;
+        return RWGameSettings.requiredScoreRest;
     }
 
     addBonusesToRollFromStats():number{
@@ -47,8 +48,8 @@ export class ActionRest extends RWAction {
     }
 
     onHit(): void {
-        this.hpHealToAtk += this.attacker.hpPerHeart() * Constants.Fight.Action.Globals.hpPercentageToHealOnRest;
-        this.lpHealToAtk += this.attacker.lustPerOrgasm() * Constants.Fight.Action.Globals.lpPercentageToHealOnRest;
-        this.fpHealToAtk += this.attacker.maxFocus() * Constants.Fight.Action.Globals.fpPercentageToHealOnRest;
+        this.hpHealToAtk += this.attacker.hpPerHeart() * RWGameSettings.hpPercentageToHealOnRest;
+        this.lpHealToAtk += this.attacker.lustPerOrgasm() * RWGameSettings.lpPercentageToHealOnRest;
+        this.fpHealToAtk += this.attacker.maxFocus() * RWGameSettings.fpPercentageToHealOnRest;
     }
 }

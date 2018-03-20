@@ -3,7 +3,7 @@ import {Database} from "../../../src/Common/Utils/Model";
 import {FightRepository} from "../../../src/FightSystem/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as BaseConstants from "../../../src/Common/BaseConstants";
+import * as BaseConstants from "../../../src/Common/Constants/BaseConstants";
 
 describe("The RWFight Repository", () => {
 

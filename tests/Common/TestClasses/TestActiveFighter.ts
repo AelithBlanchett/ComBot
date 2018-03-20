@@ -1,5 +1,5 @@
 import {BaseActiveFighter} from "../../../src/Common/Fight/BaseActiveFighter";
-import {TransactionType} from "../../../src/Common/BaseConstants";
+import {TransactionType} from "../../../src/Common/Constants/TransactionType";
 
 export class TestActiveFighter extends BaseActiveFighter {
     validateStats(): string {

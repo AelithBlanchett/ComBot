@@ -1,9 +1,7 @@
 import {RWFight} from "../src/FightSystem/Fight/RWFight";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
-import * as BaseConstants from "../src/Common/BaseConstants";
 import {Utils} from "../src/Common/Utils/Utils";
 import {EnumEx} from "../src/Common/Utils/Utils";
-import Trigger = BaseConstants.Trigger;
 var waitUntil = require('wait-until');
 var Jasmine = require('jasmine');
 var async = require('async');
@@ -18,6 +16,7 @@ import {IRWFighter} from "../src/FightSystem/Fight/IRWFighter";
 import {ActionType} from "../src/FightSystem/Actions/RWAction";
 import {BaseDamage} from "../src/FightSystem/RWConstants";
 import {TierDifficulty, Tiers} from "../src/FightSystem/Constants/Tiers";
+import {Trigger} from "../src/Common/Constants/Trigger";
 var jasmine = new Jasmine();
 var fChatLibInstance:any;
 var debug = false;

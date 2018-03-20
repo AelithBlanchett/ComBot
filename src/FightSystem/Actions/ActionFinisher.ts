@@ -1,12 +1,13 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import * as Constants from "../../Common/BaseConstants";
+import * as Constants from "../../Common/Constants/BaseConstants";
 import {ActiveFighter} from "../Fight/ActiveFighter";
 import {RWFight} from "../Fight/RWFight";
-import {FocusDamageOnHit, FocusDamageOnMiss, FocusHealOnHit} from "../RWConstants";
+import {FocusDamageOnMiss} from "../RWConstants";
 import {Utils} from "../../Common/Utils/Utils";
 import {Messages} from "../../Common/Constants/Messages";
 import {Tiers} from "../Constants/Tiers";
-import {Trigger} from "../../Common/BaseConstants";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionFinisher extends RWAction {
 
@@ -51,8 +52,8 @@ export class ActionFinisher extends RWAction {
 
     checkRequirements():void{
         super.checkRequirements();
-        if((this.defender.livesRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 2)){
-            throw new Error(`You can't finish your opponent right now. They must have only one life left, or it must at least be their ${Constants.Fight.Action.Globals.maxTurnsWithoutFocus - 2}th turn without focus.`)
+        if((this.defender.livesRemaining <= 1 || this.defender.consecutiveTurnsWithoutFocus == RWGameSettings.maxTurnsWithoutFocus - 2)){
+            throw new Error(`You can't finish your opponent right now. They must have only one life left, or it must at least be their ${RWGameSettings.maxTurnsWithoutFocus - 2}th turn without focus.`)
         }
     }
 

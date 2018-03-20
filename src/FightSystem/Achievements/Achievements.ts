@@ -2,9 +2,9 @@ import {IAchievement} from "../../Common/Achievements/IAchievement";
 import {BaseFighter} from "../../Common/Fight/BaseFighter";
 import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
 import {BaseFight} from "../../Common/Fight/BaseFight";
-import {FightTier} from "../../Common/BaseConstants";
 import {RWFight} from "../Fight/RWFight";
 import {AchievementManager} from "../../Common/Achievements/AchievementManager";
+import {FightTier} from "../../Common/Constants/FightTier";
 
 export class RookieAchievement implements IAchievement{
     createdAt: Date;

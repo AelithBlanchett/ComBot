@@ -1,6 +1,6 @@
 import {RWFighter} from "../src/FightSystem/Fight/RWFighter";
 import {CommandHandler} from "../src/FightSystem/CommandHandler";
-import * as BaseConstants from "../src/Common/BaseConstants";
+import * as BaseConstants from "../src/Common/Constants/BaseConstants";
 import {Utils} from "../src/Common/Utils/Utils";
 import {ActiveFighter} from "../src/FightSystem/Fight/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";

@@ -1,5 +1,5 @@
 import {Utils} from "../Utils/Utils";
-import {Trigger} from "../BaseConstants";
+import {Trigger} from "../Constants/Trigger";
 
 export abstract class BaseAction{
 

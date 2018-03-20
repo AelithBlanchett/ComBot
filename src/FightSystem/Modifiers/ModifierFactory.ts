@@ -1,4 +1,4 @@
-import * as BaseConstants from "../../Common/BaseConstants";
+import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {Modifier} from "./Modifier";
 import {Utils} from "../../Common/Utils/Utils";
 import {BaseFight} from "../../Common/Fight/BaseFight";
@@ -6,6 +6,8 @@ import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
 import {Tiers} from "../Constants/Tiers";
 import {ModifierType} from "../RWConstants";
 import * as modifiersList from "./modifiers.json";
+import {Trigger} from "../../Common/Constants/Trigger";
+import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
 
 export class ModifierFactory{
 
@@ -35,34 +37,34 @@ export class ModifierFactory{
         let eventFound = false;
 
         if(parameters.sEvent != null){
-            let listOfEvents = Utils.getEnumList(BaseConstants.Trigger);
+            let listOfEvents = Utils.getEnumList(Trigger);
             for(let trigger in listOfEvents){
                 if(listOfEvents[trigger].toLowerCase() == parameters.sEvent.toLowerCase()){
-                    parameters.event = BaseConstants.Trigger[listOfEvents[trigger]];
+                    parameters.event = Trigger[listOfEvents[trigger]];
                     eventFound = true;
                 }
             }
         }
 
         if(!eventFound){
-            parameters.event = BaseConstants.Trigger.None;
+            parameters.event = Trigger.None;
         }
 
         //Convert textual timeToTrigger to its equivalent in the code
         let timeToTriggerFound = false;
 
         if(parameters.sTimeToTrigger != null){
-            let listOfEvents = Utils.getEnumList(BaseConstants.TriggerMoment);
+            let listOfEvents = Utils.getEnumList(TriggerMoment);
             for(let trigger in listOfEvents){
                 if(listOfEvents[trigger].toLowerCase() == parameters.sTimeToTrigger.toLowerCase()){
-                    parameters.timeToTrigger = BaseConstants.TriggerMoment[listOfEvents[trigger]];
+                    parameters.timeToTrigger = TriggerMoment[listOfEvents[trigger]];
                     timeToTriggerFound = true;
                 }
             }
         }
 
         if(!timeToTriggerFound){
-            parameters.timeToTrigger = BaseConstants.TriggerMoment.Never;
+            parameters.timeToTrigger = TriggerMoment.Never;
         }
 
         return parameters;

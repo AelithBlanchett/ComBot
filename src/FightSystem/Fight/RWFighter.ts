@@ -1,9 +1,8 @@
 import {BaseFighter} from "../../Common/Fight/BaseFighter";
 import {IRWFighter} from "./IRWFighter";
-import {TransactionType} from "../../Common/BaseConstants";
 import {Stats} from "../Constants/Stats";
-import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
 import {FighterRepository} from "../Repositories/FighterRepository";
+import {TransactionType} from "../../Common/Constants/TransactionType";
 
 export class RWFighter extends BaseFighter implements IRWFighter {
 

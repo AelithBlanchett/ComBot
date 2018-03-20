@@ -1,6 +1,6 @@
 import {RWFight} from "../src/FightSystem/Fight/RWFight";
 import {RendezVousWrestling} from "../src/FightSystem/RendezVousWrestling";
-import * as BaseConstants from "../src/Common/BaseConstants";
+import * as BaseConstants from "../src/Common/Constants/BaseConstants";
 import {Utils} from "../src/Common/Utils/Utils";
 import {ActiveFighter} from "../src/FightSystem/Fight/ActiveFighter";
 import {FighterRepository} from "../src/FightSystem/Repositories/FighterRepository";
@@ -15,6 +15,7 @@ import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
 import {Messages} from "../src/Common/Constants/Messages";
 import {GameSettings} from "../src/Common/Configuration/GameSettings";
 import {FeatureFactory} from "../src/FightSystem/Features/FeatureFactory";
+import {RWGameSettings} from "../src/FightSystem/Configuration/RWGameSettings";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -493,19 +494,19 @@ describe("Before the fight, the player(s)", () => {
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST);
 
-    it(`should give a loss after ${BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`, async function (done) {
+    it(`should give a loss after ${RWGameSettings.maxTurnsWithoutFocus} turns without focus`, async function (done) {
         let cmd = new RendezVousWrestling(fChatLibInstance, "here");
         await initiateMatchSettings1vs1(cmd);
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.getFighterByName("Aelith Blanchette").focus = -100;
-        for (let i = 0; i < BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus; i++) {
+        for (let i = 0; i < RWGameSettings.maxTurnsWithoutFocus; i++) {
             await cmd.fight.nextTurn();
         }
         if (cmd.fight.getFighterByName("Aelith Blanchette").isBroken()) {
             done();
         }
         else {
-            done.fail(new Error(`Player was still alive after ${BaseConstants.Fight.Action.Globals.maxTurnsWithoutFocus} turns without focus`));
+            done.fail(new Error(`Player was still alive after ${RWGameSettings.maxTurnsWithoutFocus} turns without focus`));
         }
     }, DEFAULT_TIMEOUT_UNIT_TEST + 10000);
 
@@ -529,7 +530,7 @@ describe("Before the fight, the player(s)", () => {
         await cmd.fight.waitUntilWaitingForAction();
         cmd.fight.setCurrentPlayer("TheTinaArmstrong");
         await doAction(cmd, "subhold", "Light");
-        for (let i = 0; i < BaseConstants.Fight.Action.Globals.initialNumberOfTurnsForHold; i++) {
+        for (let i = 0; i < RWGameSettings.initialNumberOfTurnsForHold; i++) {
             await cmd.fight.nextTurn();
             refillHPLPFP(cmd, "Aelith Blanchette");
         }

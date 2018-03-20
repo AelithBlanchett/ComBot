@@ -1,5 +1,5 @@
 import {BaseFighter} from "../../../src/Common/Fight/BaseFighter";
-import {TransactionType} from "../../../src/Common/BaseConstants";
+import {TransactionType} from "../../../src/Common/Constants/TransactionType";
 
 export class TestFighter extends BaseFighter {
     restat(statArray: number[]) {

@@ -1,6 +1,6 @@
 import {Database} from "../../Common/Utils/Model";
 import {Utils} from "../../Common/Utils/Utils";
-import * as BaseConstants from "../../Common/BaseConstants";
+import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {RWAction, EmptyAction} from "../Actions/RWAction";
 
 export class ActionRepository{

@@ -3,7 +3,7 @@ import {ActiveFighter} from "../../../src/FightSystem/Fight/ActiveFighter";
 import {ActiveFighterRepository} from "../../../src/FightSystem/Repositories/ActiveFighterRepository";
 import {Database} from "../../../src/Common/Utils/Model";
 import {FightStatus} from "../../../src/Common/Fight/BaseFight";
-import {Teams} from "../../../src/Common/Constants/Teams";
+import {Team} from "../../../src/Common/Constants/Team";
 import {FeatureFactory} from "../../../src/FightSystem/Features/FeatureFactory";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
@@ -25,7 +25,7 @@ describe("The Active Fighter Repository", () => {
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
         myFighter.season = 0;
-        myFighter.assignedTeam = Teams.Blue;
+        myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
         myFighter.fightStatus = FightStatus.Playing;
 
@@ -46,7 +46,7 @@ describe("The Active Fighter Repository", () => {
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
         myFighter.season = 0;
-        myFighter.assignedTeam = Teams.Blue;
+        myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
 
         await ActiveFighterRepository.persist(myFighter);
@@ -61,7 +61,7 @@ describe("The Active Fighter Repository", () => {
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
         myFighter.season = 0;
-        myFighter.assignedTeam = Teams.Blue;
+        myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
 
         await ActiveFighterRepository.persist(myFighter);
@@ -76,7 +76,7 @@ describe("The Active Fighter Repository", () => {
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
         myFighter.season = 0;
-        myFighter.assignedTeam = Teams.Blue;
+        myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
 
         await ActiveFighterRepository.persist(myFighter);
