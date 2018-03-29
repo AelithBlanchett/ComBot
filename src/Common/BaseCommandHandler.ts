@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {Utils} from "./Utils/Utils";
 import {BaseFighter} from "./Fight/BaseFighter";
 import {IFChatLib} from "fchatlib/dist/src/Interfaces/IFChatLib";

@@ -1,0 +1,18 @@
+{
+   "type": "mysql",
+   "host": "localhost",
+   "port": 3306,
+   "username": "root",
+   "password": "password",
+   "database": "testdb",
+   "synchronize": true,
+   "logging": true,
+   "entities": [
+      "bin/src/Common/Fight/*.js",
+      "bin/src/FightSystem/Fight/*.js"
+   ],
+   "cli": {
+      "entitiesDir": "src",
+      "migrationsDir": "migrations"
+   }
+}

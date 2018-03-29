@@ -9,27 +9,46 @@ import {Messages} from "../Constants/Messages";
 import {GameSettings} from "../Configuration/GameSettings";
 import {BaseFeatureParameter} from "../Features/BaseFeatureParameter";
 import {TriggerMoment} from "../Constants/TriggerMoment";
-
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne} from "typeorm";
 
 export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, ActiveFighter extends BaseActiveFighter = BaseActiveFighter> extends BaseAction{
 
+    @OneToOne(type => BaseFight, fight => fight.pastActions)
     fight:Fight;
+
+    @OneToOne(type => BaseActiveFighter, fighter => fighter)
+    @JoinColumn()
     attacker:ActiveFighter;
+
+    @OneToOne(type => BaseActiveFighter, fighter => fighter)
+    @JoinColumn()
     defenders:ActiveFighter[];
 
+    @Column()
     atTurn: number;
+    @Column()
     diceScore: number;
+    @Column()
     diceRollRawValue:number;
+    @Column()
     diceRollBonusFromStat:number;
+    @Column()
     diceScoreBaseDamage:number;
+    @Column()
     diceScoreStatDifference:number;
+    @Column()
     diceScoreBonusPoints:number;
+    @Column()
     difficultyExplanation:string;
+    @Column()
     diceRequiredRoll:number;
+    @Column()
     missed: boolean = false;
 
+    //@Column()
     appliedModifiers:BaseModifier[] = [];
 
+    @Column()
     trigger:Trigger;
 
     temporaryIdAttacker:string;

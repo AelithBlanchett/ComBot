@@ -10,8 +10,15 @@ import {ModifierType} from "../RWConstants";
 import {Messages} from "../../Common/Constants/Messages";
 import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
 import {Trigger} from "../../Common/Constants/Trigger";
+import {Column, Entity, JoinColumn, OneToMany} from "typeorm";
+import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
 
+@Entity()
 export class RWFight extends BaseFight<ActiveFighter>{
+
+    @OneToMany(type => ActiveFighter, fighter => fighter.fight)
+    @JoinColumn()
+    fighters:ActiveFighter[];
 
     public constructor() {
         super(new RWActionFactory());

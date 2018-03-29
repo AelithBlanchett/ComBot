@@ -24,7 +24,6 @@ describe("The Active Fighter Repository", () => {
         myFighter.initialize();
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
-        myFighter.season = 0;
         myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
         myFighter.fightStatus = FightStatus.Playing;
@@ -45,7 +44,6 @@ describe("The Active Fighter Repository", () => {
         myFighter.initialize();
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
-        myFighter.season = 0;
         myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
 
@@ -60,7 +58,6 @@ describe("The Active Fighter Repository", () => {
         myFighter.initialize();
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
-        myFighter.season = 0;
         myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
 
@@ -75,7 +72,6 @@ describe("The Active Fighter Repository", () => {
         myFighter.initialize();
         myFighter.name = "Aelith Blanchette";
         myFighter.idFight = "1";
-        myFighter.season = 0;
         myFighter.assignedTeam = Team.Blue;
         myFighter.isReady = true;
 

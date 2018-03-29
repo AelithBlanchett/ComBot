@@ -29,7 +29,7 @@ export class FighterRepository{
                     areStatsPrivate: fighter.areStatsPrivate,
                     tokens: Number(fighter.tokens).toFixed(2),
                     tokensSpent: Number(fighter.tokensSpent).toFixed(2),
-                    eloRating: fighter.eloRating,
+                    eloRating: fighter.stats.eloRating,
                     createdAt: fighter.createdAt
                 });
             }
@@ -45,7 +45,7 @@ export class FighterRepository{
                     areStatsPrivate: fighter.areStatsPrivate,
                     tokens: Number(fighter.tokens).toFixed(2),
                     tokensSpent: Number(fighter.tokensSpent).toFixed(2),
-                    eloRating: fighter.eloRating,
+                    eloRating: fighter.stats.eloRating,
                     updatedAt: fighter.updatedAt
                 });
 

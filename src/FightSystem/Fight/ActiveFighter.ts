@@ -1,4 +1,4 @@
-import * as Constants from "../../Common/Constants/BaseConstants";
+import "reflect-metadata";
 import {Utils} from "../../Common/Utils/Utils";
 import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
 import {IRWFighter} from "./IRWFighter";
@@ -17,13 +17,25 @@ import {Trigger} from "../../Common/Constants/Trigger";
 import {FightType} from "../../Common/Constants/FightType";
 import {TransactionType} from "../../Common/Constants/TransactionType";
 import {RWGameSettings} from "../Configuration/RWGameSettings";
+import {Column, Entity, ManyToOne, OneToOne} from "typeorm";
+import {RWFighterStats} from "./RWFighterStats";
 
+@Entity()
 export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
+    @ManyToOne(type => RWFight, fight => fight.fighters)
+    fight:RWFight;
+    @OneToOne(type => RWFighterStats, stats => stats.fighter)
+    stats:RWFighterStats;
+    @Column()
     hp:number = 0;
+    @Column()
     lust:number = 0;
+    @Column()
     livesRemaining:number = 0;
+    @Column()
     focus:number = 0;
+    @Column()
     consecutiveTurnsWithoutFocus:number;
 
     dexterity:number = 1;
@@ -553,7 +565,7 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         let turnsFocusLine = `  [color=orange]turns ${this.hasFeature(FeatureType.DomSubLover) ? "being too submissive" : "without focus"}: ${this.consecutiveTurnsWithoutFocus}|${RWGameSettings.maxTurnsWithoutFocus}[/color] `;
         let bondageLine = `  [color=purple]bondage items ${this.bondageItemsOnSelf()}|${RWGameSettings.maxBondageItemsOnSelf}[/color] `;
         let modifiersLine = `  [color=cyan]affected by: ${this.getListOfActiveModifiers()}[/color] `;
-        let targetLine = `  [color=red]target(s): ` + ((this.targets != null && this.targets.length > 0) ? `${this.targets.map(x => x.name).toString()}` : "None set yet! (!targets charactername)") + `[/color]`;
+        let targetLine = `  [color=red]target(s): ` + ((this.targets != null && this.targets.length > 0) ? `${this.targets.join(",").toString()}` : "None set yet! (!targets charactername)") + `[/color]`;
 
         return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${(this.getListOfActiveModifiers().length > 0 ? modifiersLine : "")} ${targetLine}`;
     }

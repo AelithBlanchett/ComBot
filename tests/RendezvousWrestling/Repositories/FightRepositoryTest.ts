@@ -1,9 +1,8 @@
+import "reflect-metadata";
 import {RWFight} from "../../../src/FightSystem/Fight/RWFight";
-import {Database} from "../../../src/Common/Utils/Model";
-import {FightRepository} from "../../../src/FightSystem/Repositories/FightRepository";
 let Jasmine = require('jasmine');
 let testSuite = new Jasmine();
-import * as BaseConstants from "../../../src/Common/Constants/BaseConstants";
+import {createConnection} from "typeorm";
 
 describe("The RWFight Repository", () => {
 
@@ -15,17 +14,25 @@ describe("The RWFight Repository", () => {
 
         let myFight = new RWFight();
 
-        await FightRepository.persist(myFight);
-        let resultTrue = await FightRepository.exists(myFight.idFight);
-        expect(resultTrue).toBe(true);
 
-        await FightRepository.delete(myFight.idFight);
-        let resultFalse = await FightRepository.exists(myFight.idFight);
-        expect(resultFalse).toBe(false);
+        createConnection().then(async connection => {
+            await connection.manager.save(myFight);
+            console.log("myFight has been saved");
+            done();
+        }).catch(error => console.log(error));
 
-        await Database.get(BaseConstants.SQL.fightTableName).where({idFight: myFight.idFight}).del();
 
-        done();
+        // await FightRepository.persist(myFight);
+        // let resultTrue = await FightRepository.exists(myFight.idFight);
+        // expect(resultTrue).toBe(true);
+        //
+        // await FightRepository.delete(myFight.idFight);
+        // let resultFalse = await FightRepository.exists(myFight.idFight);
+        // expect(resultFalse).toBe(false);
+        //
+        // await Database.get(BaseConstants.SQL.fightTableName).where({idFight: myFight.idFight}).del();
+
+        //done();
     });
 
     // it("should say that action that was just inserted is in database.", async function (done) {

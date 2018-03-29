@@ -30,7 +30,7 @@
     "require-reload": "*",
     "sprintf-js": "^1.1.1",
     "stats-lite": "^2.1.0",
-    "typeorm": "0.0.8",
+    "typeorm": "^0.1.19",
     "typescript": "^2.7.2",
     "typings": "^2.1.1",
     "wait-until": "*"

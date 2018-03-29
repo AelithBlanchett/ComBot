@@ -7,53 +7,33 @@ import {Messages} from "../Constants/Messages";
 import {FightTierWinRequirements} from "../Constants/FightTierWinRequirements";
 import {FightTier} from "../Constants/FightTier";
 import {TransactionType} from "../Constants/TransactionType";
+import {Column, CreateDateColumn, JoinColumn, OneToOne, PrimaryColumn, UpdateDateColumn} from "typeorm";
+import {BaseFighterStats} from "./BaseFighterStats";
 
 export abstract class BaseFighter{
 
+    @PrimaryColumn()
     name:string = "";
+    @Column()
     areStatsPrivate:boolean = true;
 
+    @Column()
     tokens: number = 50;
+    @Column()
     tokensSpent: number = 0;
 
-    fightsCount:number;
-    fightsCountCS:number;
-    losses:number;
-    lossesSeason:number;
-    wins:number;
-    winsSeason:number;
-    currentlyPlaying:number;
-    currentlyPlayingSeason:number;
-    fightsPendingReady:number;
-    fightsPendingReadySeason:number;
-    fightsPendingStart:number;
-    fightsPendingStartSeason:number;
-    fightsPendingDraw:number;
-    fightsPendingDrawSeason:number;
-    favoriteTeam:Team;
-    favoriteTagPartner:string;
-    timesFoughtWithFavoriteTagPartner:number;
-    nemesis:string;
-    lossesAgainstNemesis:number;
-    averageDiceRoll:number;
-    missedAttacks:number;
-    actionsCount:number;
-    actionsDefended:number;
-
-    matchesInLast24Hours:number;
-    matchesInLast48Hours:number;
-
-    eloRating:number = 2000;
-    globalRank:number;
-
-    forfeits:number;
-    quits:number;
+    // @OneToOne(type => BaseFighterStats)
+    // @JoinColumn()
+    stats:BaseFighterStats;
 
     features:BaseFeature[] = [];
     achievements:IAchievement[] = [];
+    @CreateDateColumn()
     createdAt:Date;
+    @UpdateDateColumn()
     updatedAt:Date;
-    deletedAt:Date;
+    @Column()
+    deleted:boolean = false;
 
     featureFactory:IFeatureFactory<BaseFight, BaseFighter>;
 
@@ -62,17 +42,6 @@ export abstract class BaseFighter{
     }
 
     abstract restat(statArray:Array<number>);
-
-    winRate():number{
-        let winRate = 0.00;
-        if(this.fightsCount > 0 && this.wins > 0){
-            winRate = this.fightsCount/this.wins;
-        }
-        else if(this.fightsCount > 0 && this.losses > 0){
-            winRate = 1 - this.fightsCount/this.losses;
-        }
-        return winRate;
-    }
 
     getFeaturesList(){
         let strResult = [];
@@ -162,13 +131,16 @@ export abstract class BaseFighter{
     }
 
     fightTier():FightTier{
-        if(this.wins < FightTierWinRequirements.Silver){
+        if(this.stats == null){
             return FightTier.Bronze;
         }
-        else if(this.wins < FightTierWinRequirements.Gold){
+        if(this.stats.wins < FightTierWinRequirements.Silver){
+            return FightTier.Bronze;
+        }
+        else if(this.stats.wins < FightTierWinRequirements.Gold){
             return FightTier.Silver
         }
-        else if(this.wins >= FightTierWinRequirements.Gold){
+        else if(this.stats.wins >= FightTierWinRequirements.Gold){
             return FightTier.Gold;
         }
         else{

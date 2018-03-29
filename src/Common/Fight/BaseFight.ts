@@ -19,29 +19,57 @@ import {TokensPerWin} from "../Constants/TokensPerWin";
 import {TransactionType} from "../Constants/TransactionType";
 import {Trigger} from "../Constants/Trigger";
 import {TriggerMoment} from "../Constants/TriggerMoment";
-
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    PrimaryColumn,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 let EloRating = require('elo-rating');
 
 export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseActiveFighter>{
 
+    @PrimaryColumn()
     idFight:string;
+    @Column()
     requiredTeams:number;
+    @Column()
     hasStarted:boolean = false;
+    @Column()
     hasEnded:boolean = false;
+    @Column()
     stage:string;
+    @Column()
     currentTurn:number;
+    @Column()
     fightType:FightType;
-    pastActions:Array<BaseActiveAction>;
+    @Column()
     winnerTeam:Team;
+    @Column()
     season:number;
+    @Column()
     waitingForAction:boolean = true;
+    @Column()
     fightLength:FightLength = FightLength.Long;
 
+    @CreateDateColumn()
     createdAt:Date;
+    @UpdateDateColumn()
     updatedAt:Date;
-    deletedAt:Date;
+    @Column()
+    deleted:boolean = false;
 
+    //@OneToMany(type => BaseActiveAction, action => action.fight)
+    //@JoinColumn()
+    pastActions:Array<BaseActiveAction>;
+    // @OneToMany(type => BaseActiveFighter, action => action.fight)
+    // @JoinColumn()
     fighters:ActiveFighter[];
+
     channel:string;
     message:FightMessage;
     fChatLibInstance:IFChatLib;
@@ -412,7 +440,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     }
 
     get currentTarget():BaseActiveFighter[] {
-        return this.currentPlayer.targets;
+        return this.currentPlayer.getTargets();
     }
 
     assignRandomTargetToAllFighters():void{
@@ -422,7 +450,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     }
 
     assignRandomTargetToFighter(fighter:ActiveFighter):void {
-        fighter.targets = [this.getRandomFighterNotInTeam(fighter.assignedTeam)];
+        fighter.targets.push(this.getRandomFighterNotInTeam(fighter.assignedTeam).name);
     }
 
     //Dice rolling
@@ -450,7 +478,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     assignTarget(fighterName:string, name:string) {
         let theTarget = this.getFighterByName(name);
         if(theTarget != null){
-            this.getFighterByName(fighterName).targets = [theTarget];
+            this.getFighterByName(fighterName).targets = [theTarget.name];
             this.message.addInfo("Target set to "+ theTarget.getStylizedName());
             this.sendFightMessage();
         }
@@ -487,7 +515,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
                 throw new Error("The character to tag with is required and wasn't found.");
             }
             else{
-                this.currentPlayer.targets = [customTarget];
+                this.currentPlayer.targets = [customTarget.name];
             }
         }
 
@@ -659,11 +687,11 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         for (let fighter of this.fighters) {
             if (fighter.assignedTeam == this.winnerTeam) {
                 numberOfWinners++;
-                eloAverageOfWinners += fighter.eloRating;
+                eloAverageOfWinners += fighter.stats.eloRating;
             }
             else{
                 numberOfLosers++;
-                eloAverageOfLosers += fighter.eloRating;
+                eloAverageOfLosers += fighter.stats.eloRating;
             }
         }
 
@@ -679,16 +707,16 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
                 fighter.fightStatus = FightStatus.Won;
                 this.message.addInfo(`Awarded ${tokensToGiveToWinners} ${GameSettings.currencyName} to ${fighter.getStylizedName()}`);
                 await fighter.giveTokens(tokensToGiveToWinners, TransactionType.FightReward, GameSettings.botName);
-                fighter.wins++;
-                fighter.winsSeason++;
-                fighter.eloRating += eloPointsChangeToWinners;
+                fighter.stats.wins++;
+                fighter.stats.winsSeason++;
+                fighter.stats.eloRating += eloPointsChangeToWinners;
             }
             else {
                 if (this.winnerTeam != Team.Unknown) {
                     fighter.fightStatus = FightStatus.Lost;
-                    fighter.losses++;
-                    fighter.lossesSeason++;
-                    fighter.eloRating += eloPointsChangeToLosers;
+                    fighter.stats.losses++;
+                    fighter.stats.lossesSeason++;
+                    fighter.stats.eloRating += eloPointsChangeToLosers;
                 }
                 this.message.addInfo(`Awarded ${tokensToGiveToLosers} ${GameSettings.currencyName} to ${fighter.getStylizedName()}`);
                 await fighter.giveTokens(tokensToGiveToLosers, TransactionType.FightReward, GameSettings.botName);

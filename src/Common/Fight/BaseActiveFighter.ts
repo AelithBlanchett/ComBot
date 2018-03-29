@@ -2,7 +2,6 @@ import {Dice} from "../Utils/Dice";
 import {BaseFight, FightStatus} from "./BaseFight";
 import {Trigger} from "../Constants/Trigger";
 import {TriggerMoment} from "../Constants/TriggerMoment";
-import * as BaseConstants from "../Constants/BaseConstants";
 import {AchievementManager} from "../Achievements/AchievementManager";
 import {BaseFighter} from "./BaseFighter";
 import {BaseModifier} from "../Modifiers/BaseModifier";
@@ -10,24 +9,39 @@ import {Team} from "../Constants/Team";
 import {GameSettings} from "../Configuration/GameSettings";
 import {IFeatureFactory} from "../Features/IFeatureFactory";
 import {FightLength} from "../Constants/FightLength";
+import {Column, CreateDateColumn, ManyToOne, PrimaryColumn, UpdateDateColumn} from "typeorm";
 
 export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModifier> extends BaseFighter {
 
+    //@ManyToOne(type => BaseFight, fight => fight.fighters)
     fight:BaseFight;
+    @PrimaryColumn()
     idFight:string;
-    season:number = GameSettings.currentSeason;
+    @Column()
     assignedTeam:Team = Team.Unknown;
-    targets:BaseActiveFighter[];
+    @Column("simple-array")
+    targets:string[];
+    @Column()
     isReady:boolean = false;
+    @Column()
     lastDiceRoll:number;
+    @Column()
     isInTheRing:boolean = true;
+    @Column()
     canMoveFromOrOffRing:boolean = true;
+    @Column()
     lastTagTurn:number = 9999999;
+    @Column()
     wantsDraw:boolean = false;
+    @Column()
     distanceFromRingCenter:number;
+    @CreateDateColumn()
     createdAt:Date;
+    @UpdateDateColumn()
     updatedAt:Date;
+    //@Column()
     modifiers:Modifier[];
+    @Column()
     fightStatus: FightStatus;
     dice:Dice;
 
@@ -48,13 +62,23 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         this.fightStatus = null;
 
         this.dice = new Dice(GameSettings.diceSides);
-        this.season = GameSettings.currentSeason;
         this.fightStatus = FightStatus.Idle;
     }
 
     assignFight(fight:BaseFight):void{
         this.fight = fight;
         this.idFight = fight.idFight;
+    }
+
+    getTargets():BaseActiveFighter[]{
+        let fighters:BaseActiveFighter[] = [];
+        for(let name of this.targets){
+            let fighter = this.fight.getFighterByName(name);
+            if(fighter != null){
+                fighters.push(fighter);
+            }
+        }
+        return fighters;
     }
 
     async checkAchievements(activeFighter?:BaseActiveFighter, fight?:BaseFight){

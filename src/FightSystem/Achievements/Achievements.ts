@@ -12,7 +12,7 @@ export class RookieAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight<BaseActiveFighter>): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.fightsCount >= 1);
+            flag = (fighter.stats.fightsCount >= 1);
         }
         return flag;
     }
@@ -40,7 +40,7 @@ export class FiveFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.fightsCount >= 5);
+            flag = (fighter.stats.fightsCount >= 5);
         }
         return flag;
     }
@@ -68,7 +68,7 @@ export class TenFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.fightsCount >= 10);
+            flag = (fighter.stats.fightsCount >= 10);
         }
         return flag;
     }
@@ -96,7 +96,7 @@ export class TwentyFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.fightsCount >= 20);
+            flag = (fighter.stats.fightsCount >= 20);
         }
         return flag;
     }
@@ -124,7 +124,7 @@ export class FortyFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.fightsCount >= 40);
+            flag = (fighter.stats.fightsCount >= 40);
         }
         return flag;
     }
@@ -152,7 +152,7 @@ export class WinookieAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.wins >= 1);
+            flag = (fighter.stats.wins >= 1);
         }
         return flag;
     }
@@ -180,7 +180,7 @@ export class WinFiveFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.wins >= 5);
+            flag = (fighter.stats.wins >= 5);
         }
         return flag;
     }
@@ -208,7 +208,7 @@ export class WinTenFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.wins >= 10);
+            flag = (fighter.stats.wins >= 10);
         }
         return flag;
     }
@@ -236,7 +236,7 @@ export class WinTwentyFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.wins >= 20);
+            flag = (fighter.stats.wins >= 20);
         }
         return flag;
     }
@@ -264,7 +264,7 @@ export class WinThirtyFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.wins >= 30);
+            flag = (fighter.stats.wins >= 30);
         }
         return flag;
     }
@@ -292,7 +292,7 @@ export class WinFortyFightsAchievement implements IAchievement{
     meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
         let flag = false;
         if(fighter != null){
-            flag = (fighter.wins >= 40);
+            flag = (fighter.stats.wins >= 40);
         }
         return flag;
     }

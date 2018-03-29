@@ -3,38 +3,28 @@ import {IRWFighter} from "./IRWFighter";
 import {Stats} from "../Constants/Stats";
 import {FighterRepository} from "../Repositories/FighterRepository";
 import {TransactionType} from "../../Common/Constants/TransactionType";
+import {Column, Entity, JoinColumn, OneToOne} from "typeorm";
+import {RWFighterStats} from "./RWFighterStats";
 
+@Entity()
 export class RWFighter extends BaseFighter implements IRWFighter {
 
+    @Column()
     dexterity:number = 1;
+    @Column()
     power:number = 1;
+    @Column()
     sensuality:number = 1;
+    @Column()
     toughness:number = 1;
+    @Column()
     endurance:number = 1;
+    @Column()
     willpower:number = 1;
 
-    //They are used in the FighterRepository file.
-    //Date from the database is assigned to these variables thanks to the mergeFromTo function
-    brawlAtksCount:number;
-    sexstrikesCount:number;
-    tagsCount:number;
-    restCount:number;
-    subholdCount:number;
-    sexholdCount:number;
-    bondageCount:number;
-    humholdCount:number;
-    itemPickups:number;
-    sextoyPickups:number;
-    degradationCount:number;
-    forcedWorshipCount:number;
-    highRiskCount:number;
-    penetrationCount:number;
-    stunCount:number;
-    escapeCount:number;
-    submitCount:number;
-    straptoyCount:number;
-    finishCount:number;
-    masturbateCount:number;
+    @OneToOne(type => RWFighterStats)
+    @JoinColumn()
+    stats:RWFighterStats;
 
     restat(statArray:Array<number>){
         for(let i = 0; i < statArray.length;  i++){
@@ -47,12 +37,12 @@ export class RWFighter extends BaseFighter implements IRWFighter {
             "[b][color=red]Power[/color][/b]:  " + this.power + "      "+"\n" +
             "[b][color=purple]Sensuality[/color][/b]:  " + this.sensuality + "\n" +
             "[b][color=orange]Toughness[/color][/b]: " + this.toughness + "\n" +
-            "[b][color=cyan]Endurance[/color][/b]: " + this.endurance + "      " + "[b][color=green]Win[/color]/[color=red]Loss[/color] record[/b]: " + this.wins + " - " + this.losses + "\n" +
+            "[b][color=cyan]Endurance[/color][/b]: " + this.endurance + "      " + "[b][color=green]Win[/color]/[color=red]Loss[/color] record[/b]: " + this.stats.wins + " - " + this.stats.losses + "\n" +
             "[b][color=green]Dexterity[/color][/b]: " + this.dexterity + "\n" +
             "[b][color=brown]Willpower[/color][/b]: " + this.willpower +  "      " + "[b][color=orange]Tokens[/color][/b]: " + this.tokens + "         [b][color=orange]Total spent[/color][/b]: "+this.tokensSpent+"\n"  +
             "[b][color=red]Features[/color][/b]: [b]" + this.getFeaturesList() + "[/b]\n" +
             "[b][color=yellow]Common.Achievements[/color][/b]: [sub]" + this.getAchievementsList() + "[/sub]\n" +
-            `[b][color=white]Fun stats[/color][/b]: [sub]Avg. roll: ${this.averageDiceRoll}, Fav. tag partner: ${(this.favoriteTagPartner != null && this.favoriteTagPartner != "" ? this.favoriteTagPartner : "None!")}, Moves done: ${this.actionsCount}, Nemesis: ${this.nemesis} [/sub]`;
+            `[b][color=white]Fun stats[/color][/b]: [sub]Avg. roll: ${this.stats.averageDiceRoll}, Fav. tag partner: ${(this.stats.favoriteTagPartner != null && this.stats.favoriteTagPartner != "" ? this.stats.favoriteTagPartner : "None!")}, Moves done: ${this.stats.actionsCount}, Nemesis: ${this.stats.nemesis} [/sub]`;
     }
 
     async save(): Promise<void> {
