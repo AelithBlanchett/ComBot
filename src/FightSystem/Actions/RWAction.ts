@@ -1,15 +1,14 @@
 ///<reference path="../../Common/Actions/BaseActiveAction.ts"/>
 import {BaseActiveAction} from "../../Common/Actions/BaseActiveAction";
 import {RWFight} from "../Fight/RWFight";
-import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFighterState} from "../Fight/RWFighterState";
 import {BaseDamage, FocusDamageOnMiss} from "../RWConstants";
-import {ActionRepository} from "../Repositories/ActionRepository";
 import {Modifier} from "../Modifiers/Modifier";
 import * as Constants from "../RWConstants"
 import {TierDifficulty, Tiers} from "../Constants/Tiers";
 import {Trigger} from "../../Common/Constants/Trigger";
 
-export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> {
+export abstract class RWAction extends BaseActiveAction<RWFight, RWFighterState> {
 
     hpDamageToDefs: number[] = [];
     lpDamageToDefs: number[] = [];
@@ -332,10 +331,6 @@ export abstract class RWAction extends BaseActiveAction<RWFight, ActiveFighter> 
                 }
             }
         }
-    }
-
-    async save(): Promise<void> {
-        await ActionRepository.persist(this);
     }
 
 }

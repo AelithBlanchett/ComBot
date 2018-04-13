@@ -1,5 +1,5 @@
 import {Trigger} from "../Constants/Trigger";
-import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {BaseFighterState} from "../Fight/BaseFighterState";
 import {BaseFight} from "../Fight/BaseFight";
 import {TriggerMoment} from "../Constants/TriggerMoment";
 
@@ -7,8 +7,8 @@ export interface IBaseModifier{
     idModifier: string;
     tier:number;
     name:string;
-    applier: BaseActiveFighter;
-    receiver: BaseActiveFighter;
+    applier: BaseFighterState;
+    receiver: BaseFighterState;
     areDamageMultipliers: boolean;
     diceRoll: number;
     escapeRoll: number;

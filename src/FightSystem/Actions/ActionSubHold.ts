@@ -1,6 +1,6 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/Constants/BaseConstants";
-import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFighterState} from "../Fight/RWFighterState";
 import {RWFight} from "../Fight/RWFight";
 import {FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
@@ -10,7 +10,7 @@ import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionSubHold extends RWAction {
 
-    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers) {
+    constructor(fight:RWFight, attacker:RWFighterState, defenders:RWFighterState[], tier:Tiers) {
         super(fight,
             attacker,
             defenders,

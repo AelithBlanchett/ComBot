@@ -1,32 +1,26 @@
 import "reflect-metadata";
 import {Utils} from "../../Common/Utils/Utils";
-import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
-import {IRWFighter} from "./IRWFighter";
+import {BaseFighterState} from "../../Common/Fight/BaseFighterState";
 import {Parser} from "../../Common/Utils/Parser";
 import {Modifier} from "../Modifiers/Modifier";
 import {FeatureType, ModifierType} from "../RWConstants";
 import {GameSettings} from "../../Common/Configuration/GameSettings";
-import {IFeatureFactory} from "../../Common/Features/IFeatureFactory";
-import {RWFight} from "./RWFight";
-import {RWFighter} from "./RWFighter";
-import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
-import {FighterRepository} from "../Repositories/FighterRepository";
 import {FightLength} from "../../Common/Constants/FightLength";
 import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
 import {Trigger} from "../../Common/Constants/Trigger";
 import {FightType} from "../../Common/Constants/FightType";
 import {TransactionType} from "../../Common/Constants/TransactionType";
 import {RWGameSettings} from "../Configuration/RWGameSettings";
-import {Column, Entity, ManyToOne, OneToOne} from "typeorm";
-import {RWFighterStats} from "./RWFighterStats";
+import {ChildEntity, Column, Entity, JoinColumn, OneToOne} from "typeorm";
+import {Stats} from "../Constants/Stats";
+import {BaseFight} from "../../Common/Fight/BaseFight";
+import {BaseUser} from "../../Common/Fight/BaseUser";
+import {RWFight} from "./RWFight";
+import {RWUser} from "./RWUser";
 
-@Entity()
-export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
+@ChildEntity("rw")
+export class RWFighterState extends BaseFighterState{
 
-    @ManyToOne(type => RWFight, fight => fight.fighters)
-    fight:RWFight;
-    @OneToOne(type => RWFighterStats, stats => stats.fighter)
-    stats:RWFighterStats;
     @Column()
     hp:number = 0;
     @Column()
@@ -38,77 +32,64 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
     @Column()
     consecutiveTurnsWithoutFocus:number;
 
-    dexterity:number = 1;
-    power:number = 1;
-    sensuality:number = 1;
-    toughness:number = 1;
-    endurance:number = 1;
-    willpower:number = 1;
-
-    //Those are re-written from RWFighter.ts
-    //Can't extend two classes, so I had to write an interface, and implement it in both ActiveFighter and RWFighter
-    brawlAtksCount:number;
-    sexstrikesCount:number;
-    tagsCount:number;
-    restCount:number;
-    subholdCount:number;
-    sexholdCount:number;
-    bondageCount:number;
-    humholdCount:number;
-    itemPickups:number;
-    sextoyPickups:number;
-    degradationCount:number;
-    forcedWorshipCount:number;
-    highRiskCount:number;
-    penetrationCount:number;
-    stunCount:number;
-    escapeCount:number;
-    submitCount:number;
-    straptoyCount:number;
-    finishCount:number;
-    masturbateCount:number;
-
+    @Column()
     startingPower:number;
+    @Column()
     startingSensuality:number;
+    @Column()
     startingToughness:number;
+    @Column()
     startingEndurance:number;
+    @Column()
     startingDexterity:number;
+    @Column()
     startingWillpower:number;
+    @Column()
     powerDelta:number;
+    @Column()
     sensualityDelta:number;
+    @Column()
     toughnessDelta:number;
+    @Column()
     enduranceDelta:number;
+    @Column()
     dexterityDelta:number;
+    @Column()
     willpowerDelta:number;
 
+    @Column()
     hpDamageLastRound: number = 0;
+    @Column()
     lpDamageLastRound: number = 0;
+    @Column()
     fpDamageLastRound: number = 0;
+    @Column()
     hpHealLastRound: number = 0;
+    @Column()
     lpHealLastRound: number = 0;
+    @Column()
     fpHealLastRound: number = 0;
+    @Column()
     heartsDamageLastRound: number = 0;
+    @Column()
     orgasmsDamageLastRound: number = 0;
+    @Column()
     heartsHealLastRound: number = 0;
+    @Column()
     orgasmsHealLastRound: number = 0;
 
     modifiers:Modifier[];
 
-    constructor(featureFactory:IFeatureFactory<RWFight, RWFighter>){
-        super(featureFactory);
-        this.toughness = 1;
-        this.toughness = 1;
-        this.endurance = 1;
-        this.willpower = 1;
-        this.sensuality = 1;
-        this.power = 1;
-        this.dexterity = 1;
-        this.startingToughness = this.toughness;
-        this.startingEndurance = this.endurance;
-        this.startingWillpower = this.willpower;
-        this.startingSensuality = this.sensuality;
-        this.startingPower = this.power;
-        this.startingDexterity = this.dexterity;
+    user:RWUser;
+
+    constructor(fight:RWFight, user:RWUser){
+        super(fight, user);
+        this.startingToughness = user.toughness;
+        this.startingEndurance = user.endurance;
+        this.startingWillpower = user.willpower;
+        this.startingSensuality = user.sensuality;
+        this.startingPower = user.power;
+        this.startingDexterity = user.dexterity;
 
         this.hp = this.hpPerHeart();
         this.lust = 0;
@@ -145,8 +126,8 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
     totalHp():number{
         let hp = 130;
-        if (this.toughness > 10) {
-            hp += (this.toughness - 10);
+        if (this.currentToughness > 10) {
+            hp += (this.currentToughness - 10);
         }
         switch (this.fightDuration()){
             case FightLength.Epic:
@@ -171,8 +152,8 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
     totalLust():number{
         let lust = 130;
-        if (this.endurance > 10) {
-            lust += (this.endurance - 10);
+        if (this.currentEndurance > 10) {
+            lust += (this.currentEndurance - 10);
         }
         switch (this.fightDuration()){
             case FightLength.Epic:
@@ -220,8 +201,8 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
 
     focusResistance():number{
         let resistance = 30;
-        if (this.willpower > 10) {
-            resistance += (this.willpower - 10);
+        if (this.currentWillpower > 10) {
+            resistance += (this.currentWillpower - 10);
         }
         return resistance;
     }
@@ -246,18 +227,18 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
     }
 
     getStatsInString():string{
-        return `${this.power},${this.sensuality},${this.toughness},${this.endurance},${this.dexterity},${this.willpower}`;
+        return `${this.user.power},${this.user.sensuality},${this.user.toughness},${this.user.endurance},${this.user.dexterity},${this.user.willpower}`;
     }
 
     //fight is "mistakenly" set as optional to be compatible with the super.init
     initialize():void {
         super.initialize();
-        this.startingToughness = this.toughness;
-        this.startingEndurance = this.endurance;
-        this.startingWillpower = this.willpower;
-        this.startingSensuality = this.sensuality;
-        this.startingPower = this.power;
-        this.startingDexterity = this.dexterity;
+        this.startingToughness = this.user.toughness;
+        this.startingEndurance = this.user.endurance;
+        this.startingWillpower = this.user.willpower;
+        this.startingSensuality = this.user.sensuality;
+        this.startingPower = this.user.power;
+        this.startingDexterity = this.user.dexterity;
 
         this.hp = this.hpPerHeart();
         this.lust = 0;
@@ -561,36 +542,12 @@ export class ActiveFighter extends BaseActiveFighter implements IRWFighter{
         let hpLine = `  [color=yellow]hit points: ${this.hp}${((this.hpDamageLastRound > 0 || this.hpHealLastRound > 0) ? `${(((-this.hpDamageLastRound + this.hpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.hpDamageLastRound + this.hpHealLastRound)})[/color]` : "")}|${this.hpPerHeart()}[/color] `;
         let lpLine = `  [color=pink]lust points: ${this.lust}${((this.lpDamageLastRound > 0 || this.lpHealLastRound > 0) ? `${(((-this.lpDamageLastRound + this.lpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(this.lpDamageLastRound - this.lpHealLastRound)})[/color]` : "")}|${this.lustPerOrgasm()}[/color] `;
         let livesLine = `  [color=red]lives: ${this.displayRemainingLives}${((this.orgasmsDamageLastRound > 0 || this.orgasmsHealLastRound > 0) ? `${(((-this.orgasmsDamageLastRound + this.orgasmsHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.orgasmsDamageLastRound + this.orgasmsHealLastRound)} orgasm(s))[/color]` : "")}${((this.heartsDamageLastRound > 0 || this.heartsHealLastRound > 0) ? `${(((-this.heartsDamageLastRound + this.heartsHealLastRound) < 0) ? "[color=red]" : "[color=green]")}  (${Utils.getSignedNumber(-this.heartsDamageLastRound + this.heartsHealLastRound)} heart(s))[/color]` : "")}(${this.livesRemaining}|${this.maxLives()})[/color] `;
-        let focusLine = `  [color=orange]${this.hasFeature(FeatureType.DomSubLover) ? "submissiveness" : "focus"}:[/color] [b][color=${(this.focus <= 0 ? "red" : "orange")}]${this.focus}[/color][/b]${(((this.fpDamageLastRound > 0 || this.fpHealLastRound > 0) && (this.fpDamageLastRound - this.fpHealLastRound != 0)) ? `${(((-this.fpDamageLastRound + this.fpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.fpDamageLastRound + this.fpHealLastRound)})[/color]` : "")}|[color=green]${this.maxFocus()}[/color] `;
-        let turnsFocusLine = `  [color=orange]turns ${this.hasFeature(FeatureType.DomSubLover) ? "being too submissive" : "without focus"}: ${this.consecutiveTurnsWithoutFocus}|${RWGameSettings.maxTurnsWithoutFocus}[/color] `;
+        let focusLine = `  [color=orange]${this.user.hasFeature(FeatureType.DomSubLover) ? "submissiveness" : "focus"}:[/color] [b][color=${(this.focus <= 0 ? "red" : "orange")}]${this.focus}[/color][/b]${(((this.fpDamageLastRound > 0 || this.fpHealLastRound > 0) && (this.fpDamageLastRound - this.fpHealLastRound != 0)) ? `${(((-this.fpDamageLastRound + this.fpHealLastRound) < 0) ? "[color=red]" : "[color=green]")} (${Utils.getSignedNumber(-this.fpDamageLastRound + this.fpHealLastRound)})[/color]` : "")}|[color=green]${this.maxFocus()}[/color] `;
+        let turnsFocusLine = `  [color=orange]turns ${this.user.hasFeature(FeatureType.DomSubLover) ? "being too submissive" : "without focus"}: ${this.consecutiveTurnsWithoutFocus}|${RWGameSettings.maxTurnsWithoutFocus}[/color] `;
         let bondageLine = `  [color=purple]bondage items ${this.bondageItemsOnSelf()}|${RWGameSettings.maxBondageItemsOnSelf}[/color] `;
         let modifiersLine = `  [color=cyan]affected by: ${this.getListOfActiveModifiers()}[/color] `;
         let targetLine = `  [color=red]target(s): ` + ((this.targets != null && this.targets.length > 0) ? `${this.targets.join(",").toString()}` : "None set yet! (!targets charactername)") + `[/color]`;
 
         return `${Utils.pad(50, nameLine, "-")} ${hpLine} ${lpLine} ${livesLine} ${focusLine} ${turnsFocusLine} ${bondageLine} ${(this.getListOfActiveModifiers().length > 0 ? modifiersLine : "")} ${targetLine}`;
-    }
-
-    async save(): Promise<void> {
-        await ActiveFighterRepository.persist(this);
-    }
-
-    async saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
-        await FighterRepository.logTransaction(idFighter, amount, transactionType, fromFighter);
-    }
-
-    restat(statArray: number[]) {
-        throw new Error("Method not implemented voluntarily.");
-    }
-
-    outputStats(): string {
-        throw new Error("Method not implemented voluntarily.");
-    }
-
-    exists(name: string): Promise<boolean> {
-        throw new Error("Method not implemented voluntarily.");
-    }
-
-    load(name: string): Promise<void> {
-        throw new Error("Method not implemented voluntarily.");
     }
 }

@@ -1,6 +1,6 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
 import * as Constants from "../../Common/Constants/BaseConstants";
-import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFighterState} from "../Fight/RWFighterState";
 import {RWFight} from "../Fight/RWFight";
 import {Tiers} from "../Constants/Tiers";
 import {Trigger} from "../../Common/Constants/Trigger";
@@ -8,7 +8,7 @@ import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionRest extends RWAction {
 
-    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
+    constructor(fight:RWFight, attacker:RWFighterState, defenders:RWFighterState[]) {
         super(fight,
             attacker,
             defenders,

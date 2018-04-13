@@ -2,7 +2,7 @@ import * as BaseConstants from "../../Common/Constants/BaseConstants";
 import {Modifier} from "./Modifier";
 import {Utils} from "../../Common/Utils/Utils";
 import {BaseFight} from "../../Common/Fight/BaseFight";
-import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
+import {BaseFighterState} from "../../Common/Fight/BaseFighterState";
 import {Tiers} from "../Constants/Tiers";
 import {ModifierType} from "../RWConstants";
 import * as modifiersList from "./modifiers.json";
@@ -70,7 +70,7 @@ export class ModifierFactory{
         return parameters;
     }
 
-    static getModifier(modifierName:ModifierType, fight:BaseFight, receiver:BaseActiveFighter, applier?:BaseActiveFighter, inputParameters?:any):Modifier{
+    static getModifier(modifierName:ModifierType, fight:BaseFight, receiver:BaseFighterState, applier?:BaseFighterState, inputParameters?:any):Modifier{
         let modifier:Modifier = null;
         if(inputParameters == null){
             inputParameters = {};

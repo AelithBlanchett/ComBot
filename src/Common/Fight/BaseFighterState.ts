@@ -3,28 +3,34 @@ import {BaseFight, FightStatus} from "./BaseFight";
 import {Trigger} from "../Constants/Trigger";
 import {TriggerMoment} from "../Constants/TriggerMoment";
 import {AchievementManager} from "../Achievements/AchievementManager";
-import {BaseFighter} from "./BaseFighter";
 import {BaseModifier} from "../Modifiers/BaseModifier";
 import {Team} from "../Constants/Team";
 import {GameSettings} from "../Configuration/GameSettings";
-import {IFeatureFactory} from "../Features/IFeatureFactory";
 import {FightLength} from "../Constants/FightLength";
-import {Column, CreateDateColumn, ManyToOne, PrimaryColumn, UpdateDateColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity, JoinColumn,
+    ManyToOne, OneToMany,
+    PrimaryColumn,
+    TableInheritance,
+    UpdateDateColumn
+} from "typeorm";
+import {TransactionType} from "../Constants/TransactionType";
+import {BaseUser} from "./BaseUser";
+@Entity("FighterState")
+@TableInheritance({ column: { name: "gametype", type: "varchar" } })
+export abstract class BaseFighterState<Modifier extends BaseModifier = BaseModifier> extends BaseEntity{
 
-export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModifier> extends BaseFighter {
-
-    //@ManyToOne(type => BaseFight, fight => fight.fighters)
-    fight:BaseFight;
-    @PrimaryColumn()
-    idFight:string;
     @Column()
     assignedTeam:Team = Team.Unknown;
     @Column("simple-array")
-    targets:string[];
+    targets:string[] = [];
     @Column()
     isReady:boolean = false;
     @Column()
-    lastDiceRoll:number;
+    lastDiceRoll:number = 0;
     @Column()
     isInTheRing:boolean = true;
     @Column()
@@ -39,15 +45,28 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     createdAt:Date;
     @UpdateDateColumn()
     updatedAt:Date;
-    //@Column()
-    modifiers:Modifier[];
+    @Column()
+    deleted:boolean = false;
     @Column()
     fightStatus: FightStatus;
+
+    @ManyToOne(type => BaseFight, fight => fight.fighters)
+    fight:BaseFight;
+    @ManyToOne(type => BaseUser, user => user.fightStates)
+    user:BaseUser;
+    //@Column()
+    modifiers:Modifier[];
+
     dice:Dice;
 
-    constructor(featureFactory:IFeatureFactory<BaseFight, BaseFighter>){
-        super(featureFactory);
+    get name():string{
+        return this.user.name;
+    }
 
+    constructor(fight:BaseFight, fighter:BaseUser){
+        super();
+        this.fight = fight;
+        this.user = fighter;
         this.assignedTeam = Team.Unknown;
         this.targets = null;
         this.isReady = false;
@@ -59,19 +78,19 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         this.distanceFromRingCenter = 0;
         this.wantsDraw = false;
         this.modifiers = [];
-        this.fightStatus = null;
+        this.targets = [];
 
         this.dice = new Dice(GameSettings.diceSides);
         this.fightStatus = FightStatus.Idle;
+        this.lastDiceRoll = 0;
     }
 
     assignFight(fight:BaseFight):void{
         this.fight = fight;
-        this.idFight = fight.idFight;
     }
 
-    getTargets():BaseActiveFighter[]{
-        let fighters:BaseActiveFighter[] = [];
+    getTargets():BaseFighterState[]{
+        let fighters:BaseFighterState[] = [];
         for(let name of this.targets){
             let fighter = this.fight.getFighterByName(name);
             if(fighter != null){
@@ -81,9 +100,9 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         return fighters;
     }
 
-    async checkAchievements(activeFighter?:BaseActiveFighter, fight?:BaseFight){
+    async checkAchievements(fight?:BaseFight){
         let strBase = `[color=yellow][b]Achievements unlocked for ${this.name}![/b][/color]\n`;
-        let added = await AchievementManager.checkAll(this, activeFighter, fight);
+        let added = await AchievementManager.checkAll(this.user, this, fight);
 
         if(added.length > 0){
             strBase += added.join("\n");
@@ -146,7 +165,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
 
     triggerFeatures<OptionalParameterType>(moment: TriggerMoment, event:Trigger, parameters?:OptionalParameterType):boolean{
         let atLeastOneFeatureWasActivated:boolean = false;
-        for (let feat of this.features) {
+        for (let feat of this.user.features) {
             let message = feat.trigger(moment, event, parameters);
             if(message.length > 0){
                 this.fight.message.addSpecial(message);
@@ -328,7 +347,7 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
         return `${modifierBeginning}[b][color=${Team[this.assignedTeam].toLowerCase()}]${this.name}[/color][/b]${modifierEnding}`;
     }
 
-    isInRange(targets:BaseActiveFighter[]):boolean{
+    isInRange(targets:BaseFighterState[]):boolean{
         let result = true;
         for(let target of targets){
             if((target.distanceFromRingCenter - this.distanceFromRingCenter) > GameSettings.maximumDistanceToBeConsideredInRange){
@@ -339,5 +358,4 @@ export abstract class BaseActiveFighter<Modifier extends BaseModifier = BaseModi
     }
 
     abstract outputStatus():string;
-
 }

@@ -1,7 +1,7 @@
-import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {BaseFighterState} from "../Fight/BaseFighterState";
 
-export interface IAction<ActiveFighter extends BaseActiveFighter>{
-    execute(attacker:ActiveFighter, defenders:ActiveFighter[]);
+export interface IAction<FighterState extends BaseFighterState>{
+    execute(attacker:FighterState, defenders:FighterState[]);
 
     requiredDiceScore:number;
     isNonTurnSkippingAction:boolean;

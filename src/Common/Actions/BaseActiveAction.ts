@@ -1,6 +1,6 @@
 import {Trigger} from "../Constants/Trigger";
 import {BaseAction} from "./BaseAction";
-import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {BaseFighterState} from "../Fight/BaseFighterState";
 import {BaseFight} from "../Fight/BaseFight";
 import {Utils} from "../Utils/Utils";
 import * as BaseConstants from "../Constants/BaseConstants";
@@ -11,18 +11,18 @@ import {BaseFeatureParameter} from "../Features/BaseFeatureParameter";
 import {TriggerMoment} from "../Constants/TriggerMoment";
 import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne} from "typeorm";
 
-export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, ActiveFighter extends BaseActiveFighter = BaseActiveFighter> extends BaseAction{
+export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, FighterState extends BaseFighterState = BaseFighterState> extends BaseAction{
 
     @OneToOne(type => BaseFight, fight => fight.pastActions)
     fight:Fight;
 
-    @OneToOne(type => BaseActiveFighter, fighter => fighter)
+    @OneToOne(type => BaseFighterState, fighter => fighter)
     @JoinColumn()
-    attacker:ActiveFighter;
+    attacker:FighterState;
 
-    @OneToOne(type => BaseActiveFighter, fighter => fighter)
+    @OneToOne(type => BaseFighterState, fighter => fighter)
     @JoinColumn()
-    defenders:ActiveFighter[];
+    defenders:FighterState[];
 
     @Column()
     atTurn: number;
@@ -56,8 +56,8 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
     temporaryIdFight:string;
 
     constructor(fight:Fight,
-                attacker:ActiveFighter,
-                defenders:ActiveFighter[],
+                attacker:FighterState,
+                defenders:FighterState[],
                 name:string,
                 tier: number,
                 isHold: boolean,
@@ -311,7 +311,4 @@ export abstract class BaseActiveAction<Fight extends BaseFight = BaseFight, Acti
             }
         }
     }
-
-    abstract async save():Promise<void>;
-
 }

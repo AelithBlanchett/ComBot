@@ -2,16 +2,16 @@ import {BaseFeature} from "../../Common/Features/BaseFeature";
 import {BaseFeatureParameter} from "../../Common/Features/BaseFeatureParameter";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
 import {FeatureType, ModifierType} from "../RWConstants";
-import {ActiveFighter} from "../Fight/ActiveFighter";
 import {Utils} from "../../Common/Utils/Utils";
 import {FeatureParameter} from "./FeatureParameter";
 import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
 import {Trigger} from "../../Common/Constants/Trigger";
+import {RWUser} from "../Fight/RWUser";
 
 export namespace Feature{
     export class BondageBunny extends BaseFeature{
 
-        constructor(receiver:ActiveFighter, uses:number, id?:string){
+        constructor(receiver:RWUser, uses:number, id?:string){
             super(FeatureType.BondageBunny, receiver, uses, id);
         }
 
@@ -28,7 +28,7 @@ export namespace Feature{
 
         readonly hpDamageMultiplier:number = 1.5;
 
-        constructor(receiver:ActiveFighter, uses:number, id?:string){
+        constructor(receiver:RWUser, uses:number, id?:string){
             super(FeatureType.KickStart, receiver, uses, id);
         }
 
@@ -52,7 +52,7 @@ export namespace Feature{
 
         readonly lpDamageFromHpMultiplier:number = 0.5;
 
-        constructor(receiver:ActiveFighter, uses:number, id?:string){
+        constructor(receiver:RWUser, uses:number, id?:string){
             super(FeatureType.Sadist, receiver, uses, id);
         }
 
@@ -76,7 +76,7 @@ export namespace Feature{
 
         readonly additionalLPDamage:number = 3;
 
-        constructor(receiver:ActiveFighter, uses:number, id?:string){
+        constructor(receiver:RWUser, uses:number, id?:string){
             super(FeatureType.CumSlut, receiver, uses, id);
         }
 
@@ -107,7 +107,7 @@ export namespace Feature{
 
         readonly lpDamageFromHpMultiplier:number = 0.5;
 
-        constructor(receiver:ActiveFighter, uses:number, id?:string){
+        constructor(receiver:RWUser, uses:number, id?:string){
             super(FeatureType.RyonaEnthusiast, receiver, uses, id);
         }
 

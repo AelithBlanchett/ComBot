@@ -1,7 +1,7 @@
-import {BaseActiveFighter} from "../../../src/Common/Fight/BaseActiveFighter";
+import {BaseFighterState} from "../../../src/Common/Fight/BaseFighterState";
 import {TransactionType} from "../../../src/Common/Constants/TransactionType";
 
-export class TestActiveFighter extends BaseActiveFighter {
+export class TestFighterState extends BaseFighterState {
     validateStats(): string {
         return "";
     }
@@ -17,7 +17,7 @@ export class TestActiveFighter extends BaseActiveFighter {
     outputStats(): string {
         return "stats: 1,2,3,4,5,6";
     }
-    save(): Promise<void> {
+    save(): Promise<this> {
         return;
     }
     saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {

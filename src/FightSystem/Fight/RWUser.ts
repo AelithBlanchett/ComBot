@@ -1,13 +1,12 @@
-import {BaseFighter} from "../../Common/Fight/BaseFighter";
-import {IRWFighter} from "./IRWFighter";
-import {Stats} from "../Constants/Stats";
-import {FighterRepository} from "../Repositories/FighterRepository";
+import {BaseUser} from "../../Common/Fight/BaseUser";
 import {TransactionType} from "../../Common/Constants/TransactionType";
-import {Column, Entity, JoinColumn, OneToOne} from "typeorm";
+import {Column, JoinColumn, OneToOne} from "typeorm";
 import {RWFighterStats} from "./RWFighterStats";
+import {IFeatureFactory} from "../../Common/Features/IFeatureFactory";
+import {Stats} from "../Constants/Stats";
 
-@Entity()
-export class RWFighter extends BaseFighter implements IRWFighter {
+export class RWUser extends BaseUser{
+
 
     @Column()
     dexterity:number = 1;
@@ -25,6 +24,21 @@ export class RWFighter extends BaseFighter implements IRWFighter {
     @OneToOne(type => RWFighterStats)
     @JoinColumn()
     stats:RWFighterStats;
+
+    saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
+        return undefined;
+    }
+
+    constructor(name: string, featureFactory:IFeatureFactory){
+        super(name, featureFactory);
+        this.toughness = 1;
+        this.toughness = 1;
+        this.endurance = 1;
+        this.willpower = 1;
+        this.sensuality = 1;
+        this.power = 1;
+        this.dexterity = 1;
+    }
 
     restat(statArray:Array<number>){
         for(let i = 0; i < statArray.length;  i++){
@@ -45,19 +59,4 @@ export class RWFighter extends BaseFighter implements IRWFighter {
             `[b][color=white]Fun stats[/color][/b]: [sub]Avg. roll: ${this.stats.averageDiceRoll}, Fav. tag partner: ${(this.stats.favoriteTagPartner != null && this.stats.favoriteTagPartner != "" ? this.stats.favoriteTagPartner : "None!")}, Moves done: ${this.stats.actionsCount}, Nemesis: ${this.stats.nemesis} [/sub]`;
     }
 
-    async save(): Promise<void> {
-        await FighterRepository.persist(this);
-    }
-
-    async saveTokenTransaction(idFighter: string, amount: number, transactionType: TransactionType, fromFighter?: string): Promise<void> {
-        await FighterRepository.logTransaction(idFighter, amount, transactionType, fromFighter);
-    }
-
-    async exists(name: string): Promise<boolean> {
-        return await FighterRepository.exists(name);
-    }
-
-    async load(name: string): Promise<void> {
-        await FighterRepository.load(name, this);
-    }
 }

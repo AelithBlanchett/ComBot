@@ -3,7 +3,7 @@ import {Dictionary} from "../Utils/Dictionary";
 import * as BaseConstants from "../Constants/BaseConstants";
 import {FightMessage} from "./FightMessage";
 import {BaseFeatureParameter} from "../Features/BaseFeatureParameter";
-import {BaseActiveFighter} from "./BaseActiveFighter";
+import {BaseFighterState} from "./BaseFighterState";
 import {BaseActiveAction} from "../Actions/BaseActiveAction";
 import {IActionFactory} from "../Actions/IActionFactory";
 import {IFChatLib} from "fchatlib/dist/src/IFChatLib";
@@ -20,18 +20,21 @@ import {TransactionType} from "../Constants/TransactionType";
 import {Trigger} from "../Constants/Trigger";
 import {TriggerMoment} from "../Constants/TriggerMoment";
 import {
+    BaseEntity,
     Column,
     CreateDateColumn,
     Entity,
     JoinColumn,
     OneToMany,
     PrimaryColumn,
-    PrimaryGeneratedColumn,
+    PrimaryGeneratedColumn, TableInheritance,
     UpdateDateColumn
 } from "typeorm";
 let EloRating = require('elo-rating');
 
-export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseActiveFighter>{
+@Entity("fights")
+@TableInheritance({ column: { name: "gametype", type: "varchar" } })
+export abstract class BaseFight<FighterState extends BaseFighterState = BaseFighterState> extends BaseEntity{
 
     @PrimaryColumn()
     idFight:string;
@@ -66,20 +69,21 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     //@OneToMany(type => BaseActiveAction, action => action.fight)
     //@JoinColumn()
     pastActions:Array<BaseActiveAction>;
-    // @OneToMany(type => BaseActiveFighter, action => action.fight)
+    // @OneToMany(type => BaseFighter, action => action.fight)
     // @JoinColumn()
-    fighters:ActiveFighter[];
+    fighters:FighterState[];
 
     channel:string;
     message:FightMessage;
     fChatLibInstance:IFChatLib;
-    actionFactory:IActionFactory<BaseFight, BaseActiveFighter>;
+    actionFactory:IActionFactory<BaseFight, BaseFighterState>;
 
     debug:boolean = false;
     forcedDiceRoll:number = 0;
     diceLess:boolean = false;
 
-    public constructor(actionFactory:IActionFactory<BaseFight, BaseActiveFighter>) {
+    public constructor(actionFactory:IActionFactory<BaseFight, BaseFighterState>) {
+        super();
         this.idFight = Utils.generateUUID();
         this.fighters = [];
         this.stage = FightingStages.pick();
@@ -172,19 +176,18 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
             if(index != -1){
                 let fighter = this.fighters[index];
                 this.fighters.splice(index, 1);
-                await this.deleteFighterFromFight(fighter.name, this.idFight);
             }
         }
     }
 
     async join(fighterName:string, team:Team):Promise<number> {
         if(!this.hasStarted){
-            if (!this.getFighterByName(fighterName)) { //find fighter by its name property instead of comparing objects, which doesn't work.
-                let activeFighter:ActiveFighter = await this.loadFighter(fighterName);
+            if (!this.getFighterByName(fighterName)) { //find user by its name property instead of comparing objects, which doesn't work.
+                let activeFighter:FighterState = null; //await BaseFighterState.loadFighter(fighterName);//TODO fix this
                 if(activeFighter == null){
                     throw new Error(Messages.errorNotRegistered);
                 }
-                if(!activeFighter.canPayAmount(GameSettings.tokensCostToFight)){
+                if(!activeFighter.user.canPayAmount(GameSettings.tokensCostToFight)){
                     throw new Error(Utils.strFormat(Messages.errorNotEnoughMoney, [GameSettings.tokensCostToFight.toString()]));
                 }
                 let areStatsValid = activeFighter.validateStats();
@@ -218,8 +221,8 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
             if (!this.getFighterByName(fighterName)) {
                 await this.join(fighterName, Team.Unknown);
             }
-            let fighterInFight:ActiveFighter = this.getFighterByName(fighterName);
-            if(fighterInFight && !fighterInFight.isReady){ //find fighter by its name property instead of comparing objects, which doesn't work.
+            let fighterInFight:FighterState = this.getFighterByName(fighterName);
+            if(fighterInFight && !fighterInFight.isReady){ //find user by its name property instead of comparing objects, which doesn't work.
                 fighterInFight.isReady = true;
                 fighterInFight.fightStatus = FightStatus.Ready;
                 let fightTypes = Utils.getEnumList(FightType);
@@ -288,7 +291,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         for (let i = 0; i < this.fighters.length; i++) {
             this.fighters[i].fightStatus = FightStatus.Playing;
             let fightCost:number = GameSettings.tokensCostToFight;
-            await this.fighters[i].removeTokens(fightCost, TransactionType.FightStart);
+            await this.fighters[i].user.removeTokens(fightCost, TransactionType.FightStart);
             this.fighters[i].triggerFeatures(TriggerMoment.After, Trigger.InitiationRoll, new BaseFeatureParameter(this, this.fighters[i]));
         }
 
@@ -333,7 +336,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         this.currentTurn++;
 
         for(let fighter of this.fighters){
-            let strAchievements = await fighter.checkAchievements(fighter, this);
+            let strAchievements = await fighter.checkAchievements(this);
             if(strAchievements != ""){
                 this.message.addSpecial(strAchievements);
             }
@@ -406,11 +409,11 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return curTurn % this.aliveFighterCount;
     }
 
-    get currentPlayer():ActiveFighter {
+    get currentPlayer():FighterState {
         return this.getAlivePlayers()[this.currentPlayerIndex];
     }
 
-    get nextPlayer():ActiveFighter {
+    get nextPlayer():FighterState {
         return this.getAlivePlayers()[this.currentTurn % this.aliveFighterCount];
     }
 
@@ -439,7 +442,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return Team[this.currentTeam];
     }
 
-    get currentTarget():BaseActiveFighter[] {
+    get currentTarget():BaseFighterState[] {
         return this.currentPlayer.getTargets();
     }
 
@@ -449,12 +452,12 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
     }
 
-    assignRandomTargetToFighter(fighter:ActiveFighter):void {
+    assignRandomTargetToFighter(fighter:FighterState):void {
         fighter.targets.push(this.getRandomFighterNotInTeam(fighter.assignedTeam).name);
     }
 
     //Dice rolling
-    rollAllDice(event:Trigger):Array<ActiveFighter> {
+    rollAllDice(event:Trigger):Array<FighterState> {
         let arrSortedFightersByInitiative = [];
         for (let player of this.getAlivePlayers()) {
             player.lastDiceRoll = player.roll(10, event);
@@ -469,7 +472,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return arrSortedFightersByInitiative;
     }
 
-    rollAllGetWinner(event:Trigger):ActiveFighter {
+    rollAllGetWinner(event:Trigger):FighterState {
         return this.rollAllDice(event)[0];
     }
 
@@ -510,7 +513,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
             throw new Error(`The tier is required, and neither Light, Medium or Heavy was specified. Example: !action Medium`);
         }
         if (isCustomTargetInsteadOfTier) {
-            let customTarget:BaseActiveFighter = this.getFighterByName(args);
+            let customTarget:FighterState = this.getFighterByName(args);
             if (customTarget == null) {
                 throw new Error("The character to tag with is required and wasn't found.");
             }
@@ -549,7 +552,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
     }
 
-    async doAction(actionName:string, attacker:BaseActiveFighter, defenders:BaseActiveFighter[], tier:number):Promise<BaseActiveAction> {
+    async doAction(actionName:string, attacker:BaseFighterState, defenders:BaseFighterState[], tier:number):Promise<BaseActiveAction> {
         let action:BaseActiveAction = this.actionFactory.getAction(actionName, this, attacker, defenders, tier);
         action.execute();
         await action.save();
@@ -557,7 +560,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return action;
     }
 
-    displayDeathMessagesIfNeedBe(involvedActors:BaseActiveFighter[]){
+    displayDeathMessagesIfNeedBe(involvedActors:BaseFighterState[]){
         for(let actor of involvedActors){
             actor.isTechnicallyOut(true);
         }
@@ -584,8 +587,8 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
     getFightTier(winnerTeam){
         let highestWinnerTier = FightTier.Bronze;
         for (let fighter of this.getTeam(winnerTeam)) {
-            if(fighter.fightTier() > highestWinnerTier){
-                highestWinnerTier = fighter.fightTier();
+            if(fighter.user.fightTier() > highestWinnerTier){
+                highestWinnerTier = fighter.user.fightTier();
             }
         }
 
@@ -593,10 +596,10 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         for (let fighter of this.fighters) {
             if(fighter.assignedTeam != winnerTeam){
                 if(lowestLoserTier == -99){
-                    lowestLoserTier = fighter.fightTier();
+                    lowestLoserTier = fighter.user.fightTier();
                 }
-                else if(lowestLoserTier > fighter.fightTier()){
-                    lowestLoserTier = fighter.fightTier();
+                else if(lowestLoserTier > fighter.user.fightTier()){
+                    lowestLoserTier = fighter.user.fightTier();
                 }
             }
         }
@@ -687,11 +690,11 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         for (let fighter of this.fighters) {
             if (fighter.assignedTeam == this.winnerTeam) {
                 numberOfWinners++;
-                eloAverageOfWinners += fighter.stats.eloRating;
+                eloAverageOfWinners += fighter.user.statistics.eloRating;
             }
             else{
                 numberOfLosers++;
-                eloAverageOfLosers += fighter.stats.eloRating;
+                eloAverageOfLosers += fighter.user.statistics.eloRating;
             }
         }
 
@@ -706,22 +709,22 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
             if (fighter.assignedTeam == this.winnerTeam) {
                 fighter.fightStatus = FightStatus.Won;
                 this.message.addInfo(`Awarded ${tokensToGiveToWinners} ${GameSettings.currencyName} to ${fighter.getStylizedName()}`);
-                await fighter.giveTokens(tokensToGiveToWinners, TransactionType.FightReward, GameSettings.botName);
-                fighter.stats.wins++;
-                fighter.stats.winsSeason++;
-                fighter.stats.eloRating += eloPointsChangeToWinners;
+                await fighter.user.giveTokens(tokensToGiveToWinners, TransactionType.FightReward, GameSettings.botName);
+                fighter.user.statistics.wins++;
+                fighter.user.statistics.winsSeason++;
+                fighter.user.statistics.eloRating += eloPointsChangeToWinners;
             }
             else {
                 if (this.winnerTeam != Team.Unknown) {
                     fighter.fightStatus = FightStatus.Lost;
-                    fighter.stats.losses++;
-                    fighter.stats.lossesSeason++;
-                    fighter.stats.eloRating += eloPointsChangeToLosers;
+                    fighter.user.statistics.losses++;
+                    fighter.user.statistics.lossesSeason++;
+                    fighter.user.statistics.eloRating += eloPointsChangeToLosers;
                 }
                 this.message.addInfo(`Awarded ${tokensToGiveToLosers} ${GameSettings.currencyName} to ${fighter.getStylizedName()}`);
-                await fighter.giveTokens(tokensToGiveToLosers, TransactionType.FightReward, GameSettings.botName);
+                await fighter.user.giveTokens(tokensToGiveToLosers, TransactionType.FightReward, GameSettings.botName);
             }
-            this.message.addInfo(await fighter.checkAchievements(fighter, this));
+            this.message.addInfo(await fighter.checkAchievements(this));
             await fighter.save();
         }
 
@@ -730,7 +733,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         await this.save();
     }
 
-    reorderFightersByInitiative(arrFightersSortedByInitiative:Array<ActiveFighter>) {
+    reorderFightersByInitiative(arrFightersSortedByInitiative:Array<FighterState>) {
         let index = 0;
         for (let fighter of arrFightersSortedByInitiative) {
             let indexToMoveInFront = this.getFighterIndex(fighter.name);
@@ -741,7 +744,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
     }
 
-    getAlivePlayers():Array<ActiveFighter> {
+    getAlivePlayers():Array<FighterState> {
         let arrPlayers = [];
         for (let player of this.fighters) {
             if (!player.isTechnicallyOut() && player.isInTheRing) {
@@ -751,8 +754,8 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return arrPlayers;
     }
 
-    getFighterByName(name:string):ActiveFighter {
-        let fighter:ActiveFighter = null;
+    getFighterByName(name:string):FighterState {
+        let fighter:FighterState = null;
         for (let player of this.fighters) {
             if (player.name == name) {
                 fighter = player;
@@ -791,7 +794,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         }
     }
 
-    getTeam(Teams:Team):Array<ActiveFighter> {
+    getTeam(Teams:Team):Array<FighterState> {
         let teamList = [];
         for (let player of this.fighters) {
             if (player.assignedTeam == Teams) {
@@ -914,13 +917,13 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return teamToUse;
     }
 
-    getRandomFighter():ActiveFighter {
+    getRandomFighter():FighterState {
         return this.getAlivePlayers()[Utils.getRandomInt(0, this.getAlivePlayers().length)];
     }
 
-    getRandomFighterNotInTeam(Teams:Team):ActiveFighter {
+    getRandomFighterNotInTeam(Teams:Team):FighterState {
         let tries = 0;
-        let fighter:ActiveFighter;
+        let fighter:FighterState;
         while (tries < 99 && (fighter == null || fighter.assignedTeam == null || fighter.assignedTeam == Teams)) {
             fighter = this.getRandomFighter();
             tries++;
@@ -937,17 +940,7 @@ export abstract class BaseFight<ActiveFighter extends BaseActiveFighter = BaseAc
         return this.getAlivePlayers().length;
     }
 
-    abstract async save():Promise<void>;
-
-    abstract async load(fightId:string):Promise<void>;
-
-    abstract async delete():Promise<void>;
-
-    abstract deleteFighterFromFight(idFighter:string, idFight:string);
-
-    abstract punishPlayerOnForfeit(fighter:ActiveFighter);
-
-    abstract loadFighter(idFighter:string):Promise<ActiveFighter>;
+    abstract punishPlayerOnForfeit(fighter:FighterState);
 
 }
 

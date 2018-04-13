@@ -1,9 +1,13 @@
 import {BaseFighterStats} from "../../Common/Fight/BaseFighterStats";
-import {Column, Entity, OneToOne} from "typeorm";
-import {RWFighter} from "./RWFighter";
+import {Column, Entity, JoinColumn, OneToOne} from "typeorm";
+import {RWUser} from "./RWUser";
 
 @Entity()
 export class RWFighterStats extends BaseFighterStats{
+
+    @OneToOne(type => RWUser, fighter => fighter.statistics)
+    @JoinColumn()
+    fighter:RWUser;
     @Column()
     brawlAtksCount:number;
     @Column()

@@ -1,10 +1,10 @@
 import {IActionFactory} from "../../../src/Common/Actions/IActionFactory";
 import {TestFight} from "./TestFight";
-import {TestActiveFighter} from "./TestActiveFighter";
+import {TestFighterState} from "./TestFighterState";
 import {TestActiveAction} from "./TestActiveAction";
 
-export class TestActionFactory implements IActionFactory<TestFight, TestActiveFighter> {
-    getAction(actionName: string, fight: TestFight, attacker: TestActiveFighter, defenders: TestActiveFighter[], tier: number): TestActiveAction {
+export class TestActionFactory implements IActionFactory<TestFight, TestFighterState> {
+    getAction(actionName: string, fight: TestFight, attacker: TestFighterState, defenders: TestFighterState[], tier: number): TestActiveAction {
         return;
     }
 }

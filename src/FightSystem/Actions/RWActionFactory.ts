@@ -2,7 +2,7 @@ import {IActionFactory} from "../../Common/Actions/IActionFactory";
 import {ActionType, RWAction} from "./RWAction";
 import {ActionTag} from "./ActionTag";
 import {RWFight} from "../Fight/RWFight";
-import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFighterState} from "../Fight/RWFighterState";
 import {ActionBrawl} from "./ActionBrawl";
 import {ActionTease} from "./ActionTease";
 import {ActionHighRisk} from "./ActionHighRisk";
@@ -27,8 +27,8 @@ import {ActionSelfDebase} from "./ActionSelfDebase";
 import {ActionMasturbate} from "./ActionMasturbate";
 import {Tiers} from "../Constants/Tiers";
 
-export class RWActionFactory implements IActionFactory<RWFight, ActiveFighter> {
-    getAction(actionName: string, fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:Tiers): RWAction {
+export class RWActionFactory implements IActionFactory<RWFight, RWFighterState> {
+    getAction(actionName: string, fight:RWFight, attacker:RWFighterState, defenders:RWFighterState[], tier:Tiers): RWAction {
         let action:RWAction;
         switch(actionName){
             case ActionType.Brawl:

@@ -1,31 +1,23 @@
 import {Utils} from "../../Common/Utils/Utils";
-import * as Constants from "../../Common/Constants/BaseConstants";
-import {ActiveFighter} from "./ActiveFighter";
-import {ActiveFighterRepository} from "../Repositories/ActiveFighterRepository";
-import {FightRepository} from "../Repositories/FightRepository";
-import {ModifierFactory} from "../Modifiers/ModifierFactory";
+import {RWFighterState} from "./RWFighterState";
 import {BaseFight} from "../../Common/Fight/BaseFight";
 import {RWActionFactory} from "../Actions/RWActionFactory";
 import {ModifierType} from "../RWConstants";
 import {Messages} from "../../Common/Constants/Messages";
 import {TriggerMoment} from "../../Common/Constants/TriggerMoment";
 import {Trigger} from "../../Common/Constants/Trigger";
-import {Column, Entity, JoinColumn, OneToMany} from "typeorm";
-import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
+import {ChildEntity, Column, Entity, JoinColumn, OneToMany} from "typeorm";
+import {ModifierFactory} from "../Modifiers/ModifierFactory";
 
-@Entity()
-export class RWFight extends BaseFight<ActiveFighter>{
 
-    @OneToMany(type => ActiveFighter, fighter => fighter.fight)
-    @JoinColumn()
-    fighters:ActiveFighter[];
+@ChildEntity("rw")
+export class RWFight extends BaseFight<RWFighterState>{
+
+    @Column()
+    test:string;
 
     public constructor() {
         super(new RWActionFactory());
-    }
-
-    async loadFighter(idFighter: string):Promise<ActiveFighter> {
-        return await ActiveFighterRepository.initialize(idFighter);
     }
 
     async nextTurn(){
@@ -44,7 +36,7 @@ export class RWFight extends BaseFight<ActiveFighter>{
         await super.nextTurn();
     }
 
-    punishPlayerOnForfeit(fighter: ActiveFighter) {
+    punishPlayerOnForfeit(fighter: RWFighterState) {
         this.message.addHit(Utils.strFormat(Messages.forfeitItemApply, [fighter.getStylizedName(), fighter.maxBondageItemsOnSelf().toString()]));
         for(let i = 0; i < fighter.maxBondageItemsOnSelf(); i++){
             fighter.modifiers.push(ModifierFactory.getModifier(ModifierType.Bondage, this, fighter, null));
@@ -53,28 +45,5 @@ export class RWFight extends BaseFight<ActiveFighter>{
         fighter.triggerPermanentOutsideRing();
     }
 
-    async save(): Promise<void> {
-        await FightRepository.persist(this);
-    }
-
-    async load(fightId:string): Promise<void> {
-        await FightRepository.load(fightId, this);
-    }
-
-    async deleteFighterFromFight(idFighter:string, idFight:string){
-        try {
-            if(await ActiveFighterRepository.exists(idFighter, idFight)){
-                await ActiveFighterRepository.delete(idFighter, idFight);
-            }
-        }
-        catch (ex) {
-            this.message.addError(Utils.strFormat(Messages.commandError, ex.message));
-            this.sendFightMessage();
-        }
-    }
-
-    async delete(): Promise<void> {
-        await FightRepository.delete(this.idFight);
-    }
 
 }

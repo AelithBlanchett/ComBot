@@ -1,15 +1,14 @@
 import {BaseCommandHandler} from "../Common/BaseCommandHandler";
 import {Utils} from "../Common/Utils/Utils";
-import * as BaseConstants from "../Common/Constants/BaseConstants";
 import {ActionType} from "./Actions/RWAction";
 import {IMsgEvent} from "fchatlib/dist/src/Interfaces/IMsgEvent";
 import {RWFight} from "./Fight/RWFight";
 import {Messages} from "../Common/Constants/Messages";
 import {Tiers} from "./Constants/Tiers";
-import {RWFighter} from "./Fight/RWFighter";
-import {FighterRepository} from "./Repositories/FighterRepository";
+import {RWFighterState} from "./Fight/RWFighterState";
+import {RWUser} from "./Fight/RWUser";
 
-export class CommandHandler extends BaseCommandHandler<RWFight, RWFighter> {
+export class CommandHandler extends BaseCommandHandler<RWFight, RWUser, RWFighterState> {
 
     private wait(ms){
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -308,16 +307,4 @@ export class CommandHandler extends BaseCommandHandler<RWFight, RWFighter> {
             }
         }
     }
-
-    async givetokenstoplayersregisteredbeforenow(args:string, data:IMsgEvent) {
-        if (this.fChatLibInstance.isUserMaster(data.character)) {
-            try {
-                await FighterRepository.GiveTokensToPlayersRegisteredBeforeNow(parseInt(args));
-            }
-            catch (ex) {
-                this.fChatLibInstance.sendPrivMessage(Utils.strFormat(Messages.commandError, ex.message), data.character);
-            }
-        }
-
-    };
 }

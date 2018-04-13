@@ -1,8 +1,7 @@
-import {BaseFighter} from "../Fight/BaseFighter";
-import {BaseFight} from "../Fight/BaseFight";
 import {BaseFeature} from "./BaseFeature";
+import {BaseUser} from "../Fight/BaseUser";
 
-export interface IFeatureFactory<Fight extends BaseFight, Fighter extends BaseFighter> {
-    getFeature(featureName: string, receiver:Fighter, uses:number, id?:string):BaseFeature;
+export interface IFeatureFactory {
+    getFeature(featureName: string, receiver:BaseUser, uses:number, id?:string):BaseFeature;
     getExistingFeatures():string[];
 }

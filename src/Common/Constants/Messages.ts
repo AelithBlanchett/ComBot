@@ -83,7 +83,7 @@ export class Messages {
     static outputStatusInfo = `[b]Turn #%s[/b] [color=%s]------ %s team ------[/color] It's [u]%s[/u]'s turn.\n`;
 
     static setCurrentPlayerOK = `Successfully changed %s's place with %s's!`;
-    static setCurrentPlayerFail = "Couldn't switch the two wrestlers. The name is either wrong, this fighter is already in the ring or this fighter isn't able to fight right now.";
+    static setCurrentPlayerFail = "Couldn't switch the two wrestlers. The name is either wrong, this user is already in the ring or this user isn't able to fight right now.";
 
     static rollAllDiceEchoRoll = "%s rolled a %s";
 

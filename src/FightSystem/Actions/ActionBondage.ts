@@ -1,5 +1,5 @@
 import {ActionExplanation, ActionType, RWAction} from "./RWAction";
-import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFighterState} from "../Fight/RWFighterState";
 import {RWFight} from "../Fight/RWFight";
 import {FeatureType, FocusDamageOnHit, FocusHealOnHit, ModifierType} from "../RWConstants";
 import {ModifierFactory} from "../Modifiers/ModifierFactory";
@@ -9,7 +9,7 @@ import {RWGameSettings} from "../Configuration/RWGameSettings";
 
 export class ActionBondage extends RWAction {
 
-    constructor(fight:RWFight, attacker:ActiveFighter, defenders:ActiveFighter[]) {
+    constructor(fight:RWFight, attacker:RWFighterState, defenders:RWFighterState[]) {
         super(fight,
             attacker,
             defenders,
@@ -48,7 +48,7 @@ export class ActionBondage extends RWAction {
         if(this.defender.isInHold()){
             this.requiresRoll = false;
         }
-        if(this.defender.hasFeature(FeatureType.BondageBunny)){
+        if(this.defender.user.hasFeature(FeatureType.BondageBunny)){
             return RWGameSettings.RequiredScoreForBondageAgainstBondageBunny;
         }
         return super.requiredDiceScore;

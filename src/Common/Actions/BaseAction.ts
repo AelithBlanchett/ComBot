@@ -1,7 +1,8 @@
 import {Utils} from "../Utils/Utils";
 import {Trigger} from "../Constants/Trigger";
+import {BaseEntity} from "typeorm";
 
-export abstract class BaseAction{
+export abstract class BaseAction extends BaseEntity{
 
     idAction: string;
     name:string;
@@ -67,6 +68,7 @@ export abstract class BaseAction{
                 trigger:Trigger,
                 explanation?:string,
                 maxTargets?:number){
+        super();
         this.idAction = Utils.generateUUID();
         this.name = name;
         this.tier = tier;

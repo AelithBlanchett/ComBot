@@ -1,5 +1,5 @@
 import * as BaseConstants from "../../Common/Constants/BaseConstants";
-import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFighterState} from "../Fight/RWFighterState";
 import {RWFight} from "../Fight/RWFight";
 import {BaseModifier} from "../../Common/Modifiers/BaseModifier";
 import {IModifier} from "./IModifier";
@@ -18,8 +18,8 @@ export class Modifier extends BaseModifier implements IModifier{
     focusHeal: number;
 
     fight:RWFight;
-    applier:ActiveFighter;
-    receiver:ActiveFighter;
+    applier:RWFighterState;
+    receiver:RWFighterState;
 
 
     isAHold():boolean{

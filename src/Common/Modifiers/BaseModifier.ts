@@ -1,7 +1,7 @@
 import {IBaseModifier} from "./IBaseModifier";
 import {Utils} from "../Utils/Utils";
 import {BaseFight} from "../Fight/BaseFight";
-import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {BaseFighterState} from "../Fight/BaseFighterState";
 import {Trigger} from "../Constants/Trigger";
 import {TriggerMoment} from "../Constants/TriggerMoment";
 
@@ -20,14 +20,14 @@ export abstract class BaseModifier implements IBaseModifier{
     idParentActions:Array<string>;
 
     fight:BaseFight;
-    applier:BaseActiveFighter;
-    receiver:BaseActiveFighter;
+    applier:BaseFighterState;
+    receiver:BaseFighterState;
 
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
 
-    constructor(name:string, fight:BaseFight, receiver:BaseActiveFighter, applier:BaseActiveFighter,  tier:number, uses:number, timeToTrigger:TriggerMoment, event:Trigger, parentActionIds?:Array<string>){
+    constructor(name:string, fight:BaseFight, receiver:BaseFighterState, applier:BaseFighterState, tier:number, uses:number, timeToTrigger:TriggerMoment, event:Trigger, parentActionIds?:Array<string>){
         this.idModifier = Utils.generateUUID();
         this.receiver = receiver;
         this.applier = applier;

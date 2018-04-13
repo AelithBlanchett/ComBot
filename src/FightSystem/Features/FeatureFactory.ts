@@ -3,16 +3,16 @@ import {BaseFeature} from "../../Common/Features/BaseFeature";
 import {Feature} from "./Features";
 import KickStart = Feature.KickStart;
 import BondageBunny = Feature.BondageBunny;
-import {ActiveFighter} from "../Fight/ActiveFighter";
+import {RWFighterState} from "../Fight/RWFighterState";
 import {IFeatureFactory} from "../../Common/Features/IFeatureFactory";
 import {RWFight} from "../Fight/RWFight";
-import {RWFighter} from "../Fight/RWFighter";
 import CumSlut = Feature.CumSlut;
 import RyonaEnthusiast = Feature.RyonaEnthusiast;
+import {RWUser} from "../Fight/RWUser";
 
-export class FeatureFactory implements IFeatureFactory<RWFight, RWFighter>{
+export class FeatureFactory implements IFeatureFactory{
 
-    getFeature(featureName:string, receiver:ActiveFighter, uses:number, id?:string):BaseFeature{
+    getFeature(featureName:string, receiver:RWUser, uses:number, id?:string):BaseFeature{
         let feature:BaseFeature = null;
 
         switch(featureName){

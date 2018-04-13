@@ -1,8 +1,8 @@
-import {BaseCommandHandler} from "./BaseCommandHandler";
-import {BaseFight} from "./Fight/BaseFight";
-import {BaseFighter} from "./Fight/BaseFighter";
-import {GameSettings} from "./Configuration/GameSettings";
-import {IFChatLib} from "fchatlib/dist/src/Interfaces/IFChatLib";
+// import {BaseCommandHandler} from "./BaseCommandHandler";
+// import {BaseFight} from "./Fight/BaseFight";
+// import {BaseFighterState} from "./Fight/BaseFighterState";
+// import {GameSettings} from "./Configuration/GameSettings";
+// import {IFChatLib} from "fchatlib/dist/src/Interfaces/IFChatLib";
 
 
 //Step 1: add imports/edit comments for Fight and Fighter entities

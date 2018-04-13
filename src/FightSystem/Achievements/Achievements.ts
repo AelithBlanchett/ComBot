@@ -1,18 +1,19 @@
 import {IAchievement} from "../../Common/Achievements/IAchievement";
-import {BaseFighter} from "../../Common/Fight/BaseFighter";
-import {BaseActiveFighter} from "../../Common/Fight/BaseActiveFighter";
+import {BaseFighterState} from "../../Common/Fight/BaseFighterState";
 import {BaseFight} from "../../Common/Fight/BaseFight";
 import {RWFight} from "../Fight/RWFight";
 import {AchievementManager} from "../../Common/Achievements/AchievementManager";
 import {FightTier} from "../../Common/Constants/FightTier";
+import {BaseAchievement} from "../../Common/Achievements/BaseAchievement";
+import {BaseUser} from "../../Common/Fight/BaseUser";
 
-export class RookieAchievement implements IAchievement{
+export class RookieAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight<BaseActiveFighter>): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.fightsCount >= 1);
+        if(user != null){
+            flag = (user.statistics.fightsCount >= 1);
         }
         return flag;
     }
@@ -34,13 +35,13 @@ export class RookieAchievement implements IAchievement{
     }
 }
 
-export class FiveFightsAchievement implements IAchievement{
+export class FiveFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.fightsCount >= 5);
+        if(user != null){
+            flag = (user.statistics.fightsCount >= 5);
         }
         return flag;
     }
@@ -62,13 +63,13 @@ export class FiveFightsAchievement implements IAchievement{
     }
 }
 
-export class TenFightsAchievement implements IAchievement{
+export class TenFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.fightsCount >= 10);
+        if(user != null){
+            flag = (user.statistics.fightsCount >= 10);
         }
         return flag;
     }
@@ -90,13 +91,13 @@ export class TenFightsAchievement implements IAchievement{
     }
 }
 
-export class TwentyFightsAchievement implements IAchievement{
+export class TwentyFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.fightsCount >= 20);
+        if(user != null){
+            flag = (user.statistics.fightsCount >= 20);
         }
         return flag;
     }
@@ -118,13 +119,13 @@ export class TwentyFightsAchievement implements IAchievement{
     }
 }
 
-export class FortyFightsAchievement implements IAchievement{
+export class FortyFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.fightsCount >= 40);
+        if(user != null){
+            flag = (user.statistics.fightsCount >= 40);
         }
         return flag;
     }
@@ -146,13 +147,13 @@ export class FortyFightsAchievement implements IAchievement{
     }
 }
 
-export class WinookieAchievement implements IAchievement{
+export class WinookieAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.wins >= 1);
+        if(user != null){
+            flag = (user.statistics.wins >= 1);
         }
         return flag;
     }
@@ -174,13 +175,13 @@ export class WinookieAchievement implements IAchievement{
     }
 }
 
-export class WinFiveFightsAchievement implements IAchievement{
+export class WinFiveFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.wins >= 5);
+        if(user != null){
+            flag = (user.statistics.wins >= 5);
         }
         return flag;
     }
@@ -202,13 +203,13 @@ export class WinFiveFightsAchievement implements IAchievement{
     }
 }
 
-export class WinTenFightsAchievement implements IAchievement{
+export class WinTenFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.wins >= 10);
+        if(user != null){
+            flag = (user.statistics.wins >= 10);
         }
         return flag;
     }
@@ -230,13 +231,13 @@ export class WinTenFightsAchievement implements IAchievement{
     }
 }
 
-export class WinTwentyFightsAchievement implements IAchievement{
+export class WinTwentyFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.wins >= 20);
+        if(user != null){
+            flag = (user.statistics.wins >= 20);
         }
         return flag;
     }
@@ -258,13 +259,13 @@ export class WinTwentyFightsAchievement implements IAchievement{
     }
 }
 
-export class WinThirtyFightsAchievement implements IAchievement{
+export class WinThirtyFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.wins >= 30);
+        if(user != null){
+            flag = (user.statistics.wins >= 30);
         }
         return flag;
     }
@@ -286,13 +287,13 @@ export class WinThirtyFightsAchievement implements IAchievement{
     }
 }
 
-export class WinFortyFightsAchievement implements IAchievement{
+export class WinFortyFightsAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.stats.wins >= 40);
+        if(user != null){
+            flag = (user.statistics.wins >= 40);
         }
         return flag;
     }
@@ -314,13 +315,13 @@ export class WinFortyFightsAchievement implements IAchievement{
     }
 }
 
-export class ReachSilverAchievement implements IAchievement{
+export class ReachSilverAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.fightTier() >= FightTier.Silver);
+        if(user != null){
+            flag = (user.fightTier() >= FightTier.Silver);
         }
         return flag;
     }
@@ -342,13 +343,13 @@ export class ReachSilverAchievement implements IAchievement{
     }
 }
 
-export class ReachGoldAchievement implements IAchievement{
+export class ReachGoldAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
-        if(fighter != null){
-            flag = (fighter.fightTier() >= FightTier.Gold);
+        if(user != null){
+            flag = (user.fightTier() >= FightTier.Gold);
         }
         return flag;
     }
@@ -370,10 +371,10 @@ export class ReachGoldAchievement implements IAchievement{
     }
 }
 
-export class LongFightAchievement implements IAchievement{
+export class LongFightAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.currentTurn >= 20);
@@ -398,10 +399,10 @@ export class LongFightAchievement implements IAchievement{
     }
 }
 
-export class SeasonOneAchievement implements IAchievement{
+export class SeasonOneAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.season == 1);
@@ -426,10 +427,10 @@ export class SeasonOneAchievement implements IAchievement{
     }
 }
 
-export class DoubleKOAchievement implements IAchievement{
+export class DoubleKOAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: BaseFight<BaseFighterState>): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.isDraw() == true);
@@ -454,10 +455,10 @@ export class DoubleKOAchievement implements IAchievement{
     }
 }
 
-export class SomeSeriousLuckAchievement implements IAchievement{
+export class SomeSeriousLuckAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, activeFighter?: BaseActiveFighter, fight?: BaseFight): boolean {
+    meetsRequirements(user: BaseUser, activeFighter?: BaseFighterState, fight?: BaseFight): boolean {
         let flag = false;
         if(activeFighter != null){
             flag = (activeFighter.lastDiceRoll >= 20 && activeFighter.lastDiceRoll <= 40);
@@ -482,10 +483,10 @@ export class SomeSeriousLuckAchievement implements IAchievement{
     }
 }
 
-export class CumFestAchievement implements IAchievement{
+export class CumFestAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: RWFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: RWFight): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.fighters.filter(x => x.orgasmsDamageLastRound == 1).length >= 2);
@@ -510,10 +511,10 @@ export class CumFestAchievement implements IAchievement{
     }
 }
 
-export class OneMoveTwoStonesAchievement implements IAchievement{
+export class OneMoveTwoStonesAchievement extends BaseAchievement{
     createdAt: Date;
 
-    meetsRequirements(fighter: BaseFighter, BaseActiveFighter?: BaseActiveFighter, fight?: RWFight): boolean {
+    meetsRequirements(user: BaseUser, BaseActiveFighter?: BaseFighterState, fight?: RWFight): boolean {
         let flag = false;
         if(fight != null){
             flag = (fight.fighters.filter(x => x.heartsDamageLastRound == 1).length >= 2);

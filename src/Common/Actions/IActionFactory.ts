@@ -1,7 +1,7 @@
 import {BaseActiveAction} from "./BaseActiveAction";
 import {BaseFight} from "../Fight/BaseFight";
-import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {BaseFighterState} from "../Fight/BaseFighterState";
 
-export interface IActionFactory<Fight extends BaseFight, ActiveFighter extends BaseActiveFighter> {
-    getAction(actionName: string, fight:Fight, attacker:ActiveFighter, defenders:ActiveFighter[], tier:number):BaseActiveAction;
+export interface IActionFactory<Fight extends BaseFight, FighterState extends BaseFighterState> {
+    getAction(actionName: string, fight:Fight, attacker:FighterState, defenders:FighterState[], tier:number):BaseActiveAction;
 }

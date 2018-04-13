@@ -1,10 +1,13 @@
 import {BaseActiveAction} from "../../src/Common/Actions/BaseActiveAction";
 import {TestFight} from "./TestClasses/TestFight";
-import {TestActiveFighter} from "./TestClasses/TestActiveFighter";
+import {TestFighterState} from "./TestClasses/TestFighterState";
 import {TestFeatureFactory} from "./TestClasses/TestFeatureFactory";
 import {TestActiveAction} from "./TestClasses/TestActiveAction";
 import {TestActionFactory} from "./TestClasses/TestActionFactory";
 import {Messages} from "../../src/Common/Constants/Messages";
+import {RWFight} from "../../src/FightSystem/Fight/RWFight";
+import {RWUser} from "../../src/FightSystem/Fight/RWUser";
+import {TestUser} from "./TestClasses/TestUser";
 
 let Jasmine = require('jasmine');
 let jasmine = new Jasmine();
@@ -12,25 +15,26 @@ let jasmine = new Jasmine();
 let featureFactory = new TestFeatureFactory();
 let actionFactory = new TestActionFactory();
 
+function createFighterState(name:string):TestFighterState{
+    return new TestFighterState(new TestFight(actionFactory), new TestUser(name, featureFactory));
+}
+
 describe("The BaseActiveAction", () => {
     beforeEach(function () {
 
     });
 
     it("'s defender getter should return the first defender", function () {
-        let defender = new TestActiveFighter(featureFactory);
-        defender.name = "Defender #1";
-        let action = new TestActiveAction(new TestFight(actionFactory), new TestActiveFighter(featureFactory), [defender]);
+        let defender = createFighterState("Defender #1");
+        let action = new TestActiveAction(new TestFight(actionFactory), createFighterState("Attacker #1"), [defender]);
         expect(action.defender).not.toBe(null);
         expect(action.defender.name).toBe(defender.name);
     });
 
     it("'s defender getter should throw an exception when there are two defenders", function () {
-        let defenderOne = new TestActiveFighter(featureFactory);
-        defenderOne.name = "Defender #1";
-        let defenderTwo = new TestActiveFighter(featureFactory);
-        defenderTwo.name = "Defender #2";
-        let action = new TestActiveAction(new TestFight(actionFactory), new TestActiveFighter(featureFactory), [defenderOne, defenderTwo]);
+        let defenderOne = createFighterState("Defender #1");
+        let defenderTwo = createFighterState("Defender #2")
+        let action = new TestActiveAction(new TestFight(actionFactory), createFighterState("Attacker #1"), [defenderOne, defenderTwo]);
         let exception = null;
         try{
             let defender = action.defender;
@@ -43,9 +47,8 @@ describe("The BaseActiveAction", () => {
     });
 
     it("should miss if the required score is too high, and call onMiss", function () {
-        let defenderOne = new TestActiveFighter(featureFactory);
-        defenderOne.name = "Defender #1";
-        let action = new TestActiveAction(new TestFight(actionFactory), new TestActiveFighter(featureFactory), [defenderOne]);
+        let defenderOne = createFighterState("Defender #1")
+        let action = new TestActiveAction(new TestFight(actionFactory), createFighterState("Attacker #1"), [defenderOne]);
         action.requiresRoll = true;
         spyOn(action, 'checkRequirements').and.callFake(() => {return true;});
         spyOn(action, 'specificRequiredDiceScore').and.callFake(() => {return Number.MAX_SAFE_INTEGER;});
@@ -57,9 +60,8 @@ describe("The BaseActiveAction", () => {
     });
 
     it("should hit if the required score is low enough", function () {
-        let defenderOne = new TestActiveFighter(featureFactory);
-        defenderOne.name = "Defender #1";
-        let action = new TestActiveAction(new TestFight(actionFactory), new TestActiveFighter(featureFactory), [defenderOne]);
+        let defenderOne = createFighterState("Defender #1")
+        let action = new TestActiveAction(new TestFight(actionFactory), createFighterState("Attacker #1"), [defenderOne]);
         action.requiresRoll = true;
         spyOn(action, 'checkRequirements').and.callFake(() => {return true;});
         spyOn(action, 'specificRequiredDiceScore').and.callFake(() => {return Number.MIN_SAFE_INTEGER;});
@@ -71,9 +73,8 @@ describe("The BaseActiveAction", () => {
     });
 
     it("should say there are too many targets", function () {
-        let defender = new TestActiveFighter(featureFactory);
-        defender.name = "Defender #1";
-        let action = new TestActiveAction(new TestFight(actionFactory), new TestActiveFighter(featureFactory), [defender, defender]);
+        let defender = createFighterState("Defender #1");
+        let action = new TestActiveAction(new TestFight(actionFactory), createFighterState("Attacker #1"), [defender, defender]);
         action.singleTarget = true;
         action.usableOnSelf = false;
         let exception = null;
@@ -88,10 +89,9 @@ describe("The BaseActiveAction", () => {
     });
 
     it("should say the attacker can't be dead", function () {
-        let attacker = new TestActiveFighter(featureFactory);
-        attacker.name = "Attacker #1";
+        let attacker = createFighterState("Attacker #1")
         spyOn(attacker, 'isTechnicallyOut').and.callFake(() => { return true;});
-        let action = new TestActiveAction(new TestFight(actionFactory), attacker, [new TestActiveFighter(featureFactory)]);
+        let action = new TestActiveAction(new TestFight(actionFactory), attacker, [createFighterState("Defender #1")]);
         action.singleTarget = true;
         action.usableOnSelf = false;
         action.requiresBeingAlive = true;
@@ -107,10 +107,9 @@ describe("The BaseActiveAction", () => {
     });
 
     it("should say the attacker can't be alive", function () {
-        let attacker = new TestActiveFighter(featureFactory);
-        attacker.name = "Attacker #1";
+        let attacker = createFighterState("Attacker #1")
         spyOn(attacker, 'isTechnicallyOut').and.callFake(() => { return false;});
-        let action = new TestActiveAction(new TestFight(actionFactory), attacker, [new TestActiveFighter(featureFactory)]);
+        let action = new TestActiveAction(new TestFight(actionFactory), attacker, [createFighterState("Defender #1")]);
         action.singleTarget = true;
         action.usableOnSelf = false;
         action.requiresBeingAlive = false;

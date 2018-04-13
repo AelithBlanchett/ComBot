@@ -1,23 +1,23 @@
-import {IAchievement} from "./IAchievement";
-import {BaseFighter} from "../Fight/BaseFighter";
-import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {BaseFighterState} from "../Fight/BaseFighterState";
 import {BaseFight} from "../Fight/BaseFight";
 import {GameSettings} from "../Configuration/GameSettings";
 import {TransactionType} from "../Constants/TransactionType";
+import {BaseAchievement} from "./BaseAchievement";
+import {BaseUser} from "../Fight/BaseUser";
 
 export class AchievementManager {
 
-    public static EnabledAchievements:IAchievement[] = [];
+    public static EnabledAchievements:BaseAchievement[] = [];
 
-    static getAll():IAchievement[]{
+    static getAll():BaseAchievement[]{
         return this.EnabledAchievements;
     }
 
-    static get(name:string):IAchievement{
+    static get(name:string):BaseAchievement{
         return AchievementManager.getAll().find(x => x.getName() == name);
     }
 
-    static async checkAll(fighter:BaseFighter, activeFighter:BaseActiveFighter, fight?:BaseFight<BaseActiveFighter>):Promise<string[]>{
+    static async checkAll(fighter:BaseUser, activeFighter:BaseFighterState, fight?:BaseFight<BaseFighterState>):Promise<string[]>{
         let addedInfo = [];
         let achievements = AchievementManager.getAll();
 

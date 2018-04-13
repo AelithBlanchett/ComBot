@@ -1,22 +1,30 @@
 import {Utils} from "../Utils/Utils";
 import {Trigger} from "../Constants/Trigger";
 import {TriggerMoment} from "../Constants/TriggerMoment";
-import {BaseFighter} from "../Fight/BaseFighter";
-import {BaseActiveFighter} from "../Fight/BaseActiveFighter";
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn} from "typeorm";
+import {BaseUser} from "../Fight/BaseUser";
 
+@Entity("Features")
 export abstract class BaseFeature{
 
+    @PrimaryColumn()
     id:string;
+    @Column()
     type:string;
+    @Column()
     uses: number;
+    @Column()
     permanent: boolean;
-    idReceiver:string;
-    receiver:BaseFighter;
+    @ManyToOne(type => BaseUser, fighter => fighter.features)
+    receiver:BaseUser;
+    @CreateDateColumn()
     createdAt:Date;
+    @UpdateDateColumn()
     updatedAt:Date;
-    deletedAt:Date;
+    @Column()
+    deleted:boolean;
 
-    constructor(featureType:string, receiver:BaseFighter, uses:number, id?:string) {
+    constructor(featureType:string, receiver:BaseUser, uses:number, id?:string) {
         if(id){
             this.id = id;
         }

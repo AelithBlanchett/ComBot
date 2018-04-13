@@ -1,33 +1,35 @@
-import {IAchievement} from "../Achievements/IAchievement";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    PrimaryColumn,
+    UpdateDateColumn
+} from "typeorm";
+import {BaseAchievement} from "../Achievements/BaseAchievement";
+import {BaseFighterStats} from "./BaseFighterStats";
 import {BaseFeature} from "../Features/BaseFeature";
-import {Team} from "../Constants/Team";
+import {TransactionType} from "../Constants/TransactionType";
+import {Messages} from "../Constants/Messages";
+import {FightTier} from "../Constants/FightTier";
+import {FightTierWinRequirements} from "../Constants/FightTierWinRequirements";
 import {IFeatureFactory} from "../Features/IFeatureFactory";
 import {BaseFight} from "./BaseFight";
-import {Messages} from "../Constants/Messages";
-import {FightTierWinRequirements} from "../Constants/FightTierWinRequirements";
-import {FightTier} from "../Constants/FightTier";
-import {TransactionType} from "../Constants/TransactionType";
-import {Column, CreateDateColumn, JoinColumn, OneToOne, PrimaryColumn, UpdateDateColumn} from "typeorm";
-import {BaseFighterStats} from "./BaseFighterStats";
+import {BaseFighterState} from "./BaseFighterState";
 
-export abstract class BaseFighter{
-
+@Entity("Users")
+export abstract class BaseUser extends BaseEntity{
     @PrimaryColumn()
     name:string = "";
     @Column()
     areStatsPrivate:boolean = true;
-
     @Column()
     tokens: number = 50;
     @Column()
     tokensSpent: number = 0;
-
-    // @OneToOne(type => BaseFighterStats)
-    // @JoinColumn()
-    stats:BaseFighterStats;
-
-    features:BaseFeature[] = [];
-    achievements:IAchievement[] = [];
     @CreateDateColumn()
     createdAt:Date;
     @UpdateDateColumn()
@@ -35,13 +37,26 @@ export abstract class BaseFighter{
     @Column()
     deleted:boolean = false;
 
-    featureFactory:IFeatureFactory<BaseFight, BaseFighter>;
+    @OneToMany(type => BaseAchievement, achievement => achievement.user)
+    @JoinColumn()
+    achievements:BaseAchievement[];
+    @OneToOne(type => BaseFighterStats)
+    @JoinColumn()
+    statistics:BaseFighterStats;
+    @OneToMany(type => BaseFeature, feature => feature.receiver)
+    @JoinColumn()
+    features:BaseFeature[];
+    @OneToMany(type => BaseFighterState, fighterState => fighterState.fight)
+    @JoinColumn()
+    fightStates:BaseFighterState[];
 
-    constructor(featureFactory:IFeatureFactory<BaseFight, BaseFighter> = null){
+    featureFactory:IFeatureFactory;
+
+    constructor(name:string, featureFactory:IFeatureFactory){
+        super();
+        this.name = name;
         this.featureFactory = featureFactory;
     }
-
-    abstract restat(statArray:Array<number>);
 
     getFeaturesList(){
         let strResult = [];
@@ -131,25 +146,25 @@ export abstract class BaseFighter{
     }
 
     fightTier():FightTier{
-        if(this.stats == null){
+        if(this.statistics == null){
             return FightTier.Bronze;
         }
-        if(this.stats.wins < FightTierWinRequirements.Silver){
+        if(this.statistics.wins < FightTierWinRequirements.Silver){
             return FightTier.Bronze;
         }
-        else if(this.stats.wins < FightTierWinRequirements.Gold){
+        else if(this.statistics.wins < FightTierWinRequirements.Gold){
             return FightTier.Silver
         }
-        else if(this.stats.wins >= FightTierWinRequirements.Gold){
+        else if(this.statistics.wins >= FightTierWinRequirements.Gold){
             return FightTier.Gold;
         }
         else{
             return FightTier.Bronze;
         }
     }
+
     abstract outputStats():string;
-    abstract async save():Promise<void>;
-    abstract async load(name:string):Promise<void>;
-    abstract async exists(name:string):Promise<boolean>;
+    abstract restat(statArray:Array<number>);
     abstract async saveTokenTransaction(idFighter:string, amount:number, transactionType:TransactionType, fromFighter?:string):Promise<void>;
+
 }
